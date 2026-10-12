@@ -168,7 +168,7 @@ export default function Home() {
                   <Text>Create a task, then request its status and result.</Text>
                 </p>
                 <Link className="button button-outline" href="/docs">
-                  <Text>Explore the documentation</Text>
+                  <Text> Explore the documentation </Text>
                   <ArrowUpRight size={17} />
                 </Link>
               </div>

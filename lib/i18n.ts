@@ -1,70 +1,15 @@
 export type Locale = 'en' | 'ru';
 export const russian: Record<string, string> = {
-  'Supports standard hCaptcha and hCaptcha Enterprise. Access through the API.':
-    'Поддержка обычной hCaptcha и hCaptcha Enterprise. Доступ через API.',
-  'hCaptcha workflows': 'Сценарии с hCaptcha',
-  'Huginn — CAPTCHA solving API': 'Huginn — API для решения CAPTCHA',
-  'A CLEAR PATH THROUGH EVERY CHALLENGE': 'ЯСНЫЙ ПУТЬ ЧЕРЕЗ ЛЮБЫЕ ПРЕГРАДЫ',
-  'Solve more.': 'Решай больше.',
-  'Fly further': 'Лети дальше',
-  'A CAPTCHA solving API for the workflows you build. Built around hCaptcha today. Ready for what comes next.':
-    'API для решения CAPTCHA в ваших проектах. Сегодня — hCaptcha. Дальше — больше возможностей.',
-  'Get API key': 'Получить API-ключ',
-  'View pricing': 'Тарифы',
-  'No subscriptions. Pay only for successful solutions.':
-    'Без подписок. Оплата только за успешные решения.',
-  'Currently solving': 'Сейчас решаем',
-  'A LITTLE INSTINCT.': 'НЕМНОГО ИНСТИНКТА.',
-  'A CLEAR WAY FORWARD.': 'ЯСНЫЙ ПУТЬ ВПЕРЁД.',
-  'API PREVIEW': 'ДЕМО API',
-  'A challenge. A clear path.': 'Задача. Решение.',
-  'Challenge, solved.': 'Задача решена.',
-  'Try it': 'Попробовать',
-  Replay: 'Повторить',
-  'Replay the API preview': 'Повторить демонстрацию API',
-  'Try the API preview': 'Попробовать демонстрацию API',
-  'Illustrative preview. No real task is submitted.':
-    'Демонстрация интерфейса. Реальная задача не отправляется.',
-  'BUILT FOR YOUR WORKFLOWS': 'ДЛЯ ВАШИХ РАБОЧИХ ПРОЦЕССОВ',
-  'hCaptcha, wherever you work.': 'hCaptcha там, где вы работаете.',
-  'and your next idea': 'и вашего следующего проекта',
-  'Made to move.': 'Движение без помех.',
-  'Submit a task, retrieve a token, and keep your workflow moving with a straightforward REST API.':
-    'Отправьте задачу, получите токен и продолжайте работу через простой REST API.',
-  'Every task, accounted for.': 'Каждая задача на виду.',
-  'Track results, usage and cost in one workspace. You only pay for successful solutions.':
-    'Результаты, статистика и расходы в одном кабинете. Оплата только за успешные решения.',
-  'One API. More possibilities.': 'Один API. Больше возможностей.',
-  'Start with hCaptcha today. A task-based API keeps your integration ready for more challenge types.':
-    'Начните с hCaptcha. Единый формат задач подготовит вашу интеграцию к новым типам CAPTCHA.',
-  'FROM FIRST REQUEST TO FIRST RESULT': 'ОТ ПЕРВОГО ЗАПРОСА ДО РЕЗУЛЬТАТА',
-  'Integrate in minutes.': 'Интеграция за минуты.',
-  'Create a task. Get a token. Carry on building.':
-    'Создайте задачу. Получите токен. Продолжайте разработку.',
-  'More types to come': 'Новые типы впереди',
-  'YOUR NEXT FOUR STEPS': 'ВАШИ СЛЕДУЮЩИЕ ЧЕТЫРЕ ШАГА',
-  'Take flight.': 'Начните полёт.',
-  'A FEW THINGS TO KNOW': 'СТОИТ ЗНАТЬ',
-  'Clear answers.': 'Понятные ответы.',
-  'Huginn currently supports hCaptcha. More challenge types are planned, with the same task-based approach to integration.':
-    'Сейчас Huginn поддерживает hCaptcha. В планах — новые типы CAPTCHA с тем же подходом к интеграции через задачи.',
-  'Which workflows is Huginn designed for?': 'Для каких сценариев создан Huginn?',
-  'Huginn is designed for hCaptcha workflows, including those involving Discord, Steam and Riot. These are application examples, not partnerships; availability depends on the challenge and the connected solving provider.':
-    'Huginn рассчитан на задачи hCaptcha, в том числе в сценариях с Discord, Steam и Riot. Это примеры приложений, а не партнёры сервиса; доступность зависит от задачи и подключённого провайдера решений.',
-  'Your next move starts here.': 'Ваш следующий шаг — здесь.',
-  'hCaptcha solving': 'Решение hCaptcha',
-  'for applications': 'для приложений',
-  'Connect your application through the API. Your account includes API keys, usage statistics and billing.':
-    'Интеграция с приложениями через API. Ключи доступа, статистика использования и расходы доступны в личном кабинете.',
+  'A service for solving': 'Сервис для решения',
+  'Supports hCaptcha Enterprise. Access through the API.':
+    'Поддержка hCaptcha Enterprise. Доступ через API.',
   Features: 'Возможности',
   'REST API': 'REST API',
-  'Submit hCaptcha tasks and retrieve their results over HTTP.':
-    'Отправка задач hCaptcha и получение результатов по HTTP.',
-  'Create separate keys for your integrations and revoke them when needed.':
-    'Отдельные ключи для интеграций с возможностью отзыва.',
+  'Create tasks and retrieve their results.': 'Создание задач и получение результатов.',
+  'Create and revoke access keys.': 'Создание и отзыв ключей доступа.',
   'Task history': 'История задач',
-  'View task statuses, results, duration and cost in your account.':
-    'Статусы, результаты, время выполнения и стоимость задач в кабинете.',
+  'Task statuses, duration and cost.': 'Статусы, время и стоимость задач.',
+  'Pay for successful tasks from your balance.': 'Оплата успешных задач с баланса.',
   'API example': 'Пример API',
   'Create a task, then request its status and result.':
     'Создайте задачу, затем запросите её статус и результат.',
@@ -144,8 +89,8 @@ export const russian: Record<string, string> = {
   Good: 'Частые',
   'questions.': 'вопросы.',
   'What does Huginn support?': 'Что поддерживает Huginn?',
-  'Huginn provides a task-based API for hCaptcha. Other CAPTCHA types are not currently supported.':
-    'Huginn предоставляет API для решения hCaptcha. Другие типы CAPTCHA пока не поддерживаются.',
+  'Huginn supports hCaptcha, including hCaptcha Enterprise, through the API.':
+    'Huginn поддерживает hCaptcha, включая hCaptcha Enterprise, через API.',
   'How are tasks billed?': 'Как оплачиваются задачи?',
   'The task price is reserved when a task is accepted. Successful tasks keep that charge; failed tasks receive an automatic refund. You can review each entry in Billing.':
     'Стоимость резервируется при принятии задачи. При успехе она списывается, при ошибке автоматически возвращается. Все операции доступны в разделе «Баланс».',
@@ -496,15 +441,71 @@ export const russian: Record<string, string> = {
   'Huginn — Solve what others can’t.': 'Huginn — Решаем то, что другим не под силу.',
   'Your language choice is saved in a preference cookie for one year. You can change it with the language switch at any time.':
     'Выбор языка сохраняется в cookie настроек на один год. Вы можете изменить его в любой момент с помощью переключателя языка.',
-  'A service for solving': 'Сервис для решения',
-  'Supports hCaptcha Enterprise. Access through the API.':
-    'Поддержка hCaptcha Enterprise. Доступ через API.',
-  'Create tasks and retrieve their results.': 'Создание задач и получение результатов.',
-  'Create and revoke access keys.': 'Создание и отзыв ключей доступа.',
-  'Task statuses, duration and cost.': 'Статусы, время и стоимость задач.',
-  'Pay for successful tasks from your balance.': 'Оплата успешных задач с баланса.',
-  'Huginn supports hCaptcha, including hCaptcha Enterprise, through the API.':
-    'Huginn поддерживает hCaptcha, включая hCaptcha Enterprise, через API.',
+
+  'Supports standard hCaptcha and hCaptcha Enterprise. Access through the API.':
+    'Поддержка обычной hCaptcha и hCaptcha Enterprise. Доступ через API.',
+  'hCaptcha workflows': 'Сценарии с hCaptcha',
+  'Huginn — CAPTCHA solving API': 'Huginn — API для решения CAPTCHA',
+  'A CLEAR PATH THROUGH EVERY CHALLENGE': 'ЯСНЫЙ ПУТЬ ЧЕРЕЗ ЛЮБЫЕ ПРЕГРАДЫ',
+  'Solve more.': 'Решай больше.',
+  'Fly further': 'Лети дальше',
+  'A CAPTCHA solving API for the workflows you build. Built around hCaptcha today. Ready for what comes next.':
+    'API для решения CAPTCHA в ваших проектах. Сегодня — hCaptcha. Дальше — больше возможностей.',
+  'Get API key': 'Получить API-ключ',
+  'View pricing': 'Тарифы',
+  'No subscriptions. Pay only for successful solutions.':
+    'Без подписок. Оплата только за успешные решения.',
+  'Currently solving': 'Сейчас решаем',
+  'A LITTLE INSTINCT.': 'НЕМНОГО ИНСТИНКТА.',
+  'A CLEAR WAY FORWARD.': 'ЯСНЫЙ ПУТЬ ВПЕРЁД.',
+  'API PREVIEW': 'ДЕМО API',
+  'A challenge. A clear path.': 'Задача. Решение.',
+  'Challenge, solved.': 'Задача решена.',
+  'Try it': 'Попробовать',
+  Replay: 'Повторить',
+  'Replay the API preview': 'Повторить демонстрацию API',
+  'Try the API preview': 'Попробовать демонстрацию API',
+  'Illustrative preview. No real task is submitted.':
+    'Демонстрация интерфейса. Реальная задача не отправляется.',
+  'BUILT FOR YOUR WORKFLOWS': 'ДЛЯ ВАШИХ РАБОЧИХ ПРОЦЕССОВ',
+  'hCaptcha, wherever you work.': 'hCaptcha там, где вы работаете.',
+  'and your next idea': 'и вашего следующего проекта',
+  'Made to move.': 'Движение без помех.',
+  'Submit a task, retrieve a token, and keep your workflow moving with a straightforward REST API.':
+    'Отправьте задачу, получите токен и продолжайте работу через простой REST API.',
+  'Every task, accounted for.': 'Каждая задача на виду.',
+  'Track results, usage and cost in one workspace. You only pay for successful solutions.':
+    'Результаты, статистика и расходы в одном кабинете. Оплата только за успешные решения.',
+  'One API. More possibilities.': 'Один API. Больше возможностей.',
+  'Start with hCaptcha today. A task-based API keeps your integration ready for more challenge types.':
+    'Начните с hCaptcha. Единый формат задач подготовит вашу интеграцию к новым типам CAPTCHA.',
+  'FROM FIRST REQUEST TO FIRST RESULT': 'ОТ ПЕРВОГО ЗАПРОСА ДО РЕЗУЛЬТАТА',
+  'Integrate in minutes.': 'Интеграция за минуты.',
+  'Create a task. Get a token. Carry on building.':
+    'Создайте задачу. Получите токен. Продолжайте разработку.',
+  'More types to come': 'Новые типы впереди',
+  'YOUR NEXT FOUR STEPS': 'ВАШИ СЛЕДУЮЩИЕ ЧЕТЫРЕ ШАГА',
+  'Take flight.': 'Начните полёт.',
+  'A FEW THINGS TO KNOW': 'СТОИТ ЗНАТЬ',
+  'Clear answers.': 'Понятные ответы.',
+  'Huginn currently supports hCaptcha. More challenge types are planned, with the same task-based approach to integration.':
+    'Сейчас Huginn поддерживает hCaptcha. В планах — новые типы CAPTCHA с тем же подходом к интеграции через задачи.',
+  'Which workflows is Huginn designed for?': 'Для каких сценариев создан Huginn?',
+  'Huginn is designed for hCaptcha workflows, including those involving Discord, Steam and Riot. These are application examples, not partnerships; availability depends on the challenge and the connected solving provider.':
+    'Huginn рассчитан на задачи hCaptcha, в том числе в сценариях с Discord, Steam и Riot. Это примеры приложений, а не партнёры сервиса; доступность зависит от задачи и подключённого провайдера решений.',
+  'Your next move starts here.': 'Ваш следующий шаг — здесь.',
+  'hCaptcha solving': 'Решение hCaptcha',
+  'for applications': 'для приложений',
+  'Connect your application through the API. Your account includes API keys, usage statistics and billing.':
+    'Интеграция с приложениями через API. Ключи доступа, статистика использования и расходы доступны в личном кабинете.',
+  'Submit hCaptcha tasks and retrieve their results over HTTP.':
+    'Отправка задач hCaptcha и получение результатов по HTTP.',
+  'Create separate keys for your integrations and revoke them when needed.':
+    'Отдельные ключи для интеграций с возможностью отзыва.',
+  'View task statuses, results, duration and cost in your account.':
+    'Статусы, результаты, время выполнения и стоимость задач в кабинете.',
+  'Huginn provides a task-based API for hCaptcha. Other CAPTCHA types are not currently supported.':
+    'Huginn предоставляет API для решения hCaptcha. Другие типы CAPTCHA пока не поддерживаются.',
 };
 
 export function translate(source: string, locale: Locale): string {

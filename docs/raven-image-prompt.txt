@@ -1,0 +1,5 @@
+Built-in ImageGen edit prompt.
+Input: public/images/raven.png
+Output: public/images/raven-blue-eye.png
+
+Use case: precise-object-edit. Edit target: the attached original raven photograph, a 1536x1024 landscape website background. Make one narrowly localized edit: change only the visible iris of the raven's eye to a striking, saturated cold azure blue with a slightly deeper sapphire-blue tone. Preserve the ORIGINAL exact eye shape, pupil shape and size, eyelids, catchlight, gaze direction, piercing watchful expression, iris texture and photographic detail. It must look like a naturally blue raven eye, not a luminous ring or a glass button. Keep the black pupil dark. No glow, halo, bloom, light spill or ambient blue stain around the eye. Preserve the photograph everywhere else: identical raven, head angle, beak, black feather texture, shadows, dark empty left area, composition, framing and resolution. Do not brighten the bird or backdrop, do not add anything, do not change lighting. This is the SAME photograph with only the iris colour changed. No text, no UI, no graphic overlays.
