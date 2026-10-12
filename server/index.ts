@@ -1,8 +1,10 @@
 import { buildApp } from './app';
 import { config } from './config';
 import { db } from './db';
+import { getBillingSettings } from './billing-settings';
 const app = await buildApp();
 await db.$connect();
+await getBillingSettings();
 await app.listen({ host: config.API_HOST, port: config.API_PORT });
 const cleanup = setInterval(() => {
   void db.session

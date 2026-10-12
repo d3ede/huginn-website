@@ -19,6 +19,7 @@ const schema = z.object({
   PAYMENT_URL: z.string().default(''),
   PAYMENT_SECRET: z.string().default(''),
   PAYMENT_WEBHOOK_SECRET: z.string().default(''),
+  SETTINGS_ENCRYPTION_KEY: z.string().default(''),
   DEMO_MODE: z.string().default('false'),
 });
 export const config = schema.parse(process.env);
@@ -32,7 +33,7 @@ if (
   throw new Error('APP_ORIGIN requires HTTPS except for local loopback addresses');
 if (config.NODE_ENV === 'production' && config.DEMO_MODE === 'true')
   throw new Error('Production requires DEMO_MODE=false');
-for (const prefix of ['SOLVER', 'PAYMENT'] as const) {
+for (const prefix of ['SOLVER'] as const) {
   if (config[`${prefix}_PROVIDER`] === 'http') {
     const url = new URL(config[`${prefix}_URL`]);
     if (
@@ -42,8 +43,6 @@ for (const prefix of ['SOLVER', 'PAYMENT'] as const) {
       throw new Error(`Invalid ${prefix} adapter configuration`);
   }
 }
-if (config.PAYMENT_PROVIDER === 'http' && config.PAYMENT_WEBHOOK_SECRET.length < 32)
-  throw new Error('Payment webhook secret must be at least 32 characters');
 if (config.SOLVER_PROVIDER === 'mimic') {
   const url = new URL(config.SOLVER_URL);
   if (

@@ -10,6 +10,7 @@ import {
   Wallet,
   KeyRound,
   Settings,
+  ShieldCheck,
   ArrowUpRight,
   LogOut,
   LoaderCircle,
@@ -19,7 +20,12 @@ import {
 import { api, ApiError } from '@/lib/api';
 import type { User, PublicConfig } from '@/lib/types';
 import { Brand } from './brand';
-type WorkspaceContext = { user: User; config: PublicConfig; refreshUser: () => Promise<void> };
+type WorkspaceContext = {
+  user: User;
+  config: PublicConfig;
+  refreshUser: () => Promise<void>;
+  refreshConfig: () => Promise<void>;
+};
 const Context = createContext<WorkspaceContext | null>(null);
 export function useWorkspace() {
   const value = useContext(Context);
@@ -43,6 +49,9 @@ export function Workspace({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState('');
   const [menu, setMenu] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const refreshConfig = useCallback(async () => {
+    setConfig(await api<PublicConfig>('/public/config'));
+  }, []);
   const refreshUser = useCallback(async () => {
     try {
       const result = await api<{ user: User }>('/account');
@@ -68,7 +77,16 @@ export function Workspace({ children }: { children: React.ReactNode }) {
   }, [router]);
   useEffect(() => {
     void load();
-  }, [load]);
+    const refresh = () => {
+      void Promise.all([refreshUser(), refreshConfig()]).catch(() => {});
+    };
+    const timer = setInterval(refresh, 30000);
+    window.addEventListener('focus', refresh);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener('focus', refresh);
+    };
+  }, [load, refreshUser, refreshConfig]);
   useEffect(() => {
     setMenu(false);
   }, [pathname]);
@@ -106,7 +124,7 @@ export function Workspace({ children }: { children: React.ReactNode }) {
       </main>
     );
   return (
-    <Context.Provider value={{ user, config, refreshUser }}>
+    <Context.Provider value={{ user, config, refreshUser, refreshConfig }}>
       <div className="workspace">
         <div className="workspace-mobile-header">
           <Brand />
@@ -144,6 +162,16 @@ export function Workspace({ children }: { children: React.ReactNode }) {
                 <Text>{label}</Text>
               </Link>
             ))}
+            {user.isAdmin && (
+              <Link
+                href="/app/admin"
+                className={pathname === '/app/admin' ? 'active' : ''}
+                aria-current={pathname === '/app/admin' ? 'page' : undefined}
+              >
+                <ShieldCheck size={17} strokeWidth={1.4} />
+                <Text>Admin panel</Text>
+              </Link>
+            )}
           </nav>
           <div className="sidebar-bottom">
             <Link href="/docs" className="sidebar-docs">
@@ -173,7 +201,10 @@ export function Workspace({ children }: { children: React.ReactNode }) {
               <Text> HUGINN </Text>
               <span className="breadcrumb-slash">/</span>{' '}
               <Text>
-                {navigation.find((n) => n.href === pathname)?.label.toUpperCase() ?? 'WORKSPACE'}
+                {pathname === '/app/admin'
+                  ? 'Admin panel'
+                  : (navigation.find((n) => n.href === pathname)?.label.toUpperCase() ??
+                    'WORKSPACE')}
               </Text>
             </span>
           </div>
@@ -192,9 +223,6 @@ export function Workspace({ children }: { children: React.ReactNode }) {
             </div>
           )}
           {children}
-          <footer className="workspace-footer">
-            <Brand />
-          </footer>
         </main>
       </div>
     </Context.Provider>

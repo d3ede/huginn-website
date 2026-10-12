@@ -4,6 +4,7 @@ export type User = {
   email: string;
   timezone: string;
   balance: string;
+  isAdmin: boolean;
   createdAt: string;
 };
 export type Task = {
@@ -25,6 +26,9 @@ export type Task = {
 };
 export type PublicConfig = {
   pricePerTask: string;
+  taskProducts: { id: string; name: string; pricePerTask: string }[];
+  topUpMinUsd: number;
+  topUpMaxUsd: number;
   currency: string;
   solverAvailable: boolean;
   paymentsAvailable: boolean;

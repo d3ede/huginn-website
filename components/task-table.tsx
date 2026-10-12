@@ -22,7 +22,7 @@ export function Status({ status }: { status: Task['status'] }) {
 export function TaskTable({ tasks, detailed = false }: { tasks: Task[]; detailed?: boolean }) {
   const { t, locale } = useI18n();
 
-  const { user } = useWorkspace();
+  const { user, config } = useWorkspace();
   const [selected, setSelected] = useState<Task | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -99,7 +99,8 @@ export function TaskTable({ tasks, detailed = false }: { tasks: Task[]; detailed
                   </button>
                 </td>
                 <td>
-                  <Text>hCaptcha</Text>
+                  {config.taskProducts.find((product) => product.id === task.type)?.name ??
+                    task.type}
                 </td>
                 <td>
                   <Status status={task.status} />

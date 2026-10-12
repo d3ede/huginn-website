@@ -7,7 +7,13 @@ import { solver, type SolverEngine, type SolverResult } from './providers';
 import { SolverFailure } from './solver-client';
 import { AppError } from './errors';
 import { money } from './security';
-import { solverTaskSchema, type SolverTask } from './solver-protocol';
+import {
+  taskDefinition,
+  taskDefinitions,
+  parseSolverTask,
+  type SolverTask,
+} from './solver-protocol';
+import { getBillingSettings, taskProducts } from './billing-settings';
 
 export function publicTask(task: Task, includeResult = false) {
   return {
@@ -35,16 +41,23 @@ export function publicTask(task: Task, includeResult = false) {
 export async function createTask(
   userId: string,
   apiKeyId: string | undefined,
-  input: { websiteURL: string; websiteKey: string; solverTask?: SolverTask },
+  input: { type?: string; websiteURL: string; websiteKey: string; solverTask?: SolverTask },
   idempotencyKey: string | undefined,
   engine: SolverEngine = solver,
 ) {
+  const productId = input.solverTask
+    ? taskDefinition(input.solverTask.type)?.id
+    : (input.type ?? 'hcaptcha');
   if (idempotencyKey) {
     const existing = await db.task.findUnique({
       where: { userId_idempotencyKey: { userId, idempotencyKey } },
     });
     if (existing) {
-      if (existing.websiteURL !== input.websiteURL || existing.websiteKey !== input.websiteKey)
+      if (
+        existing.websiteURL !== input.websiteURL ||
+        existing.websiteKey !== input.websiteKey ||
+        existing.type !== productId
+      )
         throw new AppError(
           409,
           'IDEMPOTENCY_CONFLICT',
@@ -59,6 +72,18 @@ export async function createTask(
       'SOLVER_UNAVAILABLE',
       'Task processing is temporarily unavailable. No balance was charged.',
     );
+  const pricing = await getBillingSettings();
+  const product = taskProducts(pricing).find((entry) => entry.id === productId);
+  if (!product?.enabled || !product.supported)
+    throw new AppError(400, 'ERROR_TASK_NOT_SUPPORTED', 'This task type is unavailable.');
+  const definition = taskDefinitions.find((entry) => entry.id === product.id)!;
+  const solverTask =
+    input.solverTask ??
+    definition.schema.parse({
+      type: definition.basicType,
+      websiteURL: input.websiteURL,
+      websiteKey: input.websiteKey,
+    });
   try {
     return await db.$transaction(async (tx) => {
       // A concurrent revocation must complete before or after this reservation.
@@ -68,7 +93,7 @@ export async function createTask(
         if (!active.length)
           throw new AppError(401, 'INVALID_API_KEY', 'The API key is invalid or revoked.');
       }
-      const reservedMicro = BigInt(config.TASK_PRICE_MICRO_USD);
+      const reservedMicro = BigInt(product.priceMicro);
       const changed = await tx.user.updateMany({
         where: { id: userId, balanceMicro: { gte: reservedMicro } },
         data: { balanceMicro: { decrement: reservedMicro } },
@@ -81,7 +106,8 @@ export async function createTask(
           userId,
           apiKeyId,
           ...input,
-          solverTask: input.solverTask as Prisma.InputJsonValue | undefined,
+          type: product.id,
+          solverTask: solverTask as Prisma.InputJsonValue,
           reservedMicro,
           idempotencyKey,
         },
@@ -206,7 +232,7 @@ export async function workOne(engine: SolverEngine = solver, shutdown?: AbortSig
         taskId: task.id,
         websiteURL: task.websiteURL,
         websiteKey: task.websiteKey,
-        ...(task.solverTask ? { task: solverTaskSchema.parse(task.solverTask) } : {}),
+        ...(task.solverTask ? { task: parseSolverTask(task.solverTask) } : {}),
       },
       AbortSignal.any([deadline, leaseLost.signal, ...(shutdown ? [shutdown] : [])]),
     );

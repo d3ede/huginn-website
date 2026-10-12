@@ -69,9 +69,15 @@ export default function BillingPage() {
           </p>
           <div className="billing-rate">
             <span>
-              <Text>Current hCaptcha rate</Text>
+              <Text>Current task rates</Text>
             </span>
-            <span>{usd(Number(config.pricePerTask) * 1000)} / 1,000</span>
+            <span>
+              {config.taskProducts.map((product) => (
+                <div key={product.id}>
+                  {product.name} · {usd(Number(product.pricePerTask) * 1000)} / 1,000
+                </div>
+              ))}
+            </span>
           </div>
         </section>
         <form className="topup-form" onSubmit={checkout}>
@@ -89,8 +95,8 @@ export default function BillingPage() {
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(Number(e.target.value))}
-                min={5}
-                max={10000}
+                min={config.topUpMinUsd}
+                max={config.topUpMaxUsd}
                 step={1}
                 required
               />

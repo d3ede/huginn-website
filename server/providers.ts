@@ -3,6 +3,8 @@ import { config } from './config';
 import { AppError } from './errors';
 import { createMimicSolver } from './solver-client';
 import type { SolverTask } from './solver-protocol';
+import type { BillingSettings } from '@prisma/client';
+import { paymentSecret } from './billing-settings';
 
 export type SolverResult = {
   token: string;
@@ -55,31 +57,33 @@ export const solver =
   config.SOLVER_PROVIDER === 'mimic'
     ? createMimicSolver({ baseURL: config.SOLVER_URL, secret: config.SOLVER_SECRET })
     : httpSolver;
-export const payments: PaymentProvider = {
-  available: config.PAYMENT_PROVIDER === 'http',
-  async checkout(input) {
-    if (!this.available)
-      throw new AppError(
-        503,
-        'PAYMENTS_UNAVAILABLE',
-        'Checkout is temporarily unavailable. Your balance has not changed.',
-      );
-    const response = await fetch(config.PAYMENT_URL, {
-      method: 'POST',
-      signal: AbortSignal.timeout(15000),
-      redirect: 'error',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${config.PAYMENT_SECRET}`,
-      },
-      body: JSON.stringify(input),
-    });
-    if (!response.ok)
-      throw new AppError(
-        502,
-        'PAYMENT_PROVIDER_ERROR',
-        'Unable to start checkout. Please try again later.',
-      );
-    return checkoutSchema.parse(await response.json());
-  },
-};
+export function createPaymentProvider(settings: BillingSettings): PaymentProvider {
+  return {
+    available: settings.paymentProvider === 'http',
+    async checkout(input) {
+      if (!this.available)
+        throw new AppError(
+          503,
+          'PAYMENTS_UNAVAILABLE',
+          'Checkout is temporarily unavailable. Your balance has not changed.',
+        );
+      const response = await fetch(settings.paymentURL, {
+        method: 'POST',
+        signal: AbortSignal.timeout(15000),
+        redirect: 'error',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${paymentSecret(settings.paymentSecret)}`,
+        },
+        body: JSON.stringify(input),
+      });
+      if (!response.ok)
+        throw new AppError(
+          502,
+          'PAYMENT_PROVIDER_ERROR',
+          'Unable to start checkout. Please try again later.',
+        );
+      return checkoutSchema.parse(await response.json());
+    },
+  };
+}

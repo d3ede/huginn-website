@@ -55,6 +55,12 @@ Parent Compose connects the private
 Mimic adapter; standalone defaults disable integrations. Crypto checkout still
 requires a real payment adapter. Only a signed payment confirmation credits funds.
 
+Edit task types and their rates, top-up limits, and payment credentials in `/app/admin`, without a
+restart. Access is granted only in PostgreSQL: set `User.isAdmin=true` for an
+existing account. Payment secrets are encrypted, write-only, and versioned for
+pending invoices. `TASK_PRICE_MICRO_USD` / `PAYMENT_*` seed the DB once;
+subsequent configuration is stored in the DB. See the operations guide for setup.
+
 Configuration, integration contracts, retention, and deployment:
 [operations guide](docs/operations.md) and [.env.example](.env.example).
 

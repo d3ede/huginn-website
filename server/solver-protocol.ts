@@ -57,11 +57,32 @@ const proxy = z
   })
   .strict()
   .refine((v) => (v.proxyLogin === undefined) === (v.proxyPassword === undefined));
-export const solverTaskSchema = z.union([
+const hcaptchaTaskSchema = z.union([
   z.object({ type: z.literal('HCaptchaTaskProxyless'), ...common }).strict(),
   proxy,
 ]);
-export type SolverTask = z.infer<typeof solverTaskSchema>;
+// Add a validated task schema here when its solver adapter is available.
+// Product IDs connect protocol capabilities to DB-managed names, availability and rates.
+export const taskDefinitions = [
+  {
+    id: 'hcaptcha',
+    name: 'hCaptcha',
+    basicType: 'HCaptchaTaskProxyless',
+    protocolTypes: ['HCaptchaTask', 'HCaptchaTaskProxyless'],
+    schema: hcaptchaTaskSchema,
+  },
+];
+export type SolverTask = z.infer<(typeof taskDefinitions)[number]['schema']>;
+export function taskDefinition(type: string) {
+  return taskDefinitions.find((entry) => entry.protocolTypes.includes(type));
+}
+export function parseSolverTask(input: unknown): SolverTask {
+  const type = z.object({ type: z.string() }).safeParse(input);
+  const definition = type.success ? taskDefinition(type.data.type) : undefined;
+  if (!definition)
+    throw new AppError(400, 'ERROR_TASK_NOT_SUPPORTED', 'This task type is not supported.');
+  return definition.schema.parse(input);
+}
 export const keyRequest = z.object({ clientKey: z.unknown().optional() }).passthrough();
 export const resultRequest = z
   .object({
@@ -73,13 +94,12 @@ export function parseCreateRequest(body: unknown) {
   const envelope = keyRequest.parse(body);
   if (envelope.task === undefined)
     throw new AppError(400, 'ERROR_TASK_ABSENT', 'A task is required.');
-  const type = z.object({ type: z.string() }).safeParse(envelope.task);
-  if (!type.success || !['HCaptchaTask', 'HCaptchaTaskProxyless'].includes(type.data.type))
-    throw new AppError(400, 'ERROR_TASK_NOT_SUPPORTED', 'This task type is not supported.');
-  return z
-    .object({ clientKey: z.string().min(1).max(256), task: solverTaskSchema })
+  const task = parseSolverTask(envelope.task);
+  const request = z
+    .object({ clientKey: z.string().min(1).max(256), task: z.unknown() })
     .strict()
     .parse(body);
+  return { ...request, task };
 }
 export function protocolPath(path: string) {
   return ['/createTask', '/getTaskResult', '/getBalance'].includes(path.split('?')[0]);

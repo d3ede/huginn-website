@@ -19,6 +19,7 @@ import {
   sessionUser,
   apiUser,
   authenticateApiKey,
+  adminUser,
   newSession,
   publicUser,
   cookieName,
@@ -33,7 +34,19 @@ import {
   taskUUID,
 } from './solver-protocol';
 import { createTask, publicTask } from './tasks';
-import { payments, solver, type PaymentProvider, type SolverEngine } from './providers';
+import {
+  createPaymentProvider,
+  solver,
+  type PaymentProvider,
+  type SolverEngine,
+} from './providers';
+import {
+  getBillingSettings,
+  adminBillingSettings,
+  updateBillingSettings,
+  paymentSecret,
+  taskProducts,
+} from './billing-settings';
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -47,7 +60,7 @@ const email = z
   .transform((v) => v.toLowerCase());
 const taskInput = z
   .object({
-    type: z.literal('hcaptcha'),
+    type: z.string().regex(/^[a-z][a-z0-9_-]{0,63}$/),
     websiteURL: z
       .url()
       .max(2048)
@@ -66,7 +79,6 @@ export async function buildApp(
   adapters: { engine?: SolverEngine; payment?: PaymentProvider; logger?: boolean } = {},
 ) {
   const engine = adapters.engine ?? solver;
-  const payment = adapters.payment ?? payments;
   const app = Fastify({
     bodyLimit: 65536,
     trustProxy: config.TRUSTED_PROXIES.split(',')
@@ -182,13 +194,55 @@ export async function buildApp(
     await db.$queryRaw`SELECT 1`;
     return { status: 'ok' };
   });
-  app.get('/public/config', async () => ({
-    pricePerTask: money(config.TASK_PRICE_MICRO_USD),
-    currency: 'USD',
-    solverAvailable: engine.available,
-    paymentsAvailable: payment.available,
-    demoMode: config.NODE_ENV !== 'production' && config.DEMO_MODE === 'true',
-  }));
+  app.get('/public/config', async () => {
+    const settings = await getBillingSettings();
+    return {
+      pricePerTask: money(settings.priceMicro),
+      taskProducts: taskProducts(settings)
+        .filter((entry) => entry.enabled && entry.supported)
+        .map((entry) => ({
+          id: entry.id,
+          name: entry.name,
+          pricePerTask: money(entry.priceMicro),
+        })),
+      topUpMinUsd: settings.topUpMinUsd,
+      topUpMaxUsd: settings.topUpMaxUsd,
+      currency: 'USD',
+      solverAvailable: engine.available,
+      paymentsAvailable: (adapters.payment ?? createPaymentProvider(settings)).available,
+      demoMode: config.NODE_ENV !== 'production' && config.DEMO_MODE === 'true',
+    };
+  });
+  app.get('/admin/billing', async (request) => {
+    await adminUser(request);
+    return adminBillingSettings(await getBillingSettings());
+  });
+  app.patch('/admin/billing', async (request) => {
+    const user = await adminUser(request);
+    return updateBillingSettings(user.id, request.body);
+  });
+  app.get('/admin/billing/history', async (request) => {
+    await adminUser(request);
+    const { page } = paging.parse(request.query);
+    const [changes, total] = await db.$transaction([
+      db.billingSettings.findMany({
+        orderBy: { id: 'desc' },
+        skip: (page - 1) * 20,
+        take: 20,
+        include: { changedBy: { select: { name: true } } },
+      }),
+      db.billingSettings.count(),
+    ]);
+    return {
+      changes: changes.map((change) => ({
+        ...adminBillingSettings(change),
+        changedByName: change.changedBy?.name ?? null,
+      })),
+      total,
+      page,
+      pageSize: 20,
+    };
+  });
   const authLimit = { config: { rateLimit: { max: 10, timeWindow: '15 minutes' } } };
   app.post('/auth/register', authLimit, async (request, reply) => {
     const input = z
@@ -414,8 +468,10 @@ export async function buildApp(
     { config: { rateLimit: { max: 10, timeWindow: '1 minute' } } },
     async (request, reply) => {
       const user = await sessionUser(request);
+      const settings = await getBillingSettings();
+      const payment = adapters.payment ?? createPaymentProvider(settings);
       const { amount } = z
-        .object({ amount: z.number().int().min(5).max(10000) })
+        .object({ amount: z.number().int().min(settings.topUpMinUsd).max(settings.topUpMaxUsd) })
         .strict()
         .parse(request.body);
       if (!payment.available)
@@ -425,7 +481,11 @@ export async function buildApp(
           'Checkout is temporarily unavailable. Your balance has not changed.',
         );
       const pending = await db.payment.create({
-        data: { userId: user.id, amountMicro: BigInt(amount) * 1_000_000n },
+        data: {
+          userId: user.id,
+          amountMicro: BigInt(amount) * 1_000_000n,
+          billingSettingsId: settings.id,
+        },
       });
       try {
         const checkout = await payment.checkout({
@@ -446,14 +506,9 @@ export async function buildApp(
     },
   );
   app.post('/webhooks/payment', async (request) => {
-    if (!payment.available || !config.PAYMENT_WEBHOOK_SECRET)
-      throw new AppError(503, 'PAYMENTS_UNAVAILABLE', 'Payments are not available.');
+    await getBillingSettings();
     const timestamp = String(request.headers['x-huginn-timestamp'] ?? '');
     const signature = String(request.headers['x-huginn-signature'] ?? '');
-    if (
-      !verifySignature(request.rawBody ?? '', timestamp, signature, config.PAYMENT_WEBHOOK_SECRET)
-    )
-      throw new AppError(401, 'INVALID_SIGNATURE', 'Invalid webhook signature.');
     const input = z
       .object({
         paymentId: uuid,
@@ -464,6 +519,20 @@ export async function buildApp(
       })
       .strict()
       .parse(request.body);
+    const invoice = await db.payment.findUnique({
+      where: { id: input.paymentId },
+      include: { billingSettings: true },
+    });
+    if (
+      !invoice?.billingSettings?.webhookSecret ||
+      !verifySignature(
+        request.rawBody ?? '',
+        timestamp,
+        signature,
+        paymentSecret(invoice.billingSettings.webhookSecret),
+      )
+    )
+      throw new AppError(401, 'INVALID_SIGNATURE', 'Invalid webhook signature.');
     await db.$transaction(async (tx) => {
       const pending = await tx.payment.findUnique({ where: { id: input.paymentId } });
       if (

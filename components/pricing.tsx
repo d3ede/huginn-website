@@ -10,9 +10,25 @@ export function Pricing() {
   const [config, setConfig] = useState<PublicConfig | null>(null);
   const [error, setError] = useState(false);
   useEffect(() => {
-    api<PublicConfig>('/public/config')
-      .then(setConfig)
-      .catch(() => setError(true));
+    const abort = new AbortController();
+    const refresh = () => {
+      void api<PublicConfig>('/public/config', { signal: abort.signal })
+        .then((value) => {
+          setConfig(value);
+          setError(false);
+        })
+        .catch(() => {
+          if (!abort.signal.aborted) setError(true);
+        });
+    };
+    refresh();
+    const timer = setInterval(refresh, 30000);
+    window.addEventListener('focus', refresh);
+    return () => {
+      abort.abort();
+      clearInterval(timer);
+      window.removeEventListener('focus', refresh);
+    };
   }, []);
   return (
     <section id="pricing" className="pricing-section container section-border">
@@ -24,17 +40,23 @@ export function Pricing() {
         </div>
       </div>
       <div className="pricing-panel">
-        <div>
-          <div className="price">
-            {config ? usd(Number(config.pricePerTask) * 1000) : '—'}
-            <span>
-              <Text> / 1,000 solutions</Text>
-            </span>
-          </div>
-          <p className="pricing-task-type">
-            <img src="/images/hcaptcha.svg" width="20" height="20" alt="" />
-            <Text>hCaptcha · USD · charged per successful task</Text>
-          </p>
+        <div className="pricing-rates">
+          {(config?.taskProducts ?? [{ id: 'loading', name: '', pricePerTask: '' }]).map(
+            (product) => (
+              <div key={product.id}>
+                <div className="price">
+                  {product.pricePerTask ? usd(Number(product.pricePerTask) * 1000) : '—'}
+                  <span>
+                    <Text> / 1,000 solutions</Text>
+                  </span>
+                </div>
+                <p className="pricing-task-type">
+                  {product.name && <span>{product.name} · </span>}
+                  <Text>USD · charged per successful task</Text>
+                </p>
+              </div>
+            ),
+          )}
           {error && (
             <p className="availability-note">
               <Text>Pricing is temporarily unavailable.</Text>

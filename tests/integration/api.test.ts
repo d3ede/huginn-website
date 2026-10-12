@@ -2,6 +2,7 @@ import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID, createHmac } from 'node:crypto';
 process.env.PAYMENT_WEBHOOK_SECRET = 'integration-test-secret-at-least-32-chars';
+process.env.SETTINGS_ENCRYPTION_KEY = 'integration-fixture-encryption-key-at-least-32-chars';
 const { buildApp } = await import('../../server/app');
 const { db } = await import('../../server/db');
 const { createTask, settleTask, workOne } = await import('../../server/tasks');
@@ -801,4 +802,356 @@ test('API lifecycle, account isolation, transaction races, and payment replay', 
       );
     },
   );
+});
+
+test('database-only administration updates billing live and preserves invoice credentials', async () => {
+  const api = await buildApp({ engine, logger: false });
+  const { getBillingSettings } = await import('../../server/billing-settings');
+  const baseline = await getBillingSettings();
+  const originalFetch = globalThis.fetch;
+  try {
+    const registration = await api.inject({
+      method: 'POST',
+      url: '/auth/register',
+      headers: { origin },
+      payload: { email: `${randomUUID()}@admin.test`, password: 'testpass', name: 'Admin fixture' },
+    });
+    const owner = registration.json().user.id;
+    ids.push(owner);
+    const headers = { origin, cookie: String(registration.headers['set-cookie']).split(';')[0] };
+    assert.equal(registration.json().user.isAdmin, false);
+    assert.equal((await api.inject({ url: '/admin/billing' })).statusCode, 401);
+    assert.equal((await api.inject({ url: '/admin/billing', headers })).statusCode, 403);
+    assert.equal((await api.inject({ url: '/admin/billing/history', headers })).statusCode, 403);
+    assert.equal(
+      (await api.inject({ method: 'PATCH', url: '/admin/billing', headers, payload: {} }))
+        .statusCode,
+      403,
+    );
+    assert.equal(
+      (
+        await api.inject({
+          method: 'PATCH',
+          url: '/account',
+          headers,
+          payload: { name: 'Admin fixture', timezone: 'UTC', isAdmin: true },
+        })
+      ).statusCode,
+      400,
+    );
+    assert.equal(
+      (
+        await api.inject({
+          method: 'POST',
+          url: '/auth/register',
+          headers: { origin },
+          payload: {
+            email: `${randomUUID()}@self-promote.test`,
+            name: 'Blocked',
+            password: 'testpass',
+            isAdmin: true,
+          },
+        })
+      ).statusCode,
+      400,
+    );
+    // The only promotion path is a direct database update.
+    await db.user.update({ where: { id: owner }, data: { isAdmin: true, balanceMicro: 100_000n } });
+    assert.equal((await api.inject({ url: '/account', headers })).json().user.isAdmin, true);
+    const initial = (await api.inject({ url: '/admin/billing', headers })).json();
+    const patch = (payload: Record<string, unknown>) =>
+      api.inject({ method: 'PATCH', url: '/admin/billing', headers, payload });
+    const input = {
+      revision: initial.revision,
+      pricePerThousand: '7.125',
+      topUpMinUsd: 12,
+      topUpMaxUsd: 25,
+      paymentProvider: 'http',
+      paymentURL: 'https://payment-fixture.test/checkout-a',
+      paymentSecret: 'fixture-checkout-secret-a',
+      webhookSecret: 'fixture-webhook-secret-a-at-least-32-chars',
+    };
+    assert.equal(
+      (
+        await api.inject({
+          method: 'PATCH',
+          url: '/admin/billing',
+          headers: { ...headers, origin: 'https://attacker.invalid' },
+          payload: input,
+        })
+      ).statusCode,
+      403,
+    );
+    assert.equal((await patch({ ...input, topUpMaxUsd: 2 })).statusCode, 400);
+    assert.equal(
+      (await patch({ ...input, paymentURL: 'http://payment-fixture.test' })).statusCode,
+      400,
+    );
+    assert.equal((await patch({ ...input, pricePerThousand: '0' })).statusCode, 400);
+    assert.equal((await patch({ ...input, webhookSecret: 'too-short' })).statusCode, 400);
+    const accepted = await patch(input);
+    assert.equal(accepted.statusCode, 200);
+    const settings = accepted.json();
+    assert.equal(settings.changedById, owner);
+    assert.equal(settings.paymentSecretConfigured, true);
+    assert.equal(settings.paymentSecret, undefined);
+    assert.equal(settings.webhookSecret, undefined);
+    const stored = await getBillingSettings();
+    assert.notEqual(stored.paymentSecret, input.paymentSecret);
+    assert.notEqual(stored.webhookSecret, input.webhookSecret);
+    assert.ok(stored.paymentSecret?.startsWith('v1:'));
+    const publicConfig = (await api.inject({ url: '/public/config' })).json();
+    assert.equal(publicConfig.pricePerTask, '0.007125');
+    assert.equal(publicConfig.topUpMinUsd, 12);
+    assert.equal(publicConfig.topUpMaxUsd, 25);
+    assert.equal(publicConfig.paymentsAvailable, true);
+    assert.equal(publicConfig.paymentURL, undefined);
+    assert.equal(publicConfig.paymentSecretConfigured, undefined);
+    const task = await createTask(
+      owner,
+      undefined,
+      { websiteURL: 'https://example.test', websiteKey: 'fixture' },
+      undefined,
+      engine,
+    );
+    assert.equal(task.reservedMicro, 7125n);
+    const seen: { url: string; authorization: string }[] = [];
+    globalThis.fetch = async (url, options) => {
+      assert.ok(String(url).startsWith('https://payment-fixture.test/'));
+      const body = JSON.parse(String(options?.body));
+      seen.push({
+        url: String(url),
+        authorization: new Headers(options?.headers).get('authorization')!,
+      });
+      return new Response(
+        JSON.stringify({
+          reference: `fixture-${body.paymentId}`,
+          checkoutURL: 'https://payment-fixture.test/pay',
+        }),
+        { status: 200 },
+      );
+    };
+    const checkout = (amount: number) =>
+      api.inject({ method: 'POST', url: '/billing/checkout', headers, payload: { amount } });
+    assert.equal((await checkout(10)).statusCode, 400);
+    assert.equal((await checkout(26)).statusCode, 400);
+    const invoice = await checkout(12);
+    assert.equal(invoice.statusCode, 201);
+    assert.deepEqual(seen[0], {
+      url: input.paymentURL,
+      authorization: `Bearer ${input.paymentSecret}`,
+    });
+    const pending = await db.payment.findUniqueOrThrow({ where: { id: invoice.json().paymentId } });
+    assert.equal(pending.billingSettingsId, settings.revision);
+    const changed = await patch({
+      ...input,
+      revision: settings.revision,
+      pricePerThousand: '9',
+      paymentURL: 'https://payment-fixture.test/checkout-b',
+      paymentSecret: 'fixture-checkout-secret-b',
+      webhookSecret: 'fixture-webhook-secret-b-at-least-32-chars',
+    });
+    assert.equal(changed.statusCode, 200);
+    assert.equal((await patch(input)).statusCode, 409);
+    assert.equal((await checkout(12)).statusCode, 201);
+    assert.deepEqual(seen[1], {
+      url: 'https://payment-fixture.test/checkout-b',
+      authorization: 'Bearer fixture-checkout-secret-b',
+    });
+    const { paymentSecret: unusedSecret, webhookSecret: unusedWebhook, ...withoutSecrets } = input;
+    void unusedSecret;
+    void unusedWebhook;
+    const disabled = await patch({
+      ...withoutSecrets,
+      revision: changed.json().revision,
+      paymentProvider: 'disabled',
+      pricePerThousand: '9',
+      clearPaymentSecret: true,
+      clearWebhookSecret: true,
+    });
+    assert.equal(disabled.statusCode, 200);
+    assert.equal(disabled.json().webhookSecretConfigured, false);
+    assert.equal((await api.inject({ url: '/public/config' })).json().paymentsAvailable, false);
+    assert.equal((await checkout(12)).statusCode, 503);
+    // Earlier tasks retain the reserved rate, even after the tariff changes.
+    await settleTask(task, { token: 'explicit-admin-fixture' });
+    assert.equal((await db.task.findUniqueOrThrow({ where: { id: task.id } })).costMicro, 7125n);
+    const newer = await createTask(
+      owner,
+      undefined,
+      { websiteURL: 'https://example.test', websiteKey: 'fixture' },
+      undefined,
+      engine,
+    );
+    assert.equal(newer.reservedMicro, 9000n);
+    await settleTask(newer, null);
+    const raw = JSON.stringify({
+      paymentId: pending.id,
+      reference: pending.providerReference,
+      amountMicro: pending.amountMicro.toString(),
+      currency: 'USD',
+      status: 'confirmed',
+    });
+    const timestamp = String(Math.floor(Date.now() / 1000));
+    const webhook = (secret: string) =>
+      api.inject({
+        method: 'POST',
+        url: '/webhooks/payment',
+        payload: raw,
+        headers: {
+          'content-type': 'application/json',
+          'x-huginn-timestamp': timestamp,
+          'x-huginn-signature': createHmac('sha256', secret)
+            .update(`${timestamp}.${raw}`)
+            .digest('hex'),
+        },
+      });
+    assert.equal((await webhook('fixture-webhook-secret-b-at-least-32-chars')).statusCode, 401);
+    const before = (await db.user.findUniqueOrThrow({ where: { id: owner } })).balanceMicro;
+    assert.equal((await webhook(input.webhookSecret)).statusCode, 200);
+    assert.equal((await webhook(input.webhookSecret)).statusCode, 200);
+    assert.equal(
+      (await db.user.findUniqueOrThrow({ where: { id: owner } })).balanceMicro,
+      before + 12_000_000n,
+    );
+    const history = (await api.inject({ url: '/admin/billing/history', headers })).json();
+    assert.ok(
+      history.changes.some((entry: { revision: number }) => entry.revision === settings.revision),
+    );
+    assert.ok(!JSON.stringify(history).includes(input.paymentSecret));
+    assert.ok(!JSON.stringify(history).includes(input.webhookSecret));
+    // Concurrent admin edits use optimistic revisions: one succeeds, one conflicts.
+    const concurrent = await Promise.all([
+      patch({
+        ...withoutSecrets,
+        revision: disabled.json().revision,
+        pricePerThousand: '3',
+        paymentProvider: 'disabled',
+      }),
+      patch({
+        ...withoutSecrets,
+        revision: disabled.json().revision,
+        pricePerThousand: '4',
+        paymentProvider: 'disabled',
+      }),
+    ]);
+    assert.deepEqual(concurrent.map((response) => response.statusCode).sort(), [200, 409]);
+    await db.user.update({ where: { id: owner }, data: { isAdmin: false } });
+    assert.equal((await api.inject({ url: '/admin/billing', headers })).statusCode, 403);
+    assert.equal((await patch(input)).statusCode, 403);
+  } finally {
+    globalThis.fetch = originalFetch;
+    await db.runtimeSettings.update({
+      where: { id: 'billing' },
+      data: { billingSettingsId: baseline.id },
+    });
+    await api.close();
+  }
+});
+
+test('task catalog keeps drafts private and enforces live per-type rates and availability', async () => {
+  const api = await buildApp({ engine, logger: false });
+  const { getBillingSettings } = await import('../../server/billing-settings');
+  const baseline = await getBillingSettings();
+  try {
+    const registered = await api.inject({
+      method: 'POST',
+      url: '/auth/register',
+      headers: { origin },
+      payload: {
+        email: `${randomUUID()}@catalog.test`,
+        password: 'testpass',
+        name: 'Catalog admin',
+      },
+    });
+    const owner = registered.json().user.id;
+    ids.push(owner);
+    await db.user.update({ where: { id: owner }, data: { isAdmin: true, balanceMicro: 100_000n } });
+    const headers = { origin, cookie: String(registered.headers['set-cookie']).split(';')[0] };
+    const keyReply = await api.inject({
+      method: 'POST',
+      url: '/keys',
+      headers,
+      payload: { name: 'Catalog fixture' },
+    });
+    const clientKey = keyReply.json().key;
+    let revision = (await api.inject({ url: '/admin/billing', headers })).json().revision;
+    const product = {
+      id: 'hcaptcha',
+      name: 'hCaptcha token',
+      pricePerThousand: '3.456',
+      enabled: true,
+    };
+    const draft = {
+      id: 'future_token',
+      name: 'Future token',
+      pricePerThousand: '8',
+      enabled: false,
+    };
+    const patch = (taskProducts: object[]) =>
+      api.inject({
+        method: 'PATCH',
+        url: '/admin/billing',
+        headers,
+        payload: {
+          revision,
+          taskProducts,
+          topUpMinUsd: 5,
+          topUpMaxUsd: 10000,
+          paymentProvider: 'disabled',
+          paymentURL: '',
+        },
+      });
+    assert.equal((await patch([product, { ...draft, enabled: true }])).statusCode, 400);
+    assert.equal((await patch([product, { ...draft, id: product.id }])).statusCode, 400);
+    assert.equal((await patch([draft])).statusCode, 400);
+    assert.equal((await patch([{ ...product, pricePerThousand: '0' }])).statusCode, 400);
+    const saved = await patch([product, draft]);
+    assert.equal(saved.statusCode, 200);
+    revision = saved.json().revision;
+    assert.equal(saved.json().taskProducts[1].supported, false);
+    assert.deepEqual((await api.inject({ url: '/public/config' })).json().taskProducts, [
+      { id: 'hcaptcha', name: 'hCaptcha token', pricePerTask: '0.003456' },
+    ]);
+    const request = () =>
+      api.inject({
+        method: 'POST',
+        url: '/createTask',
+        payload: {
+          clientKey,
+          task: {
+            type: 'HCaptchaTaskProxyless',
+            websiteURL: 'https://example.test',
+            websiteKey: 'fixture',
+          },
+        },
+      });
+    const accepted = await request();
+    assert.equal(accepted.json().errorId, 0);
+    const task = await db.task.findFirstOrThrow({ where: { userId: owner } });
+    assert.equal(task.type, 'hcaptcha');
+    assert.equal(task.reservedMicro, 3456n);
+    const disabled = await patch([{ ...product, pricePerThousand: '9', enabled: false }, draft]);
+    assert.equal(disabled.statusCode, 200);
+    assert.deepEqual((await api.inject({ url: '/public/config' })).json().taskProducts, []);
+    const balance = (await db.user.findUniqueOrThrow({ where: { id: owner } })).balanceMicro;
+    assert.equal((await request()).json().errorCode, 'ERROR_TASK_NOT_SUPPORTED');
+    assert.equal((await db.user.findUniqueOrThrow({ where: { id: owner } })).balanceMicro, balance);
+    await settleTask(task, { token: 'catalog-fixture-result' });
+    assert.equal((await db.task.findUniqueOrThrow({ where: { id: task.id } })).costMicro, 3456n);
+    revision = disabled.json().revision;
+    const enabled = await patch([{ ...product, pricePerThousand: '9' }, draft]);
+    assert.equal(enabled.statusCode, 200);
+    assert.equal((await request()).json().errorId, 0);
+    const newer = await db.task.findFirstOrThrow({ where: { userId: owner, status: 'QUEUED' } });
+    assert.equal(newer.reservedMicro, 9000n);
+    await settleTask(newer, null);
+    assert.equal((await db.user.findUniqueOrThrow({ where: { id: owner } })).balanceMicro, balance);
+  } finally {
+    await db.runtimeSettings.update({
+      where: { id: 'billing' },
+      data: { billingSettingsId: baseline.id },
+    });
+    await api.close();
+  }
 });

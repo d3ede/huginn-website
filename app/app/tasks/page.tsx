@@ -47,7 +47,7 @@ export default function TasksPage() {
       await api('/tasks', {
         method: 'POST',
         body: JSON.stringify({
-          type: 'hcaptcha',
+          type: form.get('type'),
           websiteURL: form.get('websiteURL'),
           websiteKey: form.get('websiteKey'),
         }),
@@ -75,6 +75,7 @@ export default function TasksPage() {
         </div>
         <button
           className="button button-primary button-small"
+          disabled={!config.taskProducts.length}
           onClick={() => {
             setError('');
             setModal(true);
@@ -161,7 +162,7 @@ export default function TasksPage() {
           >
             <div className="dialog-heading">
               <h2 id="new-task-title">
-                <Text>New hCaptcha task</Text>
+                <Text>New task</Text>
               </h2>
               <button
                 className="icon-button"
@@ -177,6 +178,16 @@ export default function TasksPage() {
             </p>
             <form onSubmit={submit}>
               <label>
+                <Text>Task type</Text>
+                <select name="type" required>
+                  {config.taskProducts.map((product) => (
+                    <option key={product.id} value={product.id}>
+                      {product.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
                 <Text> Website URL </Text>
                 <input
                   name="websiteURL"
@@ -187,7 +198,7 @@ export default function TasksPage() {
                 />
               </label>
               <label>
-                <Text> hCaptcha site key </Text>
+                <Text> Site key </Text>
                 <input
                   name="websiteKey"
                   placeholder={t('Your site key')}

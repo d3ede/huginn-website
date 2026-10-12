@@ -18,6 +18,7 @@ export function publicUser(user: User) {
     name: user.name,
     timezone: user.timezone,
     balance: money(user.balanceMicro),
+    isAdmin: user.isAdmin,
     createdAt: user.createdAt,
   };
 }
@@ -43,6 +44,11 @@ export async function apiUser(request: FastifyRequest) {
   if (!authorization?.startsWith('Bearer hg_live_'))
     throw new AppError(401, 'INVALID_API_KEY', 'A valid Bearer API key is required.');
   return authenticateApiKey(authorization.slice(7));
+}
+export async function adminUser(request: FastifyRequest) {
+  const user = await sessionUser(request);
+  if (!user.isAdmin) throw new AppError(403, 'FORBIDDEN', 'Administrator access is required.');
+  return user;
 }
 export async function authenticateApiKey(token: unknown) {
   if (typeof token !== 'string' || !token.startsWith('hg_live_') || token.length > 256)

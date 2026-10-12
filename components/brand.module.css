@@ -21,9 +21,13 @@
   top: -17.931%;
 }
 
-:global(.footer) .logo,
-:global(.sidebar-brand-row) .logo {
+:global(.footer) .logo {
   width: 152px;
+}
+:global(.sidebar-brand-row) .logo {
+  width: 100%;
+  min-width: 0;
+  max-width: 152px;
 }
 
 @media (max-width: 560px) {

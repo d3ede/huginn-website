@@ -20,7 +20,7 @@ const ActivityChart = dynamic(() => import('@/components/activity-chart'), {
 export default function Dashboard() {
   const { t, locale } = useI18n();
 
-  const { user } = useWorkspace();
+  const { user, config } = useWorkspace();
   const [days, setDays] = useState(30);
   const [stats, setStats] = useState<Stats | null>(null);
   const [error, setError] = useState('');
@@ -170,7 +170,8 @@ export default function Dashboard() {
                 <div key={type.type}>
                   <div>
                     <span>
-                      <Text>hCaptcha</Text>
+                      {config.taskProducts.find((product) => product.id === type.type)?.name ??
+                        type.type}
                     </span>
                     <span>{type.count.toLocaleString(locale === 'ru' ? 'ru-RU' : 'en-US')}</span>
                   </div>
