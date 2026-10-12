@@ -193,9 +193,7 @@ export function Workspace({ children }: { children: React.ReactNode }) {
           )}
           {children}
           <footer className="workspace-footer">
-            <Link href="/">
-              <Text>huginn.</Text>
-            </Link>
+            <Brand />
           </footer>
         </main>
       </div>

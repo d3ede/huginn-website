@@ -21,25 +21,6 @@ body {
   color: var(--text);
   letter-spacing: -1.3px;
 }
-.brand-symbol {
-  display: flex;
-  width: 37px;
-  height: 37px;
-  align-items: center;
-  justify-content: center;
-  background: #142a3d;
-  color: #edf6ff !important;
-  border-radius: 50%;
-}
-.brand-symbol svg {
-  transform: rotate(-12deg);
-}
-.brand-word {
-  color: var(--text) !important;
-}
-.brand-word > span {
-  color: #448bc8;
-}
 .public-header {
   position: relative;
   height: 84px;
@@ -629,13 +610,6 @@ body {
 .footer .brand {
   font-size: 22px;
 }
-.footer .brand-symbol {
-  width: 29px;
-  height: 29px;
-}
-.footer .brand-symbol svg {
-  width: 18px;
-}
 .footer nav a {
   font-size: 11px;
 }
@@ -910,10 +884,6 @@ body {
   .brand {
     font-size: 25px;
     gap: 8px;
-  }
-  .brand-symbol {
-    width: 32px;
-    height: 32px;
   }
   .nav-inner {
     gap: 12px;
