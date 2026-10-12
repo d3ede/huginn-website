@@ -1,0 +1,54 @@
+{
+  "name": "huginn",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.21.0"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n web,api \"next dev --hostname 127.0.0.1\" \"tsx watch server/index.ts\"",
+    "dev:web": "next dev --hostname 127.0.0.1",
+    "dev:api": "tsx watch server/index.ts",
+    "db:local": "node scripts/local-postgres.mjs",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate deploy",
+    "db:seed": "tsx prisma/seed.ts",
+    "build": "prisma generate && next build",
+    "start": "concurrently -k \"next start --hostname 127.0.0.1\" \"tsx server/index.ts\"",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
+    "test": "tsx --test tests/*.test.ts",
+    "test:integration": "node scripts/integration-tests.mjs"
+  },
+  "dependencies": {
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/helmet": "^13.0.2",
+    "@fastify/rate-limit": "^10.3.0",
+    "@prisma/client": "6.19.3",
+    "dotenv": "^17.2.3",
+    "fastify": "^5.6.2",
+    "lucide-react": "^0.468.0",
+    "next": "16.4.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "recharts": "^3.3.0",
+    "zod": "^4.1.12"
+  },
+  "overrides": {
+    "deepmerge-ts": "^8.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.16",
+    "@types/node": "^22.18.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "concurrently": "^9.2.1",
+    "embedded-postgres": "18.4.0-beta.17",
+    "prettier": "^3.6.2",
+    "prisma": "6.19.3",
+    "tailwindcss": "^4.1.16",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

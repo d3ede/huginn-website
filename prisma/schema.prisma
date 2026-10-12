@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+enum TaskStatus {
+  QUEUED
+  PROCESSING
+  SUCCEEDED
+  FAILED
+}
+enum LedgerKind {
+  PAYMENT
+  TASK_RESERVE
+  TASK_REFUND
+  DEV_CREDIT
+}
+enum PaymentStatus {
+  PENDING
+  CONFIRMED
+  FAILED
+}
+model User {
+  id String @id @default(uuid()) @db.Uuid
+  email String @unique
+  name String
+  passwordHash String
+  timezone String @default("UTC")
+  balanceMicro BigInt @default(0)
+  createdAt DateTime @default(now())
+  sessions Session[]
+  apiKeys ApiKey[]
+  tasks Task[]
+  ledger LedgerEntry[]
+  payments Payment[]
+}
+model Session {
+  id String @id @default(uuid()) @db.Uuid
+  tokenHash String @unique
+  userId String @db.Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  @@index([expiresAt])
+}
+model ApiKey {
+  id String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name String
+  prefix String
+  tokenHash String @unique
+  createdAt DateTime @default(now())
+  lastUsedAt DateTime?
+  revokedAt DateTime?
+  tasks Task[]
+  @@index([userId, createdAt])
+}
+model Task {
+  id String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  apiKeyId String? @db.Uuid
+  apiKey ApiKey? @relation(fields: [apiKeyId], references: [id], onDelete: SetNull)
+  type String @default("hcaptcha")
+  websiteURL String
+  websiteKey String
+  status TaskStatus @default(QUEUED)
+  reservedMicro BigInt
+  costMicro BigInt @default(0)
+  resultToken String?
+  errorCode String?
+  idempotencyKey String?
+  startedAt DateTime?
+  completedAt DateTime?
+  durationMs Int?
+  createdAt DateTime @default(now())
+  ledger LedgerEntry[]
+  @@unique([userId, idempotencyKey])
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
+}
+model LedgerEntry {
+  id String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  amountMicro BigInt
+  balanceAfterMicro BigInt
+  kind LedgerKind
+  taskId String? @db.Uuid
+  task Task? @relation(fields: [taskId], references: [id])
+  paymentId String? @db.Uuid
+  payment Payment? @relation(fields: [paymentId], references: [id])
+  createdAt DateTime @default(now())
+  @@unique([taskId, kind])
+  @@unique([paymentId, kind])
+  @@index([userId, createdAt])
+}
+model Payment {
+  id String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  amountMicro BigInt
+  status PaymentStatus @default(PENDING)
+  providerReference String? @unique
+  createdAt DateTime @default(now())
+  confirmedAt DateTime?
+  ledger LedgerEntry[]
+}
