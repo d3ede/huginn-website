@@ -1,69 +1,59 @@
-# Huginn
+# Huginn Website
 
-Веб-интерфейс и REST API для hCaptcha: лендинг, аккаунты, API-ключи, очередь задач и биллинг. Движок решения CAPTCHA и платёжный процессинг подключаются как внешние сервисы.
+Web portal and public REST API for Huginn: a bilingual landing page, user accounts,
+API keys, task history, and prepaid billing. Built with Next.js 16, React 19,
+Fastify 5, Prisma, and PostgreSQL.
 
-![Главная страница Huginn](docs/screenshots/landing.png)
+![Huginn landing page](docs/screenshots/landing.png)
 
-<details>
-<summary>Регистрация</summary>
+The solver engine and payment processor are external integrations. Both are
+disabled by default: new accounts start with zero balance, and unavailable
+operations return `503`. This repository does not include a solver.
 
-![Регистрация в Huginn](docs/screenshots/registration.png)
+## Development
 
-</details>
+Requires Node.js 22.21+ and PostgreSQL.
 
-## Стек и архитектура
-
-- **Frontend:** Next.js 16 / App Router, React 19, TypeScript, Tailwind CSS 4, Recharts. Светлая тема, RU/EN.
-- **Backend:** Fastify 5, Zod, PostgreSQL, Prisma 6. Next.js проксирует `/api/*` на Fastify.
-- **Задачи:** очередь в PostgreSQL, атомарный захват, таймауты и идемпотентность. Статусы: `queued → processing → succeeded | failed`.
-- **Биллинг:** целые микродоллары; резервирование при создании задачи, списание при успехе, однократный возврат при ошибке.
-- **Авторизация:** scrypt, сессионные HttpOnly-cookie, API-ключи с хранением SHA-256-хешей. Подтверждение платежей — HMAC-webhook.
-
-Основной код: `app/` — страницы, `components/` — UI, `server/` — API и обработка задач, `prisma/` — схема и миграции. Контракты интеграций: [server/providers.ts](server/providers.ts).
-
-## Запуск
-
-Нужны **Node.js 22.21+** и PostgreSQL. Для разработки доступен встроенный PostgreSQL без Docker.
-
-```powershell
+```sh
 npm ci
-Copy-Item .env.example .env
+cp .env.example .env
 npm run db:generate
 npm run db:local
 ```
 
-Оставьте PostgreSQL запущенным; в другом терминале:
+On Windows, use `Copy-Item .env.example .env`. Keep the local database running;
+in another terminal, run:
 
-```powershell
+```sh
 npm run db:migrate
 npm run dev
 ```
 
-Frontend: [localhost:3000](http://localhost:3000), API: `127.0.0.1:4000`, локальная БД: `127.0.0.1:54329`. На Linux/macOS используйте `cp .env.example .env`. Для своей БД задайте `DATABASE_URL` и пропустите `db:local`. Адрес frontend должен совпадать с `APP_ORIGIN`.
+Open [localhost:3000](http://localhost:3000). For an existing database, set
+`DATABASE_URL` and skip `db:local`. `APP_ORIGIN` must match the browser URL.
 
-## REST API
+## API and integrations
 
-Базовый путь: `/api/v1`. Авторизация: `Authorization: Bearer <API_KEY>`.
+The public API uses `/api/v1` and Bearer API keys: `GET /balance`, `POST /tasks`,
+and `GET /tasks/:id`. Task creation supports `Idempotency-Key`; the full contract
+and Python/JavaScript examples are available at `/docs`.
 
-| Метод | Путь         | Назначение                                         |
-| ----- | ------------ | -------------------------------------------------- |
-| GET   | `/balance`   | Баланс в USD                                       |
-| POST  | `/tasks`     | Создать задачу: `type`, `websiteURL`, `websiteKey` |
-| GET   | `/tasks/:id` | Статус и результат задачи                          |
+Billing uses integer microdollars: reserve on creation, charge on success, refund
+on failure. Configure solver and payment adapters through [.env.example](.env.example).
+Integration contracts and deployment details: [operations guide](docs/operations.md).
 
-Поддерживаемый тип — `hcaptcha`; повторные отправки защищены заголовком `Idempotency-Key`. Полный контракт и Python/JavaScript-примеры доступны на `/docs`.
+## Production and checks
 
-По умолчанию `SOLVER_PROVIDER` и `PAYMENT_PROVIDER` отключены: соответствующие операции возвращают **503**, баланс нового аккаунта — **0**. HTTP-адаптеры настраиваются в [.env.example](.env.example); приватного солвера в репозитории нет.
-
-## Проверки и эксплуатация
+Set `API_INTERNAL_URL` before building; Next.js forwards `/api/*` to that backend.
+Production requires HTTPS, production secrets, and `DEMO_MODE=false`.
 
 ```sh
-npm test
-npm run typecheck
+npm run db:migrate
 npm run build
-npm run test:integration
+npm start
 ```
 
-Интеграционные тесты требуют PostgreSQL и создают отдельную временную схему; можно задать `TEST_DATABASE_URL`. Production: `npm run db:migrate`, `npm run build`, `npm start`; HTTPS, реальные секреты и `DEMO_MODE=false` обязательны. `API_INTERNAL_URL` задаётся до сборки.
+Checks: `npm test`, `npm run typecheck`, `npm run build`, and
+`npm run test:integration` (requires PostgreSQL; uses an isolated temporary schema).
 
-Подробности провайдеров, webhook, dev-seed и развёртывания: [эксплуатация и интеграции](docs/operations.md). Источники логотипов: [SOURCES.md](public/images/brands/SOURCES.md); промпт фоновой текстуры: [hero-raven-flight-feathers-prompt.txt](docs/hero-raven-flight-feathers-prompt.txt).
+Asset attribution: [brand sources](public/images/brands/SOURCES.md).
