@@ -22,6 +22,7 @@ export default function Docs() {
             ['#start', 'Quick start'],
             ['#requests', 'Request format'],
             ['#tasks', 'Create a task'],
+            ['#site-settings', 'Site-specific settings'],
             ['#result', 'Retrieve a task'],
             ['#balance', 'Check balance'],
             ['#example', 'Examples'],
@@ -214,6 +215,61 @@ export default function Docs() {
                 Use HCaptchaTask with proxyType, proxyAddress, and proxyPort. Supported proxy types
                 are http, https, and socks5. Supply proxyLogin and proxyPassword together when
                 required. Proxy fields are not accepted for HCaptchaTaskProxyless.
+              </Text>
+            </p>
+          </section>
+          <section id="site-settings">
+            <h2>
+              <Text>Site-specific settings</Text>
+            </h2>
+            <p>
+              <Text>
+                Known site settings take priority over conflicting task parameters. Your parameters
+                apply wherever the site does not specify a setting. All submitted values must still
+                have valid types and formats.
+              </Text>
+            </p>
+            <h3>
+              <Text>Steam account creation</Text>
+            </h3>
+            <p>
+              <Text>
+                For https://store.steampowered.com/join/ (with or without a query string), hCaptcha
+                runs in checkbox mode. isInvisible: true is ignored for this integration. Other URLs
+                keep the requested mode unless their own site settings specify otherwise.
+              </Text>
+            </p>
+            <p>
+              <Text>
+                Use websiteContext for integration values obtained from the website. Steam Join
+                accepts gid as a numeric string of up to 32 digits, and s as the integration state
+                string. These fields are optional and validated for the matching website; they are
+                not universal task fields.
+              </Text>
+            </p>
+            <pre>
+              <code>
+                {JSON.stringify(
+                  {
+                    clientKey: 'YOUR_API_KEY',
+                    task: {
+                      type: 'HCaptchaTaskProxyless',
+                      websiteURL: 'https://store.steampowered.com/join/',
+                      websiteKey: 'SITE_KEY',
+                      isInvisible: false,
+                      websiteContext: { gid: '2971917980901569', s: '' },
+                    },
+                  },
+                  null,
+                  2,
+                )}
+              </code>
+            </pre>
+            <p>
+              <Text>
+                Continue supplying the website key, proxy, cookies, user agent, language and
+                Enterprise data required by your integration. Site-specific configuration only
+                overrides established settings; it does not replace missing session data.
               </Text>
             </p>
           </section>

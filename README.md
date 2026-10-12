@@ -43,6 +43,8 @@ The solver contract is 2Captcha-compatible JSON: `POST /api/createTask`,
 `processing` / `ready`, and `solution.gRecaptchaResponse`. See `/docs` for the
 contract and matching Python/JavaScript examples, including hCaptcha proxy and
 Enterprise fields.
+Known site settings take precedence over conflicting caller parameters; `/docs`
+also documents supported `websiteContext` fields and Steam Join checkbox mode.
 
 Create API keys in the account workspace. Keys have no expiry and stay valid until
 manually revoked. Their secrets appear once and are stored only as hashes.

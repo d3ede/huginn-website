@@ -380,6 +380,14 @@ webhook credentials even after current credentials are rotated or cleared.
 
 ## Administration analytics and evidence
 
+The public reference includes site-specific configuration and precedence. The
+private solver's `site_environments` registry is the single authority: defined
+profile settings override callers; explicitly authoritative omissions override
+them too. Steam Join enforces checkbox/dark theme/omitted size. Valid language,
+gid and s remain caller-controlled. Unknown sites and unobserved Steam paths
+preserve caller options. API normalization, rendered widget and activation all
+use the resolver. Do not duplicate that policy in the website task schemas.
+
 Statistics use stored platform tasks and confirmed payments, with 7/30/90-day
 UTC windows. Success rate excludes queued/processing tasks; average and P95
 durations use successful tasks. Revenue is settled task charges, deposits use

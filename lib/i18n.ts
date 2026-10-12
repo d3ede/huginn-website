@@ -1,5 +1,15 @@
 export type Locale = 'en' | 'ru';
 export const russian: Record<string, string> = {
+  'Site-specific settings': 'Настройки конкретных сайтов',
+  'Steam account creation': 'Создание аккаунта Steam',
+  'Known site settings take priority over conflicting task parameters. Your parameters apply wherever the site does not specify a setting. All submitted values must still have valid types and formats.':
+    'Известные настройки сайта имеют приоритет над противоречащими им параметрами задачи. Ваши параметры применяются там, где сайт не задаёт настройку. Переданные значения всё равно должны иметь корректные типы и форматы.',
+  'For https://store.steampowered.com/join/ (with or without a query string), hCaptcha runs in checkbox mode. isInvisible: true is ignored for this integration. Other URLs keep the requested mode unless their own site settings specify otherwise.':
+    'Для https://store.steampowered.com/join/ (с параметрами URL или без них) hCaptcha работает в режиме checkbox. Значение isInvisible: true для этой интеграции игнорируется. На других URL сохраняется запрошенный режим, если настройки конкретного сайта не задают иной.',
+  'Use websiteContext for integration values obtained from the website. Steam Join accepts gid as a numeric string of up to 32 digits, and s as the integration state string. These fields are optional and validated for the matching website; they are not universal task fields.':
+    'Передавайте в websiteContext значения интеграции, полученные от сайта. Steam Join принимает gid — строку из цифр длиной до 32 символов, и s — строку состояния интеграции. Эти поля необязательны и проверяются для соответствующего сайта; они не являются универсальными параметрами задач.',
+  'Continue supplying the website key, proxy, cookies, user agent, language and Enterprise data required by your integration. Site-specific configuration only overrides established settings; it does not replace missing session data.':
+    'Передавайте ключ сайта, прокси, cookies, user agent, язык и Enterprise-данные, которые нужны вашей интеграции. Настройки сайта переопределяют только известные параметры и не заменяют отсутствующие данные сессии.',
   Statistics: 'Статистика',
   'Token issued': 'Токен выдан',
   'Submission accepted': 'Отправка принята',
