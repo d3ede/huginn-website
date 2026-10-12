@@ -24,7 +24,7 @@ declare module 'fastify' {
     rawBody?: string;
   }
 }
-const password = z.string().min(12, 'Use at least 12 characters.').max(128);
+const password = z.string().min(8, 'Use at least 8 characters.').max(128);
 const email = z
   .email()
   .max(254)
@@ -53,7 +53,9 @@ export async function buildApp(
   const payment = adapters.payment ?? payments;
   const app = Fastify({
     bodyLimit: 65536,
-    trustProxy: ['127.0.0.1', '::1'],
+    trustProxy: config.TRUSTED_PROXIES.split(',')
+      .map((v) => v.trim())
+      .filter(Boolean),
     logger:
       adapters.logger === false
         ? false
@@ -387,7 +389,7 @@ export async function buildApp(
         throw new AppError(
           503,
           'PAYMENTS_UNAVAILABLE',
-          'Payments are not connected yet. Your balance has not changed.',
+          'Checkout is temporarily unavailable. Your balance has not changed.',
         );
       const pending = await db.payment.create({
         data: { userId: user.id, amountMicro: BigInt(amount) * 1_000_000n },

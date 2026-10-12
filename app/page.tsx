@@ -38,17 +38,14 @@ const features = [
   },
 ];
 const faqs = [
-  [
-    'What does Huginn support?',
-    'Huginn supports hCaptcha, including hCaptcha Enterprise, through the API.',
-  ],
+  ['What does Huginn support?', 'Huginn supports hCaptcha tasks through a REST API.'],
   [
     'How are tasks billed?',
     'The task price is reserved when a task is accepted. Successful tasks keep that charge; failed tasks receive an automatic refund. You can review each entry in Billing.',
   ],
   [
-    'Is task processing available now?',
-    'This release includes the workspace and API. Processing becomes available when the service operator connects a solving provider. If it is unavailable, requests fail explicitly without charging your balance.',
+    'How do I get started?',
+    'Create an account, add funds to your balance and generate an API key. Submit your first task using the examples in the documentation.',
   ],
   [
     'How do I keep my API key safe?',
@@ -124,18 +121,11 @@ export default function Home() {
               ['riot', 'Riot Games'],
               ['epic', 'Epic Games'],
             ].map(([icon, name]) => (
-              <div
-                key={icon}
-                className="platform-brand"
-                role="img"
-                aria-label={name}
-                tabIndex={0}
-              >
-                <span
-                  className={`platform-logo platform-logo-${icon}`}
-                  aria-hidden="true"
-                />
-                <span className="platform-label" aria-hidden="true">{name}</span>
+              <div key={icon} className="platform-brand" role="img" aria-label={name} tabIndex={0}>
+                <span className={`platform-logo platform-logo-${icon}`} aria-hidden="true" />
+                <span className="platform-label" aria-hidden="true">
+                  {name}
+                </span>
               </div>
             ))}
           </div>

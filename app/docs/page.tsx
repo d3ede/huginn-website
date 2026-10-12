@@ -64,7 +64,7 @@ export default function Docs() {
                 <Text>. Save it securely; it is shown once. </Text>
               </li>
               <li>
-                <Text>Add balance from Billing when payments are enabled.</Text>
+                <Text>Add funds to your prepaid balance in Billing.</Text>
               </li>
               <li>
                 <Text> Set </Text>
@@ -77,13 +77,6 @@ export default function Docs() {
                 <Text>Send a task and poll for a terminal status.</Text>
               </li>
             </ol>
-            <div className="notice">
-              <Text>
-                {' '}
-                This preview has no solving or payment provider enabled by default. Unavailable
-                operations return an explicit 503 without changing your balance.{' '}
-              </Text>
-            </div>
           </section>
           <section id="authentication">
             <h2>
@@ -95,7 +88,7 @@ export default function Docs() {
               <Text>
                 {' '}
                 for every external request. Keep API keys in server environment variables. Never
-                embed them in browser code. All production requests must use HTTPS.{' '}
+                embed them in browser code. Use HTTPS for public requests.{' '}
               </Text>
             </p>
             <p>

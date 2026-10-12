@@ -6,6 +6,8 @@ const { buildApp } = await import('../../server/app');
 const { db } = await import('../../server/db');
 const { createTask, settleTask, workOne } = await import('../../server/tasks');
 const { config } = await import('../../server/config');
+const { createMimicSolver } = await import('../../server/solver-client');
+const { hashToken } = await import('../../server/security');
 const engine = {
   available: true,
   async solve() {
@@ -29,8 +31,99 @@ let userId = '';
 let key = '';
 let keyId = '';
 const origin = new URL(config.APP_ORIGIN).origin;
+
+test(
+  'public keyed API settles a real HTTP/Redis/ARQ fixture through the private adapter',
+  { skip: !process.env.TEST_SOLVER_URL },
+  async () => {
+    const realAdapter = createMimicSolver({
+      baseURL: process.env.TEST_SOLVER_URL!,
+      secret: process.env.TEST_SOLVER_SECRET!,
+      pollMs: 10,
+    });
+    const isolated = await buildApp({ engine: realAdapter, payment, logger: false });
+    try {
+      const owner = await db.user.create({
+        data: {
+          email: `${randomUUID()}@cross.test`,
+          name: 'Cross-service fixture',
+          passwordHash: 'unused-fixture',
+          balanceMicro: 1_000_000n,
+        },
+      });
+      ids.push(owner.id);
+      const apiKey = `hg_live_${randomUUID()}`;
+      await db.apiKey.create({
+        data: {
+          userId: owner.id,
+          name: 'Fixture',
+          prefix: 'hg_live_fixture',
+          tokenHash: hashToken(apiKey),
+        },
+      });
+      const headers = { authorization: `Bearer ${apiKey}`, 'idempotency-key': 'cross-service' };
+      const created = await isolated.inject({
+        method: 'POST',
+        url: '/v1/tasks',
+        headers,
+        payload: { type: 'hcaptcha', websiteURL: 'https://example.test', websiteKey: 'fixture' },
+      });
+      assert.equal(created.statusCode, 202);
+      const taskId = created.json().id;
+      await workOne(realAdapter);
+      const completed = await isolated.inject({ url: `/v1/tasks/${taskId}`, headers });
+      assert.equal(completed.json().status, 'succeeded');
+      assert.equal(completed.json().result.token, 'explicit-cross-service-test-fixture');
+      assert.equal(completed.json().result.serverAcceptance, 'not_observed');
+      assert.equal(
+        (await db.user.findUniqueOrThrow({ where: { id: owner.id } })).balanceMicro,
+        1_000_000n - BigInt(config.TASK_PRICE_MICRO_USD),
+      );
+      const repeated = await isolated.inject({
+        method: 'POST',
+        url: '/v1/tasks',
+        headers,
+        payload: { type: 'hcaptcha', websiteURL: 'https://example.test', websiteKey: 'fixture' },
+      });
+      assert.equal(repeated.json().id, taskId);
+      assert.equal(await db.ledgerEntry.count({ where: { taskId, kind: 'TASK_RESERVE' } }), 1);
+    } finally {
+      await isolated.close();
+    }
+  },
+);
 before(async () => {
   await db.$connect();
+});
+
+test('concurrent retries with only one task worth of balance all return the same reservation', async () => {
+  const owner = await db.user.create({
+    data: {
+      email: `${randomUUID()}@last-credit.test`,
+      name: 'Fixture',
+      passwordHash: 'unused-fixture',
+      balanceMicro: BigInt(config.TASK_PRICE_MICRO_USD),
+    },
+  });
+  ids.push(owner.id);
+  const results = await Promise.all(
+    Array.from({ length: 8 }, () =>
+      createTask(
+        owner.id,
+        undefined,
+        { websiteURL: 'https://example.test', websiteKey: 'fixture' },
+        'last-credit',
+        engine,
+      ),
+    ),
+  );
+  assert.equal(new Set(results.map((r) => r.id)).size, 1);
+  assert.equal((await db.user.findUniqueOrThrow({ where: { id: owner.id } })).balanceMicro, 0n);
+  await settleTask(results[0], null);
+  assert.equal(
+    (await db.user.findUniqueOrThrow({ where: { id: owner.id } })).balanceMicro,
+    BigInt(config.TASK_PRICE_MICRO_USD),
+  );
 });
 after(async () => {
   await app.close();
@@ -48,14 +141,21 @@ test('API lifecycle, account isolation, transaction races, and payment replay', 
         method: 'POST',
         url: '/auth/register',
         headers: { origin: 'https://attacker.invalid' },
-        payload: { email: emails, password: 'test password twelve', name: 'Test' },
+        payload: { email: emails, password: 'testpass', name: 'Test' },
       });
       assert.equal(blocked.statusCode, 403);
+      const short = await app.inject({
+        method: 'POST',
+        url: '/auth/register',
+        headers: { origin },
+        payload: { email: emails, password: '1234567', name: 'Test' },
+      });
+      assert.equal(short.statusCode, 400);
       const response = await app.inject({
         method: 'POST',
         url: '/auth/register',
         headers: { origin },
-        payload: { email: emails, password: 'test password twelve', name: 'Test' },
+        payload: { email: emails, password: 'testpass', name: 'Test' },
       });
       assert.equal(response.statusCode, 201);
       userId = response.json().user.id;
@@ -63,6 +163,11 @@ test('API lifecycle, account isolation, transaction races, and payment replay', 
       cookie = String(response.headers['set-cookie']).split(';')[0];
       assert.match(String(response.headers['set-cookie']), /HttpOnly/);
       assert.match(String(response.headers['set-cookie']), /SameSite=Lax/i);
+      assert.equal(
+        /; Secure/i.test(String(response.headers['set-cookie'])),
+        config.APP_ORIGIN.startsWith('https://'),
+      );
+      assert.equal(cookie.startsWith('__Host-'), config.APP_ORIGIN.startsWith('https://'));
       assert.equal(response.json().user.balance, '0.000000');
       assert.equal(response.json().user.passwordHash, undefined);
       assert.equal((await app.inject({ url: '/account', headers: { cookie } })).statusCode, 200);
@@ -205,6 +310,110 @@ test('API lifecycle, account isolation, transaction races, and payment replay', 
     assert.equal((await db.user.findUniqueOrThrow({ where: { id: userId } })).balanceMicro, before);
     await disabled.close();
   });
+  await t.test(
+    'worker shutdown preserves the reservation and resumes the same solver identity',
+    async () => {
+      const task = await createTask(
+        userId,
+        keyId,
+        { websiteURL: 'https://example.test/resume', websiteKey: 'fixture' },
+        'resume',
+        engine,
+      );
+      const reservedBalance = (await db.user.findUniqueOrThrow({ where: { id: userId } }))
+        .balanceMicro;
+      const shutdown = new AbortController();
+      const observed: string[] = [];
+      await workOne(
+        {
+          available: true,
+          async solve(input, signal) {
+            observed.push(input.taskId);
+            shutdown.abort();
+            signal.throwIfAborted();
+            return { token: 'unreachable' };
+          },
+        },
+        shutdown.signal,
+      );
+      const interrupted = await db.task.findUniqueOrThrow({ where: { id: task.id } });
+      assert.equal(interrupted.status, 'PROCESSING');
+      assert.equal(interrupted.leaseId, null);
+      assert.equal(
+        (await db.user.findUniqueOrThrow({ where: { id: userId } })).balanceMicro,
+        reservedBalance,
+      );
+      await workOne({
+        available: true,
+        async solve(input) {
+          observed.push(input.taskId);
+          return {
+            token: 'resumed-fixture',
+            serverAcceptance: 'not_observed',
+            userAgent: 'fixture-agent',
+          };
+        },
+      });
+      assert.deepEqual(observed, [task.id, task.id]);
+      const finished = await db.task.findUniqueOrThrow({ where: { id: task.id } });
+      assert.equal(finished.status, 'SUCCEEDED');
+      assert.equal(finished.startedAt!.getTime(), interrupted.startedAt!.getTime());
+      assert.equal(finished.serverAcceptance, 'not_observed');
+      await settleTask(finished, null);
+      assert.equal(
+        (await db.user.findUniqueOrThrow({ where: { id: userId } })).balanceMicro,
+        reservedBalance,
+      );
+      assert.equal(
+        await db.ledgerEntry.count({ where: { taskId: task.id, kind: 'TASK_RESERVE' } }),
+        1,
+      );
+      assert.equal(
+        await db.ledgerEntry.count({ where: { taskId: task.id, kind: 'TASK_REFUND' } }),
+        0,
+      );
+    },
+  );
+  await t.test(
+    'an expired processing job refunds once and an old lease cannot settle it',
+    async () => {
+      const task = await createTask(
+        userId,
+        keyId,
+        { websiteURL: 'https://example.test/timeout', websiteKey: 'fixture' },
+        'timeout',
+        engine,
+      );
+      const oldLease = randomUUID();
+      await db.task.update({
+        where: { id: task.id },
+        data: {
+          status: 'PROCESSING',
+          leaseId: oldLease,
+          leaseUntil: new Date(Date.now() - 1000),
+          startedAt: new Date(Date.now() - (config.TASK_TIMEOUT_SECONDS + 1) * 1000),
+        },
+      });
+      let called = false;
+      await workOne({
+        available: true,
+        async solve() {
+          called = true;
+          return { token: 'unreachable' };
+        },
+      });
+      assert.equal(called, false);
+      const finished = await db.task.findUniqueOrThrow({ where: { id: task.id } });
+      assert.equal(finished.errorCode, 'TASK_TIMEOUT');
+      await settleTask(task, { token: 'late-fixture' }, 'TASK_FAILED', oldLease);
+      await settleTask(task, null);
+      assert.equal((await db.task.findUniqueOrThrow({ where: { id: task.id } })).status, 'FAILED');
+      assert.equal(
+        await db.ledgerEntry.count({ where: { taskId: task.id, kind: 'TASK_REFUND' } }),
+        1,
+      );
+    },
+  );
   await t.test('signed confirmed webhook credits once even under concurrent replay', async () => {
     const checkout = await app.inject({
       method: 'POST',
@@ -268,7 +477,7 @@ test('API lifecycle, account isolation, transaction races, and payment replay', 
         method: 'POST',
         url: '/auth/register',
         headers: { origin },
-        payload: { email: `second-${emails}`, password: 'test password twelve', name: 'Other' },
+        payload: { email: `second-${emails}`, password: 'testpass', name: 'Other' },
       });
       ids.push(second.json().user.id);
       const secondCookie = String(second.headers['set-cookie']).split(';')[0];
@@ -305,9 +514,9 @@ test('API lifecycle, account isolation, transaction races, and payment replay', 
     async () => {
       const stats = await app.inject({ url: '/stats?days=7', headers: { cookie } });
       assert.equal(stats.statusCode, 200);
-      assert.equal(stats.json().solved, 1);
+      assert.equal(stats.json().solved, 2);
       assert.equal(stats.json().daily.length, 7);
-      assert.equal(stats.json().total, 4);
+      assert.equal(stats.json().total, 6);
       assert.equal(
         stats.json().daily.reduce((sum: number, day: { solved: number }) => sum + day.solved, 0),
         stats.json().solved,
@@ -338,7 +547,7 @@ test('API lifecycle, account isolation, transaction races, and payment replay', 
         method: 'POST',
         url: '/auth/login',
         headers: { origin },
-        payload: { email: emails, password: 'test password twelve' },
+        payload: { email: emails, password: 'testpass' },
       });
       assert.equal(login.statusCode, 200);
       const oldCookie = String(login.headers['set-cookie']).split(';')[0];
@@ -346,7 +555,7 @@ test('API lifecycle, account isolation, transaction races, and payment replay', 
         method: 'POST',
         url: '/account/password',
         headers: { origin, cookie: oldCookie },
-        payload: { currentPassword: 'test password twelve', password: 'a newer test password' },
+        payload: { currentPassword: 'testpass', password: 'a newer test password' },
       });
       assert.equal(changed.statusCode, 200);
       assert.equal(
@@ -364,7 +573,7 @@ test('API lifecycle, account isolation, transaction races, and payment replay', 
             method: 'POST',
             url: '/auth/login',
             headers: { origin },
-            payload: { email: emails, password: 'test password twelve' },
+            payload: { email: emails, password: 'testpass' },
           })
         ).statusCode,
         401,

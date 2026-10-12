@@ -84,14 +84,14 @@ export function AuthForm({ register = false }: { register?: boolean }) {
                 type="password"
                 autoComplete={register ? 'new-password' : 'current-password'}
                 required
-                minLength={register ? 12 : 1}
+                minLength={register ? 8 : 1}
                 maxLength={128}
-                placeholder={t(register ? 'At least 12 characters' : 'Your password')}
+                placeholder={t(register ? 'At least 8 characters' : 'Your password')}
               />
             </label>
             {register && (
               <p className="field-hint">
-                <Text>Use at least 12 characters. Keep this password unique.</Text>
+                <Text>Use at least 8 characters. Keep this password unique.</Text>
               </p>
             )}
             {error && (

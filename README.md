@@ -1,18 +1,20 @@
 # Huginn Website
 
-Web portal and public REST API for Huginn: a bilingual landing page, user accounts,
-API keys, task history, and prepaid billing. Built with Next.js 16, React 19,
-Fastify 5, Prisma, and PostgreSQL.
+Bilingual web portal and public REST API: accounts, API keys, task history,
+and a prepaid wallet. Built with Next.js 16, React 19, Fastify 5, Prisma, and
+PostgreSQL. The solver runs in a separate private service.
 
-![Huginn landing page](docs/screenshots/landing.png)
+## Run as part of Huggin
 
-The solver engine and payment processor are external integrations. Both are
-disabled by default: new accounts start with zero balance, and unavailable
-operations return `503`. This repository does not include a solver.
+This repository is the `website/` submodule of [Huggin](https://github.com/moreveal/huggin).
+Run its Compose stack from the parent checkout. The same built images work locally
+and behind Cloudflare; configure the external address with `APP_ORIGIN`.
+The gateway routes `/api/*` at runtime, so the web image has no compiled backend URL.
+API and task workers run as separate processes.
 
-## Development
+## Standalone development
 
-Requires Node.js 22.21+ and PostgreSQL.
+Requires Node.js 22.21+ and PostgreSQL:
 
 ```sh
 npm ci
@@ -21,39 +23,42 @@ npm run db:generate
 npm run db:local
 ```
 
-On Windows, use `Copy-Item .env.example .env`. Keep the local database running;
-in another terminal, run:
+On Windows use `Copy-Item .env.example .env`. Leave PostgreSQL running, then
+in another terminal:
 
 ```sh
 npm run db:migrate
 npm run dev
 ```
 
-Open [localhost:3000](http://localhost:3000). For an existing database, set
+Open [localhost:3000](http://localhost:3000). For an existing database set
 `DATABASE_URL` and skip `db:local`. `APP_ORIGIN` must match the browser URL.
+For a direct built Next.js server, set `API_INTERNAL_URL` before `npm run build`,
+then use `npm start` to run web, API, and worker.
 
-## API and integrations
+## API and billing
 
-The public API uses `/api/v1` and Bearer API keys: `GET /balance`, `POST /tasks`,
-and `GET /tasks/:id`. Task creation supports `Idempotency-Key`; the full contract
-and Python/JavaScript examples are available at `/docs`.
+Clients use `/api/v1` with Bearer API keys: `GET /balance`, `POST /tasks`, and
+`GET /tasks/:id`. `Idempotency-Key` prevents duplicate reservations. See `/docs`
+for the customer contract and Python/JavaScript examples.
 
-Billing uses integer microdollars: reserve on creation, charge on success, refund
-on failure. Configure solver and payment adapters through [.env.example](.env.example).
-Integration contracts and deployment details: [operations guide](docs/operations.md).
+Amounts use integer microdollars: reserve on creation, settle on token delivery,
+refund on failure. New accounts start at zero. Parent Compose connects the private
+Mimic adapter; standalone defaults disable integrations. Crypto checkout still
+requires a real payment adapter. Only a signed payment confirmation credits funds.
 
-## Production and checks
+Configuration, integration contracts, retention, and deployment:
+[operations guide](docs/operations.md) and [.env.example](.env.example).
 
-Set `API_INTERNAL_URL` before building; Next.js forwards `/api/*` to that backend.
-Production requires HTTPS, production secrets, and `DEMO_MODE=false`.
+## Checks
 
 ```sh
-npm run db:migrate
+npm test
+npm run typecheck
 npm run build
-npm start
+npm run test:integration
 ```
 
-Checks: `npm test`, `npm run typecheck`, `npm run build`, and
-`npm run test:integration` (requires PostgreSQL; uses an isolated temporary schema).
-
-Asset attribution: [brand sources](public/images/brands/SOURCES.md).
+Integration tests require PostgreSQL and use a temporary schema with synthetic
+providers. Brand attribution: [sources](public/images/brands/SOURCES.md).
+The Huginn logo in `public/images/brand/huginn-logo-v1.png` was supplied by the project owner.

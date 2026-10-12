@@ -48,14 +48,14 @@ export default function Terms() {
           </Text>
         </p>
         <h2>
-          <Text>Preview release</Text>
+          <Text>Payments and refunds</Text>
         </h2>
         <p>
           <Text>
             {' '}
-            Processing and payments are unavailable until connected by the service operator. Before
-            accepting public customers, the operator must publish its identity, contact details,
-            refund and withdrawal terms, and any jurisdiction-specific terms.{' '}
+            Your balance is prepaid. Failed tasks are refunded automatically to your balance. A
+            checkout redirect alone does not confirm payment. Review the amount and currency before
+            paying.{' '}
           </Text>
         </p>
       </main>

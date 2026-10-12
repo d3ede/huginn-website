@@ -34,9 +34,10 @@ export default function Privacy() {
         <p>
           <Text>
             {' '}
-            Task URLs and site keys are stored with task records. A connected processing provider
-            receives task input. Successful tokens are cleared after 24 hours. A connected payment
-            provider handles checkout; this application does not store card details.{' '}
+            Task URLs and site keys are stored with task records and used to process your requests.
+            Result tokens in your task history are cleared after 24 hours. Diagnostic records may be
+            retained separately for up to 90 days. Payment processors handle checkout; Huginn does
+            not store card details.{' '}
           </Text>
         </p>
         <h2>
@@ -51,15 +52,13 @@ export default function Privacy() {
           </Text>
         </p>
         <h2>
-          <Text>Service operator</Text>
+          <Text>Your data</Text>
         </h2>
         <p>
           <Text>
             {' '}
-            Contact the operator of your deployed instance for account data requests, retention
-            details, and the applicable privacy contact. The operator must publish its identity,
-            contact information, retention policy, and provider disclosures before accepting public
-            customers.{' '}
+            Keep task inputs free of unnecessary personal information. Account and transaction
+            records are retained to provide your history and maintain accurate balances.{' '}
           </Text>
         </p>
       </main>

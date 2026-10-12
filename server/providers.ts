@@ -1,13 +1,21 @@
 import { z } from 'zod';
 import { config } from './config';
 import { AppError } from './errors';
+import { createMimicSolver } from './solver-client';
+
+export type SolverResult = {
+  token: string;
+  serverAcceptance?: string;
+  userAgent?: string;
+  respKey?: string;
+};
 
 export interface SolverEngine {
   available: boolean;
   solve(
     input: { taskId: string; websiteURL: string; websiteKey: string },
     signal: AbortSignal,
-  ): Promise<{ token: string }>;
+  ): Promise<SolverResult>;
 }
 export interface PaymentProvider {
   available: boolean;
@@ -23,11 +31,11 @@ const checkoutSchema = z.object({
   reference: z.string().min(1).max(200),
   checkoutURL: z.url().refine((v) => new URL(v).protocol === 'https:'),
 });
-export const solver: SolverEngine = {
+const httpSolver: SolverEngine = {
   available: config.SOLVER_PROVIDER === 'http',
   async solve(input, signal) {
     if (!this.available)
-      throw new AppError(503, 'SOLVER_UNAVAILABLE', 'Task processing is not available yet.');
+      throw new AppError(503, 'SOLVER_UNAVAILABLE', 'Task processing is temporarily unavailable.');
     const response = await fetch(config.SOLVER_URL, {
       method: 'POST',
       signal,
@@ -42,6 +50,10 @@ export const solver: SolverEngine = {
     return resultSchema.parse(await response.json());
   },
 };
+export const solver =
+  config.SOLVER_PROVIDER === 'mimic'
+    ? createMimicSolver({ baseURL: config.SOLVER_URL, secret: config.SOLVER_SECRET })
+    : httpSolver;
 export const payments: PaymentProvider = {
   available: config.PAYMENT_PROVIDER === 'http',
   async checkout(input) {
@@ -49,7 +61,7 @@ export const payments: PaymentProvider = {
       throw new AppError(
         503,
         'PAYMENTS_UNAVAILABLE',
-        'Payments are not available yet. Your balance has not changed.',
+        'Checkout is temporarily unavailable. Your balance has not changed.',
       );
     const response = await fetch(config.PAYMENT_URL, {
       method: 'POST',

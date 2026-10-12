@@ -1,5 +1,26 @@
 export type Locale = 'en' | 'ru';
 export const russian: Record<string, string> = {
+  'Huginn supports hCaptcha tasks through a REST API.':
+    'Huginn поддерживает задачи hCaptcha через REST API.',
+  'How do I get started?': 'Как начать работу?',
+  'Create an account, add funds to your balance and generate an API key. Submit your first task using the examples in the documentation.':
+    'Создайте аккаунт, пополните баланс и сгенерируйте API-ключ. Отправьте первую задачу по примерам в документации.',
+  'Add funds to your prepaid balance in Billing.': 'Пополните баланс в разделе «Оплата».',
+  'for every external request. Keep API keys in server environment variables. Never embed them in browser code. Use HTTPS for public requests.':
+    'для каждого внешнего запроса. Храните API-ключи в переменных окружения сервера. Не включайте их в браузерный код. Используйте HTTPS для публичных запросов.',
+  'You’ll continue to a secure checkout.': 'Вы перейдёте на защищённую страницу оплаты.',
+  'Payments and refunds': 'Платежи и возвраты',
+  'Your balance is prepaid. Failed tasks are refunded automatically to your balance. A checkout redirect alone does not confirm payment. Review the amount and currency before paying.':
+    'Баланс пополняется заранее. Неудачные задачи автоматически возвращаются на баланс. Переход со страницы оплаты сам по себе не подтверждает платёж. Проверьте сумму и валюту перед оплатой.',
+  'Task URLs and site keys are stored with task records and used to process your requests. Result tokens in your task history are cleared after 24 hours. Diagnostic records may be retained separately for up to 90 days. Payment processors handle checkout; Huginn does not store card details.':
+    'Адреса страниц и ключи сайтов сохраняются в истории задач и используются для обработки запросов. Токены результата в истории удаляются спустя 24 часа. Диагностические записи могут храниться отдельно до 90 дней. Платежи обрабатываются платёжными сервисами; Huginn не хранит данные карт.',
+  'Your data': 'Ваши данные',
+  'Keep task inputs free of unnecessary personal information. Account and transaction records are retained to provide your history and maintain accurate balances.':
+    'Не передавайте лишние персональные данные в задачах. Данные аккаунта и транзакций сохраняются для истории операций и корректного учёта баланса.',
+  'Checkout is temporarily unavailable. Your balance has not changed.':
+    'Оплата временно недоступна. Ваш баланс не изменился.',
+  'Task processing is temporarily unavailable. No balance was charged.':
+    'Обработка задач временно недоступна. Средства не списаны.',
   'A service for solving': 'Сервис для решения',
   'Supports hCaptcha Enterprise. Access through the API.':
     'Поддержка hCaptcha Enterprise. Доступ через API.',
@@ -79,9 +100,6 @@ export const russian: Record<string, string> = {
   'No subscription to keep track of.': 'Без обязательной подписки.',
   '/ 1,000 solutions': '/ 1 000 решений',
   'hCaptcha · USD · charged per successful task': 'hCaptcha · USD · оплата за успешную задачу',
-  'Preview release.': 'Предварительная версия.',
-  'Payments are not connected yet.': 'Платежи пока не подключены.',
-  'Task processing is not enabled yet.': 'Обработка задач пока не подключена.',
   'Pricing is temporarily unavailable.': 'Тарифы временно недоступны.',
   'No recurring fees': 'Без регулярных платежей',
   'Failed tasks refunded': 'Возврат при ошибке',
@@ -89,17 +107,12 @@ export const russian: Record<string, string> = {
   Good: 'Частые',
   'questions.': 'вопросы.',
   'What does Huginn support?': 'Что поддерживает Huginn?',
-  'Huginn supports hCaptcha, including hCaptcha Enterprise, through the API.':
-    'Huginn поддерживает hCaptcha, включая hCaptcha Enterprise, через API.',
   'How are tasks billed?': 'Как оплачиваются задачи?',
   'The task price is reserved when a task is accepted. Successful tasks keep that charge; failed tasks receive an automatic refund. You can review each entry in Billing.':
     'Стоимость резервируется при принятии задачи. При успехе она списывается, при ошибке автоматически возвращается. Все операции доступны в разделе «Баланс».',
   'Do you offer a subscription?': 'Нужна ли подписка?',
   'No. Huginn uses a prepaid balance and charges per successful task. The configured rate is shown above and in your workspace.':
     'Нет. Вы пополняете баланс и оплачиваете только успешные задачи. Текущий тариф указан выше и в кабинете.',
-  'Is task processing available now?': 'Доступна ли обработка задач?',
-  'This release includes the workspace and API. Processing becomes available when the service operator connects a solving provider. If it is unavailable, requests fail explicitly without charging your balance.':
-    'В этой версии доступны кабинет и API. Обработка начнётся после подключения провайдера решения. Пока он недоступен, API возвращает явную ошибку без списания средств.',
   'How do I keep my API key safe?': 'Как защитить API-ключ?',
   'Keep keys on your server and outside source control. Each key is shown only once when created. Revoke it from your workspace if it may have been exposed.':
     'Храните ключи на сервере и не добавляйте их в репозиторий. Полный ключ показывается только при создании. При подозрении на утечку отзовите его в кабинете.',
@@ -168,8 +181,6 @@ export const russian: Record<string, string> = {
   'Refresh tasks': 'Обновить задачи',
   'Filter by status': 'Фильтр по статусу',
   'All statuses': 'Все статусы',
-  'Task processing is not enabled yet. You can prepare your API integration; no tasks will be charged until processing is available.':
-    'Обработка задач пока отключена. Вы можете подготовить интеграцию с API. До подключения обработки средства не списываются.',
   'Task ID': 'ID задачи',
   Type: 'Тип',
   Status: 'Статус',
@@ -199,8 +210,6 @@ export const russian: Record<string, string> = {
   'The configured task price is reserved on acceptance. Failed tasks are refunded.':
     'Стоимость резервируется при принятии задачи и возвращается при ошибке.',
   'Submit task': 'Отправить задачу',
-  'Processing is currently unavailable. No balance will be charged.':
-    'Обработка временно недоступна. Средства не будут списаны.',
   Page: 'Страница',
   '← Previous': '← Назад',
   'Next →': 'Далее →',
@@ -211,9 +220,6 @@ export const russian: Record<string, string> = {
   'USD · prepaid balance': 'USD · предоплаченный баланс',
   'Current hCaptcha rate': 'Тариф hCaptcha',
   'Add to your balance': 'Пополнить баланс',
-  'You’ll continue to a secure provider checkout.': 'Вы перейдёте на защищённую страницу оплаты.',
-  'Payments are not connected yet. Your balance will not change.':
-    'Платежи пока не подключены. Ваш баланс не изменится.',
   'Amount in USD': 'Сумма в USD',
   'Continue to checkout': 'Перейти к оплате',
   'Balance is credited only after a confirmed payment.':
@@ -279,8 +285,8 @@ export const russian: Record<string, string> = {
   'Save changes': 'Сохранить изменения',
   'Profile updated.': 'Профиль обновлён.',
   Password: 'Пароль',
-  'At least 12 characters. Use a unique password.':
-    'Не менее 12 символов. Используйте уникальный пароль.',
+  'At least 8 characters. Use a unique password.':
+    'Не менее 8 символов. Используйте уникальный пароль.',
   'Current password': 'Текущий пароль',
   'New password': 'Новый пароль',
   'Confirm new password': 'Повторите новый пароль',
@@ -295,10 +301,10 @@ export const russian: Record<string, string> = {
   'Create an account. Build with a clearer view.': 'Зарегистрируйтесь и начните работу с Huginn.',
   'Sign in to your workspace.': 'Войдите в личный кабинет.',
   'Your name': 'Ваше имя',
-  'At least 12 characters': 'Не менее 12 символов',
+  'At least 8 characters': 'Не менее 8 символов',
   'Your password': 'Ваш пароль',
-  'Use at least 12 characters. Keep this password unique.':
-    'Используйте не менее 12 символов и уникальный пароль.',
+  'Use at least 8 characters. Keep this password unique.':
+    'Используйте не менее 8 символов и уникальный пароль.',
   'By creating an account, you agree to our': 'Создавая аккаунт, вы принимаете',
   terms: 'условия',
   and: 'и',
@@ -321,17 +327,11 @@ export const russian: Record<string, string> = {
   'and sign in.': 'и войдите.',
   'Generate a key in': 'Создайте ключ в разделе',
   '. Save it securely; it is shown once.': '. Сохраните его надёжно: он показывается один раз.',
-  'Add balance from Billing when payments are enabled.':
-    'Пополните баланс после подключения платежей.',
   Set: 'Укажите',
   'to your deployment URL plus': 'равным адресу вашего сервиса с суффиксом',
   '(locally:': '(локально:',
   'Send a task and poll for a terminal status.': 'Отправьте задачу и дождитесь итогового статуса.',
-  'This preview has no solving or payment provider enabled by default. Unavailable operations return an explicit 503 without changing your balance.':
-    'В этой версии провайдеры решения и оплаты по умолчанию отключены. Недоступные операции возвращают 503 без изменения баланса.',
   Use: 'Используйте',
-  'for every external request. Keep API keys in server environment variables. Never embed them in browser code. All production requests must use HTTPS.':
-    'для каждого внешнего запроса. Храните API-ключи в переменных окружения сервера, никогда не включайте их в браузерный код. Все production-запросы должны использовать HTTPS.',
   returns: 'возвращает',
   '. Amounts are decimal USD strings.': '. Суммы передаются десятичными строками в USD.',
   'Create a task': 'Создание задачи',
@@ -382,11 +382,6 @@ export const russian: Record<string, string> = {
   'An essential HttpOnly cookie keeps you signed in. There are no advertising or analytics cookies in this release. Signing out revokes the current session; changing your password revokes all existing sessions.':
     'Необходимый HttpOnly cookie поддерживает авторизацию. В этой версии нет рекламных и аналитических cookies. Выход завершает текущий сеанс, смена пароля — все существующие сеансы.',
   'Tasks and payments': 'Задачи и платежи',
-  'Task URLs and site keys are stored with task records. A connected processing provider receives task input. Successful tokens are cleared after 24 hours. A connected payment provider handles checkout; this application does not store card details.':
-    'Адреса сайтов и ключи сохраняются в записях задач. Подключённый провайдер обработки получает входные данные задачи. Токены результата удаляются через 24 часа. Оплатой занимается подключённый платёжный провайдер; приложение не хранит данные карт.',
-  'Service operator': 'Оператор сервиса',
-  'Contact the operator of your deployed instance for account data requests, retention details, and the applicable privacy contact. The operator must publish its identity, contact information, retention policy, and provider disclosures before accepting public customers.':
-    'По вопросам данных аккаунта и сроков хранения обращайтесь к оператору вашего экземпляра сервиса. Перед публичным запуском оператор должен опубликовать свои реквизиты, контакты, правила хранения данных и сведения о провайдерах.',
   'HUGINN / TERMS': 'HUGINN / УСЛОВИЯ',
   'Build with': 'Работайте',
   'intention.': 'осознанно.',
@@ -399,9 +394,6 @@ export const russian: Record<string, string> = {
   'Billing and availability': 'Оплата и доступность',
   'The displayed task rate applies when a task is accepted. Its price is reserved and charged only if the task succeeds. Failed tasks are refunded to your balance. Payment completion requires confirmation from the payment provider. Processing speed and success are not guaranteed.':
     'Указанный тариф применяется при принятии задачи. Стоимость резервируется и списывается только при успехе. При ошибке средства возвращаются на баланс. Пополнение требует подтверждения платёжного провайдера. Скорость и успех обработки не гарантируются.',
-  'Preview release': 'Предварительная версия',
-  'Processing and payments are unavailable until connected by the service operator. Before accepting public customers, the operator must publish its identity, contact details, refund and withdrawal terms, and any jurisdiction-specific terms.':
-    'Обработка и платежи недоступны до подключения оператором сервиса. Перед публичным запуском оператор должен опубликовать реквизиты, контакты, правила возврата и вывода средств, а также условия для своей юрисдикции.',
   '404 / OUT OF SIGHT': '404 / СТРАНИЦА НЕ НАЙДЕНА',
   'Nothing here.': 'Здесь ничего нет.',
   'Look a little further.': 'Вернитесь на главную.',

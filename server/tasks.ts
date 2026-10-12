@@ -1,7 +1,10 @@
 import { Prisma, type Task } from '@prisma/client';
+import { randomUUID } from 'node:crypto';
+import { setTimeout as delay } from 'node:timers/promises';
 import { db } from './db';
 import { config } from './config';
-import { solver, type SolverEngine } from './providers';
+import { solver, type SolverEngine, type SolverResult } from './providers';
+import { SolverFailure } from './solver-client';
 import { AppError } from './errors';
 import { money } from './security';
 
@@ -17,7 +20,14 @@ export function publicTask(task: Task, includeResult = false) {
     durationMs: task.durationMs,
     errorCode: task.errorCode,
     ...(includeResult && task.status === 'SUCCEEDED'
-      ? { result: { token: task.resultToken } }
+      ? {
+          result: {
+            token: task.resultToken,
+            serverAcceptance: task.serverAcceptance,
+            userAgent: task.resultUserAgent,
+            respKey: task.resultRespKey,
+          },
+        }
       : {}),
   };
 }
@@ -46,7 +56,7 @@ export async function createTask(
     throw new AppError(
       503,
       'SOLVER_UNAVAILABLE',
-      'Task processing is not available yet. No balance was charged.',
+      'Task processing is temporarily unavailable. No balance was charged.',
     );
   try {
     return await db.$transaction(async (tx) => {
@@ -73,6 +83,13 @@ export async function createTask(
       return task;
     });
   } catch (error) {
+    // The competing request may have consumed the last available reservation.
+    if (idempotencyKey && error instanceof AppError && error.code === 'INSUFFICIENT_BALANCE') {
+      const existing = await db.task.findUnique({
+        where: { userId_idempotencyKey: { userId, idempotencyKey } },
+      });
+      if (existing) return createTask(userId, apiKeyId, input, idempotencyKey, engine);
+    }
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === 'P2002' &&
@@ -84,16 +101,27 @@ export async function createTask(
 }
 export async function settleTask(
   task: Task,
-  result: { token: string } | null,
+  result: SolverResult | null,
   errorCode = 'TASK_FAILED',
+  leaseId?: string,
 ) {
+  if (result && !result.token.trim()) throw new Error('Solver returned an empty token');
   await db.$transaction(async (tx) => {
     const completedAt = new Date();
     const changed = await tx.task.updateMany({
-      where: { id: task.id, status: { in: ['QUEUED', 'PROCESSING'] } },
+      where: {
+        id: task.id,
+        status: { in: ['QUEUED', 'PROCESSING'] },
+        ...(leaseId ? { leaseId } : {}),
+      },
       data: {
         status: result ? 'SUCCEEDED' : 'FAILED',
         resultToken: result?.token ?? null,
+        serverAcceptance: result?.serverAcceptance ?? null,
+        resultUserAgent: result?.userAgent ?? null,
+        resultRespKey: result?.respKey ?? null,
+        leaseId: null,
+        leaseUntil: null,
         errorCode: result ? null : errorCode,
         costMicro: result ? task.reservedMicro : 0n,
         completedAt,
@@ -119,45 +147,91 @@ export async function settleTask(
     });
   });
 }
-export async function workOne(engine: SolverEngine = solver) {
-  const expired = await db.task.findMany({
-    where: {
-      status: 'PROCESSING',
-      startedAt: { lt: new Date(Date.now() - (config.TASK_TIMEOUT_SECONDS + 30) * 1000) },
-    },
-    take: 20,
-  });
-  for (const task of expired) await settleTask(task, null, 'TASK_TIMEOUT');
+export async function workOne(engine: SolverEngine = solver, shutdown?: AbortSignal) {
+  if (!engine.available || shutdown?.aborted) return false;
+  const leaseId = randomUUID();
   const tasks = await db.$queryRaw<Task[]>`
-    UPDATE "Task" SET status = 'PROCESSING', "startedAt" = (NOW() AT TIME ZONE 'UTC')
-    WHERE id = (SELECT id FROM "Task" WHERE status = 'QUEUED' ORDER BY "createdAt" FOR UPDATE SKIP LOCKED LIMIT 1)
+    UPDATE "Task" SET status = 'PROCESSING',
+      "startedAt" = COALESCE("startedAt", NOW() AT TIME ZONE 'UTC'),
+      "leaseId" = ${leaseId}::uuid, "leaseUntil" = (NOW() AT TIME ZONE 'UTC') + INTERVAL '30 seconds'
+    WHERE id = (SELECT id FROM "Task" WHERE status = 'QUEUED'
+      OR (status = 'PROCESSING' AND ("leaseUntil" IS NULL OR "leaseUntil" < (NOW() AT TIME ZONE 'UTC')))
+      ORDER BY "createdAt" FOR UPDATE SKIP LOCKED LIMIT 1)
     RETURNING *`;
   const task = tasks[0];
   if (!task) return false;
+  const remaining = task.startedAt!.getTime() + config.TASK_TIMEOUT_SECONDS * 1000 - Date.now();
+  if (remaining <= 0) {
+    await settleTask(task, null, 'TASK_TIMEOUT', leaseId);
+    return true;
+  }
+  const leaseLost = new AbortController();
+  let renewing = false;
+  const heartbeat = setInterval(() => {
+    if (renewing) return;
+    renewing = true;
+    void db.task
+      .updateMany({
+        where: { id: task.id, leaseId, status: 'PROCESSING' },
+        data: { leaseUntil: new Date(Date.now() + 30000) },
+      })
+      .then((r) => {
+        if (!r.count) leaseLost.abort();
+      })
+      .catch(() => leaseLost.abort())
+      .finally(() => {
+        renewing = false;
+      });
+  }, 10000);
+  const deadline = AbortSignal.timeout(Math.ceil(remaining));
   try {
     const result = await engine.solve(
       { taskId: task.id, websiteURL: task.websiteURL, websiteKey: task.websiteKey },
-      AbortSignal.timeout(config.TASK_TIMEOUT_SECONDS * 1000),
+      AbortSignal.any([deadline, leaseLost.signal, ...(shutdown ? [shutdown] : [])]),
     );
-    await settleTask(task, result);
-  } catch {
-    await settleTask(task, null);
+    if (!shutdown?.aborted && !leaseLost.signal.aborted) {
+      await settleTask(task, deadline.aborted ? null : result, 'TASK_TIMEOUT', leaseId);
+    }
+  } catch (error) {
+    if (!shutdown?.aborted && !leaseLost.signal.aborted)
+      await settleTask(
+        task,
+        null,
+        deadline.aborted
+          ? 'TASK_TIMEOUT'
+          : error instanceof SolverFailure
+            ? error.code
+            : 'TASK_FAILED',
+        leaseId,
+      );
+  } finally {
+    clearInterval(heartbeat);
+    // Shutdown releases ownership; the next worker resumes the same solver ID.
+    await db.task.updateMany({
+      where: { id: task.id, leaseId, status: 'PROCESSING' },
+      data: { leaseId: null, leaseUntil: new Date() },
+    });
   }
   return true;
 }
 export function startWorker(onError: (error: unknown) => void) {
-  let running = false;
-  const tick = async () => {
-    if (running) return;
-    running = true;
-    try {
-      for (let i = 0; i < 10; i++) if (!(await workOne())) break;
-    } catch (error) {
-      onError(error);
-    } finally {
-      running = false;
+  const controller = new AbortController();
+  const slots = Array.from({ length: config.WORKER_CONCURRENCY }, async () => {
+    while (!controller.signal.aborted) {
+      try {
+        if (await workOne(solver, controller.signal)) continue;
+      } catch (error) {
+        onError(error);
+      }
+      try {
+        await delay(500, undefined, { signal: controller.signal });
+      } catch {
+        break;
+      }
     }
+  });
+  return async () => {
+    controller.abort();
+    await Promise.allSettled(slots);
   };
-  const timer = setInterval(() => void tick(), 1000);
-  return () => clearInterval(timer);
 }

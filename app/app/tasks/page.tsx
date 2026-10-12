@@ -84,15 +84,6 @@ export default function TasksPage() {
           <Text> New task </Text>
         </button>
       </header>
-      {!config.solverAvailable && (
-        <div className="notice">
-          <Text>
-            {' '}
-            Task processing is not enabled yet. You can prepare your API integration; no tasks will
-            be charged until processing is available.{' '}
-          </Text>
-        </div>
-      )}
       <div className="table-toolbar">
         <label>
           <span className="sr-only">
@@ -211,17 +202,12 @@ export default function TasksPage() {
                   refunded.{' '}
                 </Text>
               </p>
-              {!config.solverAvailable && (
-                <div className="notice">
-                  <Text> Processing is currently unavailable. No balance will be charged. </Text>
-                </div>
-              )}
               {error && (
                 <p className="form-error" role="alert">
                   <Text>{error}</Text>
                 </p>
               )}
-              <button className="button button-primary" disabled={busy || !config.solverAvailable}>
+              <button className="button button-primary" disabled={busy}>
                 <Text>{busy ? <LoaderCircle className="spin" size={16} /> : 'Submit task'}</Text>
               </button>
             </form>

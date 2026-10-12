@@ -166,7 +166,7 @@ export default function SettingsPage() {
               type="password"
               autoComplete="new-password"
               required
-              minLength={12}
+              minLength={8}
               maxLength={128}
             />
           </label>
@@ -177,12 +177,12 @@ export default function SettingsPage() {
               type="password"
               autoComplete="new-password"
               required
-              minLength={12}
+              minLength={8}
               maxLength={128}
             />
           </label>
           <p className="field-hint">
-            <Text>At least 12 characters. Use a unique password.</Text>
+            <Text>At least 8 characters. Use a unique password.</Text>
           </p>
           <button className="button button-outline" disabled={!!busy}>
             <Text>

@@ -16,7 +16,12 @@ export type Task = {
   completedAt: string | null;
   durationMs: number | null;
   errorCode: string | null;
-  result?: { token: string | null };
+  result?: {
+    token: string | null;
+    serverAcceptance: string | null;
+    userAgent: string | null;
+    respKey: string | null;
+  };
 };
 export type PublicConfig = {
   pricePerTask: string;

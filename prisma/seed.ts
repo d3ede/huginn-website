@@ -4,7 +4,7 @@ import { hashPassword } from '../server/security';
 if (config.NODE_ENV === 'production' || config.DEMO_MODE !== 'true')
   throw new Error('Seed requires non-production NODE_ENV and explicit DEMO_MODE=true.');
 const password = process.env.DEMO_PASSWORD ?? '';
-if (password.length < 12) throw new Error('Set DEMO_PASSWORD locally to at least 12 characters.');
+if (password.length < 8) throw new Error('Set DEMO_PASSWORD locally to at least 8 characters.');
 const email = 'demo@huginn.local';
 try {
   if (await db.user.findUnique({ where: { email } })) {

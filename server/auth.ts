@@ -1,14 +1,13 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
 import { db } from './db';
-import { config } from './config';
+import { config, secureCookies } from './config';
 import { hashToken, randomToken, money } from './security';
 import { AppError } from './errors';
 import type { User } from '@prisma/client';
-export const cookieName =
-  config.NODE_ENV === 'production' ? '__Host-huginn_session' : 'huginn_session';
+export const cookieName = secureCookies ? '__Host-huginn_session' : 'huginn_session';
 export const cookieOptions = {
   httpOnly: true,
-  secure: config.NODE_ENV === 'production',
+  secure: secureCookies,
   sameSite: 'lax' as const,
   path: '/',
 };

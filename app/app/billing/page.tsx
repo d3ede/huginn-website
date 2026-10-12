@@ -79,11 +79,7 @@ export default function BillingPage() {
             <Text>Add to your balance</Text>
           </h2>
           <p>
-            <Text>
-              {config.paymentsAvailable
-                ? 'You’ll continue to a secure provider checkout.'
-                : 'Payments are not connected yet. Your balance will not change.'}
-            </Text>
+            <Text>You’ll continue to a secure checkout.</Text>
           </p>
           <label>
             <Text> Amount in USD </Text>
@@ -100,7 +96,7 @@ export default function BillingPage() {
               />
             </div>
           </label>
-          <button className="button button-primary" disabled={busy || !config.paymentsAvailable}>
+          <button className="button button-primary" disabled={busy}>
             {busy ? (
               <LoaderCircle className="spin" size={16} />
             ) : (
