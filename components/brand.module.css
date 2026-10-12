@@ -1,0 +1,33 @@
+.logo {
+  width: 176px;
+  flex-shrink: 0;
+}
+
+/* Frame the original artwork without its transparent outer padding. */
+.artwork {
+  display: block;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1700 / 580;
+  overflow: hidden;
+}
+
+.image {
+  position: absolute;
+  width: 117.706%;
+  max-width: none;
+  height: auto;
+  left: -10%;
+  top: -17.931%;
+}
+
+:global(.footer) .logo,
+:global(.sidebar-brand-row) .logo {
+  width: 152px;
+}
+
+@media (max-width: 560px) {
+  .logo {
+    width: 120px;
+  }
+}
