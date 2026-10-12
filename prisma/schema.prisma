@@ -67,6 +67,7 @@ model Task {
   type String @default("hcaptcha")
   websiteURL String
   websiteKey String
+  solverTask Json?
   status TaskStatus @default(QUEUED)
   reservedMicro BigInt
   costMicro BigInt @default(0)

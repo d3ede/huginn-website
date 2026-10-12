@@ -56,22 +56,28 @@ export function createMimicSolver({
     available: true,
     async solve(input, signal) {
       const path = `/internal/tasks/${encodeURIComponent(input.taskId)}`;
-      const ack = z.object({ errorId: z.literal(0), taskId: z.string() }).parse(
-        await request(
-          path,
-          {
-            method: 'PUT',
-            body: JSON.stringify({
-              task: {
-                type: 'HCaptchaTaskProxyless',
-                websiteURL: input.websiteURL,
-                websiteKey: input.websiteKey,
-              },
-            }),
-          },
-          signal,
-        ),
-      );
+      const ack = z
+        .union([
+          z.object({ errorId: z.literal(0), taskId: z.string() }),
+          z.object({ errorId: z.literal(1), errorCode: z.string() }),
+        ])
+        .parse(
+          await request(
+            path,
+            {
+              method: 'PUT',
+              body: JSON.stringify({
+                task: input.task ?? {
+                  type: 'HCaptchaTaskProxyless',
+                  websiteURL: input.websiteURL,
+                  websiteKey: input.websiteKey,
+                },
+              }),
+            },
+            signal,
+          ),
+        );
+      if (ack.errorId === 1) throw new SolverFailure(ack.errorCode);
       if (ack.taskId !== input.taskId.replaceAll('-', ''))
         throw new SolverFailure('SOLVER_ID_MISMATCH');
       for (;;) {

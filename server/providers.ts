@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { config } from './config';
 import { AppError } from './errors';
 import { createMimicSolver } from './solver-client';
+import type { SolverTask } from './solver-protocol';
 
 export type SolverResult = {
   token: string;
@@ -13,7 +14,7 @@ export type SolverResult = {
 export interface SolverEngine {
   available: boolean;
   solve(
-    input: { taskId: string; websiteURL: string; websiteKey: string },
+    input: { taskId: string; websiteURL: string; websiteKey: string; task?: SolverTask },
     signal: AbortSignal,
   ): Promise<SolverResult>;
 }

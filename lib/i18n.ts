@@ -290,6 +290,17 @@ export const russian: Record<string, string> = {
   'Your keys.': 'Ваши ключи.',
   'Your control.': 'Ваш контроль.',
   'A separate key for every integration.': 'Отдельный ключ для каждой интеграции.',
+  'Keys never expire. Revoke them here whenever needed.':
+    'Ключи бессрочные. При необходимости отзовите их здесь.',
+  'Set HUGINN_BASE_URL to your site origin followed by /api and HUGINN_API_KEY to your key.':
+    'Задайте HUGINN_BASE_URL как адрес сайта с /api и HUGINN_API_KEY как ваш ключ.',
+  'Keys never expire. Revoke them in API Keys whenever needed. Revoked keys cannot create tasks, retrieve results, or check balance. Any active key on your account can retrieve your tasks.':
+    'Ключи бессрочные. При необходимости отзовите их в разделе «API-ключи». Отозванные ключи не могут создавать задачи, получать результаты или проверять баланс. Любой активный ключ аккаунта может получать ваши задачи.',
+  'The response contains your available prepaid balance in USD.':
+    'Ответ содержит доступный баланс в USD.',
+  'The task price is reserved when accepted, charged on success, and refunded automatically on failure.':
+    'Стоимость резервируется при принятии задачи, списывается при успехе и автоматически возвращается при ошибке.',
+  'Insufficient available balance': 'Недостаточно средств на балансе',
   'Create key': 'Создать ключ',
   'Save your new key.': 'Сохраните новый ключ.',
   'This is the only time the full key is shown. Keep it out of source control and browser code.':

@@ -42,12 +42,22 @@ export async function apiUser(request: FastifyRequest) {
   const authorization = request.headers.authorization;
   if (!authorization?.startsWith('Bearer hg_live_'))
     throw new AppError(401, 'INVALID_API_KEY', 'A valid Bearer API key is required.');
+  return authenticateApiKey(authorization.slice(7));
+}
+export async function authenticateApiKey(token: unknown) {
+  if (typeof token !== 'string' || !token.startsWith('hg_live_') || token.length > 256)
+    throw new AppError(401, 'INVALID_API_KEY', 'The API key is invalid or revoked.');
   const key = await db.apiKey.findUnique({
-    where: { tokenHash: hashToken(authorization.slice(7)) },
+    where: { tokenHash: hashToken(token) },
     include: { user: true },
   });
   if (!key || key.revokedAt)
     throw new AppError(401, 'INVALID_API_KEY', 'The API key is invalid or revoked.');
-  await db.apiKey.update({ where: { id: key.id }, data: { lastUsedAt: new Date() } });
+  const changed = await db.apiKey.updateMany({
+    where: { id: key.id, revokedAt: null },
+    data: { lastUsedAt: new Date() },
+  });
+  if (!changed.count)
+    throw new AppError(401, 'INVALID_API_KEY', 'The API key is invalid or revoked.');
   return { user: key.user, apiKeyId: key.id };
 }

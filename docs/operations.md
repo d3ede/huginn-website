@@ -21,7 +21,7 @@ remain available for development.
 ```mermaid
 flowchart LR
   Browser[Account portal] --> Gateway
-  Customer[Current portal API prototype] --> Gateway
+  Customer[2Captcha-compatible customer API] --> Gateway
   Gateway --> Web[Next.js]
   Gateway --> API[Fastify]
   API --> DB[(PostgreSQL: accounts, keys, wallet, tasks)]
@@ -36,10 +36,10 @@ flowchart LR
 
 Only gateway publishes a host port, normally `127.0.0.1:3000`. Platform, ingress,
 and solver networks isolate traffic. PostgreSQL, Redis, Python API, and CDP are
-private. Browser account requests use relative `/api` URLs. The advertised solver
-contract is the Python service's 2Captcha-compatible JSON protocol below. The
-current gateway only forwards account/prototype routes to Fastify; routing the
-solver protocol through customer authentication is a future integration.
+private. Browser account requests use relative `/api` URLs. Customer solver requests
+use `/api/createTask`, `/api/getTaskResult`, and `/api/getBalance`. Fastify validates
+account keys, enforces task ownership, and reserves wallet funds before its worker
+dispatches to the private Python service. Python never receives a customer key.
 
 ## Configuration and Cloudflare
 
@@ -78,14 +78,16 @@ Gateway addresses are runtime settings. Direct Next.js servers use
 `API_INTERNAL_URL` in a build-time rewrite. Docker sets `API_PROXY_ENABLED=false`
 because gateway owns routing.
 
-## Solver JSON contract and future customer authorization
+## Solver JSON contract and customer authorization
 
-The published solver contract follows the implemented Python JSON service:
+Set `HUGINN_BASE_URL` to the site's HTTPS origin followed by `/api` (locally,
+`http://localhost:3000/api`). Paths below are relative to this base. Fastify exposes:
 
 | Method | Path             | Request                                                                                                                              | Response                                                              |
 | ------ | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------- |
 | POST   | `/createTask`    | `{ "clientKey": "KEY", "task": { "type": "HCaptchaTaskProxyless", "websiteURL": "https://example.com", "websiteKey": "SITE_KEY" } }` | `{ "errorId": 0, "taskId": "ID" }`                                    |
 | POST   | `/getTaskResult` | `{ "clientKey": "KEY", "taskId": "ID" }`                                                                                             | `{ "errorId": 0, "status": "processing" }` or `ready` with `solution` |
+| POST   | `/getBalance`    | `{ "clientKey": "KEY" }`                                                                                                             | `{ "errorId": 0, "balance": 10.5 }` (available USD)                   |
 
 Supported types: `HCaptchaTaskProxyless` and `HCaptchaTask`. The latter requires
 proxyType/proxyAddress/proxyPort, plus paired proxyLogin/proxyPassword if needed.
@@ -96,19 +98,25 @@ in token, userAgent, serverAcceptance, and optional respKey. Protocol errors use
 errorId: 1, errorCode, errorDescription, including under HTTP 200. Each createTask
 call creates a new task; no Idempotency-Key guarantee applies to this protocol.
 
-Customer authorization is not implemented for these JSON endpoints yet.
-The current Python parser accepts but ignores clientKey. SOLVER_SECRET authenticates
-private service-to-service transport, not a customer's account or task ownership.
-Keep Python ingress private until customer key validation, ownership, wallet
-reservations/refunds, and gateway routing are attached to this protocol. The final
-customer authorization integration is separate future work; this update documents
-the intended 2Captcha wire format without implementing it.
+Create keys through the signed-in account's `/api/keys` endpoint or workspace.
+They have no expiry and survive session expiry, logout, and password changes.
+Manual `DELETE /api/keys/:id` revokes a key. Every solver request validates its
+hash and revocation state. The reservation transaction locks/rechecks the key so
+revocation cannot race a subsequent charge. Revocation prevents new requests;
+already accepted tasks finish with normal settlement. Another active key on the
+same account can retrieve those tasks. Foreign-account IDs and expired results
+return the same `ERROR_TASK_NOT_FOUND` response.
 
-Current Fastify `/v1/balance`, `/v1/tasks`, `/v1/tasks/:id` remain a different portal
-prototype with Bearer API keys, HTTP 202, account-scoped Idempotency-Key, and
-queued/processing/succeeded/failed statuses. They are not the advertised solver
-contract and are not examples for customer solver integrations. Their existing
-wallet accounting does not automatically apply to Python createTask calls.
+Missing/invalid/revoked keys return `ERROR_KEY_DOES_NOT_EXIST`; inadequate funds
+return `ERROR_ZERO_BALANCE`. These protocol failures use HTTP 200 with errorId: 1.
+Malformed bodies also use the protocol error envelope. Technical failures may use
+5xx; throttling uses HTTP 429 with `ERROR_NO_SLOT_AVAILABLE` and Retry-After.
+Check both HTTP status and errorId. No rejected request creates a job or reserves funds.
+
+Legacy Fastify `/v1/balance`, `/v1/tasks`, `/v1/tasks/:id` remain available with
+Bearer API keys, HTTP 202, account-scoped Idempotency-Key, and
+queued/processing/succeeded/failed statuses. Both APIs use the same accounts,
+keys, tasks, and wallet. Customer examples use the 2Captcha-compatible methods.
 The public docs intentionally omit deployment and integration status.
 
 Account endpoints under `/api` use sessions: `/auth/register`, `/auth/login`,
@@ -117,7 +125,7 @@ Account endpoints under `/api` use sessions: `/auth/register`, `/auth/login`,
 start at zero. Passwords accept 8–128 characters and use salted scrypt. Sessions
 last seven days by default. Password changes revoke all sessions and establish a
 new current one. API secrets appear once; only SHA-256 hashes are stored, with 20
-active keys maximum per account. Lists use 20 entries per page. Statistics use UTC
+active keys maximum per account; keys never expire automatically. Lists use 20 entries per page. Statistics use UTC
 days in 7/30/90-day windows; display timezone changes only table timestamps.
 
 ## Wallet and task recovery
@@ -126,6 +134,11 @@ Amounts use integer microdollars (`1 USD = 1000000`). Creation reserves the
 configured task price atomically with the task and ledger. Token delivery settles
 the reservation; failure/timeout refunds once. Customer charges are per task;
 the private model cost/token ledger is separate from the wallet.
+
+The complete validated task, including proxy/cookie/Enterprise options, is stored
+privately with the queued task and survives worker restarts. Public task listings
+never include that payload. Settlement removes it from PostgreSQL. Private Redis
+and solver evidence have separate retention and must be access restricted.
 
 Workers atomically claim queued/expired tasks with SKIP LOCKED. A 30-second lease
 renews every 10 seconds. Shutdown releases it without refund; another worker
@@ -149,12 +162,12 @@ Compose uses `SOLVER_PROVIDER=mimic`, an internal HTTP(S) `SOLVER_URL`, and
 - Transient/lost acknowledgments retry the same ID; terminal errors or the
   remaining processing deadline cause failure/refund.
 
-Python `/createTask` and `/getTaskResult` implement the advertised JSON contract
-but are currently private; `clientKey`
-is not customer authentication. Do not publish that port.
+Python `/createTask` and `/getTaskResult` are private transport endpoints. Their
+parser is not an account authenticator: Fastify owns customer authentication and
+wallet settlement. `SOLVER_SECRET` protects Python ingress. Do not publish that port.
 
 For a separate synchronous adapter, `SOLVER_PROVIDER=http` sends a Bearer POST
-to `SOLVER_URL` with `{ taskId, websiteURL, websiteKey }` and expects
+to `SOLVER_URL` with `{ taskId, websiteURL, websiteKey, task? }` and expects
 `{ "token": "..." }`. The provider must deduplicate taskId for crash recovery.
 Production configuration requires HTTPS for this generic adapter.
 Standalone defaults disable solver integration.
@@ -275,7 +288,8 @@ npm run test:integration
 Integration tests require DATABASE_URL and schema privileges; TEST_DATABASE_URL
 can select another server. Runner migrates/removes a unique temporary schema
 and refuses NODE_ENV=production. Fixtures cover 7-character rejection/8-character
-acceptance, account isolation, keys, last-balance idempotency, renewable leases,
+acceptance, account isolation, permanent keys, authenticated 2Captcha methods,
+revocation without charges, full task relay, last-balance idempotency, renewable leases,
 timeout/refund fencing, stats, and signed payment replay. They do not prove live
 solving or payments. The parent README explains optional real Redis/ARQ fixture
 tests using TEST_SOLVER_URL and TEST_SOLVER_SECRET.

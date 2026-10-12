@@ -38,21 +38,19 @@ then use `npm start` to run web, API, and worker.
 
 ## API and billing
 
-The solver contract is 2Captcha-compatible JSON: `POST /createTask` and
-`POST /getTaskResult`, with `clientKey`, nested `task`, `errorId`, `taskId`,
+The solver contract is 2Captcha-compatible JSON: `POST /api/createTask`,
+`POST /api/getTaskResult`, and `POST /api/getBalance`, with `clientKey`, nested `task`, `errorId`, `taskId`,
 `processing` / `ready`, and `solution.gRecaptchaResponse`. See `/docs` for the
 contract and matching Python/JavaScript examples, including hCaptcha proxy and
 Enterprise fields.
 
-Customer authorization for that solver contract is future work. The Python
-parser currently accepts `clientKey` without validating it; the private transport
-secret is separate. Existing Fastify `/v1/*` routes are a portal prototype,
-not the documented solver protocol. No new authorization or routing is introduced
-by this documentation update; see the operations guide for the current wiring.
+Create API keys in the account workspace. Keys have no expiry and stay valid until
+manually revoked. Their secrets appear once and are stored only as hashes.
+Every solver method validates `clientKey`; tasks and billing belong to its account.
+The private solver uses a separate service-to-service secret.
 
-The existing portal wallet uses integer microdollars: reserve on creation, settle
-on token delivery, refund on failure. Connecting this accounting to the
-2Captcha-compatible customer endpoints is future work. New accounts start at zero.
+The prepaid wallet uses integer microdollars: reserve on creation, settle
+on token delivery, refund on failure. New accounts start at zero.
 Parent Compose connects the private
 Mimic adapter; standalone defaults disable integrations. Crypto checkout still
 requires a real payment adapter. Only a signed payment confirmation credits funds.

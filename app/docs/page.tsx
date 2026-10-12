@@ -23,6 +23,7 @@ export default function Docs() {
             ['#requests', 'Request format'],
             ['#tasks', 'Create a task'],
             ['#result', 'Retrieve a task'],
+            ['#balance', 'Check balance'],
             ['#example', 'Examples'],
             ['#errors', 'Errors'],
           ].map(([href, label]) => (
@@ -71,7 +72,8 @@ export default function Docs() {
               </li>
               <li>
                 <Text>
-                  Set HUGINN_BASE_URL to your API base URL and HUGINN_API_KEY to your key.
+                  Set HUGINN_BASE_URL to your site origin followed by /api and HUGINN_API_KEY to
+                  your key.
                 </Text>
               </li>
               <li>
@@ -95,6 +97,13 @@ export default function Docs() {
               <Text>
                 The JSON request includes clientKey. Keep your API key in server environment
                 variables and outside browser code. Use HTTPS for public requests.
+              </Text>
+            </p>
+            <p>
+              <Text>
+                Keys never expire. Revoke them in API Keys whenever needed. Revoked keys cannot
+                create tasks, retrieve results, or check balance. Any active key on your account can
+                retrieve your tasks.
               </Text>
             </p>
             <p>
@@ -242,6 +251,30 @@ export default function Docs() {
               </Text>
             </p>
           </section>
+          <section id="balance">
+            <h2>
+              <Text>Check balance</Text>
+            </h2>
+            <div className="endpoint">
+              <span>POST</span>
+              <code>/getBalance</code>
+            </div>
+            <pre>
+              <code>{'{ "clientKey": "YOUR_API_KEY" }'}</code>
+            </pre>
+            <p>
+              <Text>The response contains your available prepaid balance in USD.</Text>
+            </p>
+            <pre>
+              <code>{'{ "errorId": 0, "balance": 10.5 }'}</code>
+            </pre>
+            <p>
+              <Text>
+                The task price is reserved when accepted, charged on success, and refunded
+                automatically on failure.
+              </Text>
+            </p>
+          </section>
           <section id="example">
             <h2>
               <Text>Working examples</Text>
@@ -286,6 +319,8 @@ export default function Docs() {
                 </thead>
                 <tbody>
                   {[
+                    ['ERROR_KEY_DOES_NOT_EXIST', 'Missing, invalid, or revoked API key'],
+                    ['ERROR_ZERO_BALANCE', 'Insufficient available balance'],
                     ['ERROR_BAD_PARAMETERS', 'Invalid request fields'],
                     ['ERROR_TASK_NOT_SUPPORTED', 'Unsupported task type'],
                     ['ERROR_PROXY_FORMAT', 'Invalid proxy configuration'],

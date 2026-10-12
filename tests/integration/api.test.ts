@@ -61,32 +61,48 @@ test(
           tokenHash: hashToken(apiKey),
         },
       });
-      const headers = { authorization: `Bearer ${apiKey}`, 'idempotency-key': 'cross-service' };
       const created = await isolated.inject({
         method: 'POST',
-        url: '/v1/tasks',
-        headers,
-        payload: { type: 'hcaptcha', websiteURL: 'https://example.test', websiteKey: 'fixture' },
+        url: '/createTask',
+        payload: {
+          clientKey: apiKey,
+          task: {
+            type: 'HCaptchaTaskProxyless',
+            websiteURL: 'https://example.test',
+            websiteKey: 'fixture',
+            userAgent: 'cross-service-transmitted-agent',
+            isInvisible: true,
+            cookies: 'fixture=value',
+            enterprisePayload: { rqdata: 'fixture-rqdata' },
+            languagePool: 'en-US',
+          },
+        },
       });
-      assert.equal(created.statusCode, 202);
-      const taskId = created.json().id;
+      assert.equal(created.statusCode, 200);
+      assert.equal(created.json().errorId, 0);
+      const taskId = created.json().taskId;
+      const dbId = taskId.replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/, '$1-$2-$3-$4-$5');
       await workOne(realAdapter);
-      const completed = await isolated.inject({ url: `/v1/tasks/${taskId}`, headers });
-      assert.equal(completed.json().status, 'succeeded');
-      assert.equal(completed.json().result.token, 'explicit-cross-service-test-fixture');
-      assert.equal(completed.json().result.serverAcceptance, 'not_observed');
+      const completed = await isolated.inject({
+        method: 'POST',
+        url: '/getTaskResult',
+        payload: { clientKey: apiKey, taskId },
+      });
+      assert.equal(completed.json().status, 'ready');
+      assert.equal(
+        completed.json().solution.gRecaptchaResponse,
+        'explicit-cross-service-test-fixture',
+      );
+      assert.equal(completed.json().solution.userAgent, 'cross-service-transmitted-agent');
+      assert.equal(completed.json().solution.serverAcceptance, 'not_observed');
       assert.equal(
         (await db.user.findUniqueOrThrow({ where: { id: owner.id } })).balanceMicro,
         1_000_000n - BigInt(config.TASK_PRICE_MICRO_USD),
       );
-      const repeated = await isolated.inject({
-        method: 'POST',
-        url: '/v1/tasks',
-        headers,
-        payload: { type: 'hcaptcha', websiteURL: 'https://example.test', websiteKey: 'fixture' },
-      });
-      assert.equal(repeated.json().id, taskId);
-      assert.equal(await db.ledgerEntry.count({ where: { taskId, kind: 'TASK_RESERVE' } }), 1);
+      assert.equal(
+        await db.ledgerEntry.count({ where: { taskId: dbId, kind: 'TASK_RESERVE' } }),
+        1,
+      );
     } finally {
       await isolated.close();
     }
@@ -94,6 +110,211 @@ test(
 );
 before(async () => {
   await db.$connect();
+});
+
+test('permanent account keys authorize the 2Captcha protocol, wallet and task ownership', async () => {
+  const api = await buildApp({ engine, payment, logger: false });
+  try {
+    const registered = await api.inject({
+      method: 'POST',
+      url: '/auth/register',
+      headers: { origin },
+      payload: { email: `${randomUUID()}@protocol.test`, password: 'testpass', name: 'Protocol' },
+    });
+    const owner = registered.json().user.id;
+    ids.push(owner);
+    const session = String(registered.headers['set-cookie']).split(';')[0];
+    async function issue(name: string) {
+      const response = await api.inject({
+        method: 'POST',
+        url: '/keys',
+        headers: { cookie: session, origin },
+        payload: { name },
+      });
+      assert.equal(response.statusCode, 201);
+      return response.json() as { id: string; key: string };
+    }
+    const first = await issue('Solver');
+    const second = await issue('Another integration');
+    await db.apiKey.update({
+      where: { id: first.id },
+      data: { createdAt: new Date('2010-01-01') },
+    });
+    const call = (url: string, payload: Record<string, unknown>) =>
+      api.inject({ method: 'POST', url, payload });
+    const task = {
+      type: 'HCaptchaTask',
+      websiteURL: 'https://example.test',
+      websiteKey: 'fixture',
+      isInvisible: true,
+      userAgent: 'fixture-agent',
+      cookies: 'a=1; b=2',
+      languagePool: 'en-US',
+      enterprisePayload: { rqdata: 'fixture-rqdata' },
+      proxyType: 'socks5',
+      proxyAddress: '127.0.0.1',
+      proxyPort: 9050,
+      proxyLogin: 'fixture',
+      proxyPassword: 'private-fixture',
+    };
+    for (const clientKey of [undefined, 'hg_live_unknown']) {
+      for (const url of ['/createTask', '/getTaskResult', '/getBalance']) {
+        const response = await call(url, { clientKey, task, taskId: randomUUID() });
+        assert.equal(response.statusCode, 200);
+        assert.equal(response.json().errorCode, 'ERROR_KEY_DOES_NOT_EXIST');
+      }
+    }
+    assert.equal((await call('/getBalance', { clientKey: first.key })).json().balance, 0);
+    assert.equal(
+      (await call('/createTask', { clientKey: first.key, task })).json().errorCode,
+      'ERROR_ZERO_BALANCE',
+    );
+    assert.equal(await db.task.count({ where: { userId: owner } }), 0);
+    await db.user.update({
+      where: { id: owner },
+      data: { balanceMicro: BigInt(config.TASK_PRICE_MICRO_USD) * 3n },
+    });
+    const startingBalance = (Number(config.TASK_PRICE_MICRO_USD) * 3) / 1_000_000;
+    for (const invalid of [
+      { ...task, type: 'UnknownTask' },
+      { ...task, proxyPort: 0 },
+      { ...task, cookies: 'invalid' },
+      { ...task, unknownField: 'invalid' },
+    ]) {
+      const rejected = await call('/createTask', { clientKey: first.key, task: invalid });
+      assert.equal(rejected.statusCode, 200);
+      assert.equal(rejected.json().errorId, 1);
+    }
+    const malformed = await api.inject({
+      method: 'POST',
+      url: '/createTask',
+      headers: { 'content-type': 'application/json' },
+      payload: '{invalid',
+    });
+    assert.equal(malformed.json().errorCode, 'ERROR_BAD_PARAMETERS');
+    assert.equal(
+      (await call('/getBalance', { clientKey: first.key })).json().balance,
+      startingBalance,
+    );
+    assert.equal(await db.ledgerEntry.count({ where: { userId: owner } }), 0);
+    const accepted = await call('/createTask', { clientKey: first.key, task });
+    assert.equal(accepted.statusCode, 200);
+    assert.equal(accepted.json().errorId, 0);
+    const taskId = accepted.json().taskId as string;
+    assert.match(taskId, /^[a-f0-9]{32}$/);
+    const stored = await db.task.findFirstOrThrow({ where: { userId: owner } });
+    assert.equal(stored.apiKeyId, first.id);
+    assert.deepEqual(stored.solverTask, task);
+    assert.equal(
+      (await call('/getTaskResult', { clientKey: second.key, taskId })).json().status,
+      'processing',
+    );
+    const outsider = await db.user.create({
+      data: {
+        email: `${randomUUID()}@outsider.test`,
+        name: 'Other',
+        passwordHash: 'unused-fixture',
+      },
+    });
+    ids.push(outsider.id);
+    const outsiderKey = `hg_live_${randomUUID()}`;
+    await db.apiKey.create({
+      data: {
+        userId: outsider.id,
+        name: 'Other',
+        prefix: 'hg_live_fixture',
+        tokenHash: hashToken(outsiderKey),
+      },
+    });
+    assert.equal(
+      (await call('/getTaskResult', { clientKey: outsiderKey, taskId })).json().errorCode,
+      'ERROR_TASK_NOT_FOUND',
+    );
+    // All previous test tasks have settled; the worker claims this durable payload.
+    let dispatched = false;
+    await workOne({
+      available: true,
+      async solve(input) {
+        assert.equal(input.taskId, stored.id);
+        assert.deepEqual(input.task, task);
+        dispatched = true;
+        return {
+          token: 'protocol-fixture',
+          userAgent: 'fixture-agent',
+          serverAcceptance: 'not_observed',
+        };
+      },
+    });
+    assert.equal(dispatched, true);
+    const ready = (await call('/getTaskResult', { clientKey: second.key, taskId })).json();
+    assert.equal(ready.status, 'ready');
+    assert.equal(ready.solution.gRecaptchaResponse, 'protocol-fixture');
+    assert.equal(ready.solution.token, 'protocol-fixture');
+    assert.equal(ready.cost, (config.TASK_PRICE_MICRO_USD / 1_000_000).toFixed(6));
+    assert.equal((await db.task.findUniqueOrThrow({ where: { id: stored.id } })).solverTask, null);
+    const publicRecord = (
+      await api.inject({ url: `/tasks/${stored.id}`, headers: { cookie: session } })
+    ).json();
+    assert.equal(publicRecord.solverTask, undefined);
+    assert.equal(publicRecord.proxyPassword, undefined);
+    const failure = await call('/createTask', { clientKey: first.key, task });
+    const failed = await db.task.findFirstOrThrow({ where: { userId: owner, status: 'QUEUED' } });
+    await Promise.all([
+      settleTask(failed, null, 'ERROR_CAPTCHA_UNSOLVABLE'),
+      settleTask(failed, null),
+    ]);
+    assert.equal(
+      (await call('/getTaskResult', { clientKey: first.key, taskId: failure.json().taskId })).json()
+        .errorCode,
+      'ERROR_CAPTCHA_UNSOLVABLE',
+    );
+    assert.equal(
+      await db.ledgerEntry.count({ where: { taskId: failed.id, kind: 'TASK_REFUND' } }),
+      1,
+    );
+    const beforeRevoke = (await db.user.findUniqueOrThrow({ where: { id: owner } })).balanceMicro;
+    await api.inject({
+      method: 'DELETE',
+      url: `/keys/${first.id}`,
+      headers: { cookie: session, origin },
+    });
+    for (const url of ['/createTask', '/getTaskResult', '/getBalance'])
+      assert.equal(
+        (await call(url, { clientKey: first.key, task, taskId })).json().errorCode,
+        'ERROR_KEY_DOES_NOT_EXIST',
+      );
+    // Recheck within the reservation transaction, even after earlier authorization.
+    await assert.rejects(
+      createTask(
+        owner,
+        first.id,
+        { websiteURL: task.websiteURL, websiteKey: task.websiteKey },
+        undefined,
+        engine,
+      ),
+      /invalid or revoked/,
+    );
+    assert.equal(
+      (await db.user.findUniqueOrThrow({ where: { id: owner } })).balanceMicro,
+      beforeRevoke,
+    );
+    await api.inject({ method: 'POST', url: '/auth/logout', headers: { cookie: session, origin } });
+    assert.equal((await call('/getBalance', { clientKey: second.key })).json().errorId, 0);
+    assert.equal(
+      (await call('/getTaskResult', { clientKey: second.key, taskId })).json().status,
+      'ready',
+    );
+    await db.task.update({
+      where: { id: stored.id },
+      data: { completedAt: new Date(Date.now() - 86400001) },
+    });
+    assert.equal(
+      (await call('/getTaskResult', { clientKey: second.key, taskId })).json().errorCode,
+      'ERROR_TASK_NOT_FOUND',
+    );
+  } finally {
+    await api.close();
+  }
 });
 
 test('concurrent retries with only one task worth of balance all return the same reservation', async () => {

@@ -15,7 +15,23 @@ import {
   money,
   verifySignature,
 } from './security';
-import { sessionUser, apiUser, newSession, publicUser, cookieName, cookieOptions } from './auth';
+import {
+  sessionUser,
+  apiUser,
+  authenticateApiKey,
+  newSession,
+  publicUser,
+  cookieName,
+  cookieOptions,
+} from './auth';
+import {
+  keyRequest,
+  resultRequest,
+  parseCreateRequest,
+  protocolPath,
+  protocolError,
+  taskUUID,
+} from './solver-protocol';
 import { createTask, publicTask } from './tasks';
 import { payments, solver, type PaymentProvider, type SolverEngine } from './providers';
 
@@ -86,6 +102,7 @@ export async function buildApp(
     if (
       !['GET', 'HEAD', 'OPTIONS'].includes(request.method) &&
       !request.url.startsWith('/v1/') &&
+      !protocolPath(request.url) &&
       request.url !== '/webhooks/payment'
     ) {
       if (request.headers.origin !== new URL(config.APP_ORIGIN).origin)
@@ -96,6 +113,22 @@ export async function buildApp(
     reply.header('Cache-Control', 'no-store');
   });
   app.setErrorHandler((error, request, reply) => {
+    if (protocolPath(request.url)) {
+      const status =
+        error instanceof ZodError
+          ? 400
+          : error instanceof AppError
+            ? error.statusCode
+            : error instanceof Error &&
+                'statusCode' in error &&
+                typeof error.statusCode === 'number'
+              ? error.statusCode
+              : 500;
+      if (status >= 500) request.log.error({ requestId: request.id }, 'Solver API request failed');
+      return reply
+        .code(status === 429 || status >= 500 ? status : 200)
+        .send(protocolError(error, status));
+    }
     if (error instanceof ZodError)
       return reply.code(400).send({
         error: {
@@ -464,6 +497,61 @@ export async function buildApp(
     balance: money((await apiUser(request)).user.balanceMicro),
     currency: 'USD',
   }));
+  app.post('/createTask', async (request) => {
+    const { user, apiKeyId } = await authenticateApiKey(keyRequest.parse(request.body).clientKey);
+    const { task: input } = parseCreateRequest(request.body);
+    const task = await createTask(
+      user.id,
+      apiKeyId,
+      {
+        websiteURL: input.websiteURL,
+        websiteKey: input.websiteKey,
+        solverTask: input,
+      },
+      undefined,
+      engine,
+    );
+    return { errorId: 0, taskId: task.id.replaceAll('-', '') };
+  });
+  app.post('/getTaskResult', async (request) => {
+    const { user } = await authenticateApiKey(keyRequest.parse(request.body).clientKey);
+    const { taskId } = resultRequest.parse(request.body);
+    const task = await db.task.findFirst({ where: { id: taskUUID(taskId), userId: user.id } });
+    if (!task || (task.completedAt && task.completedAt.getTime() < Date.now() - 86400000))
+      throw new AppError(404, 'NOT_FOUND', 'Task not found.');
+    if (task.status === 'QUEUED' || task.status === 'PROCESSING')
+      return { errorId: 0, status: 'processing' };
+    if (task.status === 'FAILED')
+      return protocolError(
+        new AppError(
+          400,
+          task.errorCode ?? 'TASK_FAILED',
+          'The task could not be completed. Its reserved price has been refunded.',
+        ),
+      );
+    if (!task.resultToken) throw new AppError(404, 'NOT_FOUND', 'Task not found.');
+    return {
+      errorId: 0,
+      status: 'ready',
+      solution: {
+        gRecaptchaResponse: task.resultToken,
+        token: task.resultToken,
+        ...(task.resultUserAgent ? { userAgent: task.resultUserAgent } : {}),
+        ...(task.serverAcceptance ? { serverAcceptance: task.serverAcceptance } : {}),
+        ...(task.resultRespKey ? { respKey: task.resultRespKey } : {}),
+      },
+      cost: money(task.costMicro),
+      createTime: Math.floor(task.createdAt.getTime() / 1000),
+      endTime: Math.floor(task.completedAt!.getTime() / 1000),
+    };
+  });
+  app.post('/getBalance', async (request) => {
+    const { user } = await authenticateApiKey(keyRequest.parse(request.body).clientKey);
+    z.object({ clientKey: z.string().min(1).max(256) })
+      .strict()
+      .parse(request.body);
+    return { errorId: 0, balance: Number(money(user.balanceMicro)) };
+  });
   app.post('/v1/tasks', async (request, reply) => {
     const { user, apiKeyId } = await apiUser(request);
     const input = taskInput.parse(request.body);

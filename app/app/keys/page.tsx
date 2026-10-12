@@ -84,7 +84,7 @@ export default function KeysPage() {
             <Text>API Keys</Text>
           </h1>
           <p>
-            <Text>A separate key for every integration.</Text>
+            <Text>Keys never expire. Revoke them here whenever needed.</Text>
           </p>
         </div>
         <button

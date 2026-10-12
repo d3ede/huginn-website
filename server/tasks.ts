@@ -7,6 +7,7 @@ import { solver, type SolverEngine, type SolverResult } from './providers';
 import { SolverFailure } from './solver-client';
 import { AppError } from './errors';
 import { money } from './security';
+import { solverTaskSchema, type SolverTask } from './solver-protocol';
 
 export function publicTask(task: Task, includeResult = false) {
   return {
@@ -34,7 +35,7 @@ export function publicTask(task: Task, includeResult = false) {
 export async function createTask(
   userId: string,
   apiKeyId: string | undefined,
-  input: { websiteURL: string; websiteKey: string },
+  input: { websiteURL: string; websiteKey: string; solverTask?: SolverTask },
   idempotencyKey: string | undefined,
   engine: SolverEngine = solver,
 ) {
@@ -60,6 +61,13 @@ export async function createTask(
     );
   try {
     return await db.$transaction(async (tx) => {
+      // A concurrent revocation must complete before or after this reservation.
+      if (apiKeyId) {
+        const active = await tx.$queryRaw<{ id: string }[]>`SELECT id FROM "ApiKey"
+          WHERE id = ${apiKeyId}::uuid AND "userId" = ${userId}::uuid AND "revokedAt" IS NULL FOR SHARE`;
+        if (!active.length)
+          throw new AppError(401, 'INVALID_API_KEY', 'The API key is invalid or revoked.');
+      }
       const reservedMicro = BigInt(config.TASK_PRICE_MICRO_USD);
       const changed = await tx.user.updateMany({
         where: { id: userId, balanceMicro: { gte: reservedMicro } },
@@ -69,7 +77,14 @@ export async function createTask(
         throw new AppError(402, 'INSUFFICIENT_BALANCE', 'Your balance is too low for this task.');
       const user = await tx.user.findUniqueOrThrow({ where: { id: userId } });
       const task = await tx.task.create({
-        data: { userId, apiKeyId, ...input, reservedMicro, idempotencyKey },
+        data: {
+          userId,
+          apiKeyId,
+          ...input,
+          solverTask: input.solverTask as Prisma.InputJsonValue | undefined,
+          reservedMicro,
+          idempotencyKey,
+        },
       });
       await tx.ledgerEntry.create({
         data: {
@@ -123,6 +138,7 @@ export async function settleTask(
         leaseId: null,
         leaseUntil: null,
         errorCode: result ? null : errorCode,
+        solverTask: Prisma.DbNull,
         costMicro: result ? task.reservedMicro : 0n,
         completedAt,
         durationMs: Math.max(
@@ -186,7 +202,12 @@ export async function workOne(engine: SolverEngine = solver, shutdown?: AbortSig
   const deadline = AbortSignal.timeout(Math.ceil(remaining));
   try {
     const result = await engine.solve(
-      { taskId: task.id, websiteURL: task.websiteURL, websiteKey: task.websiteKey },
+      {
+        taskId: task.id,
+        websiteURL: task.websiteURL,
+        websiteKey: task.websiteKey,
+        ...(task.solverTask ? { task: solverTaskSchema.parse(task.solverTask) } : {}),
+      },
       AbortSignal.any([deadline, leaseLost.signal, ...(shutdown ? [shutdown] : [])]),
     );
     if (!shutdown?.aborted && !leaseLost.signal.aborted) {
