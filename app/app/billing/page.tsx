@@ -54,11 +54,7 @@ export default function BillingPage() {
       <header className="workspace-page-heading">
         <div>
           <h1>
-            <Text> Clear spending. </Text>
-            <br className="mobile-break" />{' '}
-            <em>
-              <Text>Full control.</Text>
-            </em>
+            <Text>Billing</Text>
           </h1>
           <p>
             <Text>Only successful solutions become final charges.</Text>
@@ -142,7 +138,7 @@ export default function BillingPage() {
           <div className="empty-state">
             <Wallet size={23} strokeWidth={1.2} />
             <h3>
-              <Text>A clean ledger.</Text>
+              <Text>No transactions yet.</Text>
             </h3>
             <p>
               <Text>Payments, reservations, and refunds will appear here.</Text>

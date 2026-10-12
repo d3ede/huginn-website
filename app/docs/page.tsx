@@ -36,17 +36,13 @@ export default function Docs() {
             <Text>HUGINN / API REFERENCE</Text>
           </span>
           <h1>
-            <Text> A small API. </Text>
-            <br />
-            <em>
-              <Text>Everything you need.</Text>
-            </em>
+            <Text>API documentation</Text>
           </h1>
           <p className="docs-lead">
             <Text>
               {' '}
-              Submit an hCaptcha task, check its status, and retrieve the result. Standard HTTP.
-              Standard JSON.{' '}
+              Submit hCaptcha tasks, check their status and retrieve results. Requests and responses
+              use JSON.{' '}
             </Text>
           </p>
           <section id="start">

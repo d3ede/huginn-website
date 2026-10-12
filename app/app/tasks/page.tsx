@@ -67,11 +67,7 @@ export default function TasksPage() {
       <header className="workspace-page-heading">
         <div>
           <h1>
-            <Text> Every task. </Text>
-            <br className="mobile-break" />{' '}
-            <em>
-              <Text>In view.</Text>
-            </em>
+            <Text>Tasks</Text>
           </h1>
           <p>
             <Text>Follow a task from submission to result.</Text>

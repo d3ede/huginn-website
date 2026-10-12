@@ -43,7 +43,7 @@ export function TaskTable({ tasks, detailed = false }: { tasks: Task[]; detailed
       <div className="empty-state">
         <span className="empty-mark">↗</span>
         <h3>
-          <Text>Your first task starts here.</Text>
+          <Text>No tasks yet.</Text>
         </h3>
         <p>
           <Text>Once you send a task, its status and result will appear in your workspace.</Text>

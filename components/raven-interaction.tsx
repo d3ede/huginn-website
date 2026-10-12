@@ -10,18 +10,18 @@ function feather(ctx: CanvasRenderingContext2D, length: number, width: number, a
   ctx.bezierCurveTo(-width * 0.64, -length * 0.2, -width * 0.7, -length * 0.68, 0, -length);
   ctx.bezierCurveTo(width * 0.52, -length * 0.68, width * 0.7, -length * 0.18, 0, 8);
   const fill = ctx.createLinearGradient(-width / 2, 0, width / 2, -length);
-  fill.addColorStop(0, `rgba(12,20,22,${alpha})`);
-  fill.addColorStop(0.55, `rgba(51,66,66,${alpha})`);
-  fill.addColorStop(1, `rgba(20,29,32,${alpha})`);
+  fill.addColorStop(0, `rgba(120,176,218,${alpha})`);
+  fill.addColorStop(0.55, `rgba(225,242,255,${alpha})`);
+  fill.addColorStop(1, `rgba(154,204,239,${alpha})`);
   ctx.fillStyle = fill;
   ctx.fill();
-  ctx.strokeStyle = `rgba(149,173,170,${alpha * 0.45})`;
+  ctx.strokeStyle = `rgba(58,114,157,${alpha * 0.45})`;
   ctx.lineWidth = 0.65;
   ctx.beginPath();
   ctx.moveTo(0, 14);
   ctx.quadraticCurveTo(2, -length * 0.4, 0, -length);
   ctx.stroke();
-  ctx.strokeStyle = `rgba(121,146,145,${alpha * 0.22})`;
+  ctx.strokeStyle = `rgba(79,143,191,${alpha * 0.22})`;
   for (let i = 1; i < 14; i++) {
     const y = (-length * i) / 15;
     const spread = width * Math.sin((Math.PI * i) / 15) * 0.48;

@@ -12,11 +12,7 @@ export default function Terms() {
           <Text>HUGINN / TERMS</Text>
         </span>
         <h1>
-          <Text> Build with </Text>
-          <br />
-          <em>
-            <Text>intention.</Text>
-          </em>
+          <Text>Terms of use</Text>
         </h1>
         <h2>
           <Text>Authorized use</Text>

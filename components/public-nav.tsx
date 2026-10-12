@@ -29,10 +29,10 @@ export function PublicNav() {
         </nav>
         <div className="nav-actions">
           <LanguageSwitch />
-          <Link href="/login" className="sign-in">
+          <Link href="/login" className="sign-in button button-outline button-small">
             <Text> Sign in </Text>
           </Link>
-          <Link href="/register" className="button button-outline button-small">
+          <Link href="/register" className="button button-primary button-small">
             <Text> Get started </Text>
             <ArrowUpRight size={14} />
           </Link>

@@ -1,4 +1,3 @@
-import { Text } from '@/components/i18n';
 import Link from 'next/link';
 import {
   ArrowRight,
@@ -9,44 +8,43 @@ import {
   Terminal,
   Plus,
 } from 'lucide-react';
+import { Text } from '@/components/i18n';
 import { PublicNav } from '@/components/public-nav';
 import { Footer } from '@/components/footer';
 import { CodeExample } from '@/components/code-example';
 import { Pricing } from '@/components/pricing';
+import { SolverPreview } from '@/components/solver-preview';
+
 const features = [
   {
     icon: Terminal,
-    title: 'Built for developers.',
-    copy: 'Create a task. Retrieve a result. A small, predictable API that fits your existing workflow.',
+    title: 'REST API',
+    copy: 'Create tasks and retrieve their results.',
   },
   {
     icon: KeyRound,
-    title: 'Your keys. Your control.',
-    copy: 'Create named API keys for each integration. Revoke access whenever you need to.',
+    title: 'API Keys',
+    copy: 'Create and revoke access keys.',
   },
   {
     icon: SlidersHorizontal,
-    title: 'Nothing out of sight.',
-    copy: 'Track task states, solution times, and spending from one considered workspace.',
+    title: 'Task history',
+    copy: 'Task statuses, duration and cost.',
   },
   {
     icon: ShieldCheck,
-    title: 'A measured approach.',
-    copy: 'Only successful tasks are charged. Failed tasks release their reserved balance automatically.',
+    title: 'Billing',
+    copy: 'Pay for successful tasks from your balance.',
   },
 ];
 const faqs = [
   [
     'What does Huginn support?',
-    'Huginn provides a task-based API for hCaptcha. Other CAPTCHA types are not currently supported.',
+    'Huginn supports hCaptcha, including hCaptcha Enterprise, through the API.',
   ],
   [
     'How are tasks billed?',
     'The task price is reserved when a task is accepted. Successful tasks keep that charge; failed tasks receive an automatic refund. You can review each entry in Billing.',
-  ],
-  [
-    'Do you offer a subscription?',
-    'No. Huginn uses a prepaid balance and charges per successful task. The configured rate is shown above and in your workspace.',
   ],
   [
     'Is task processing available now?',
@@ -56,105 +54,136 @@ const faqs = [
     'How do I keep my API key safe?',
     'Keep keys on your server and outside source control. Each key is shown only once when created. Revoke it from your workspace if it may have been exposed.',
   ],
-  [
-    'Can I use it in my own application?',
-    'Use Huginn only for applications you own or are authorized to automate, and comply with the applicable website terms. Start with the documented REST API.',
-  ],
 ];
+
 export default function Home() {
   return (
     <>
       <PublicNav />
       <main id="main">
-        <section className="hero">
-          <div className="hero-material" aria-hidden="true" />
-          <div className="container hero-content">
-            <h1 className="reveal">
-              <Text> Solve </Text>
-              <br />
-              <Text> what others </Text>
-              <br />
-              <em>
-                <Text>can’t.</Text>
-              </em>
-            </h1>
-            <p className="hero-description reveal">
-              <Text> Developer-first hCaptcha </Text>
-              <br className="mobile-break" />
-              <Text> solving infrastructure. </Text>
-            </p>
-            <div className="hero-actions reveal">
-              <Link className="button button-primary" href="/register">
-                <Text> Get started </Text>
-                <ArrowUpRight size={17} />
-              </Link>
-              <Link className="text-link" href="/docs">
-                <Text> Documentation </Text>
-                <ArrowRight size={17} />
-              </Link>
+        <section className="landing-hero-section">
+          <div className="landing-hero container">
+            <div className="landing-hero-copy">
+              <div className="landing-supported reveal">
+                <span>
+                  <img src="/images/hcaptcha.svg" width="26" height="26" alt="" />
+                  hCaptcha
+                </span>
+                <span>
+                  <Terminal size={17} strokeWidth={1.5} />
+                  REST API
+                </span>
+              </div>
+              <h1 className="reveal">
+                <span className="landing-title-first">
+                  <Text>A service for solving</Text>
+                </span>
+                <span className="landing-title-accent">hCaptcha</span>
+              </h1>
+              <p className="landing-description reveal">
+                <Text>
+                  Supports standard hCaptcha and hCaptcha Enterprise. Access through the API.
+                </Text>
+              </p>
+              <div className="landing-actions reveal">
+                <Link className="button button-primary" href="/register">
+                  <Text>Get API key</Text>
+                  <ArrowRight size={18} />
+                </Link>
+                <Link className="button button-outline" href="/#pricing">
+                  <Text>View pricing</Text>
+                </Link>
+              </div>
+              <p className="landing-footnote">
+                <Text>No subscriptions. Pay only for successful solutions.</Text>
+              </p>
+            </div>
+            <div className="raven-stage">
+              <div className="raven-stage-wing" aria-hidden="true">
+                {Array.from({ length: 7 }, (_, i) => (
+                  <span key={i} />
+                ))}
+              </div>
+              <div className="raven-stage-grain" aria-hidden="true" />
+              <SolverPreview />
             </div>
           </div>
         </section>
-        <section id="product" className="container product-section section-border">
-          <div className="section-heading">
-            <div>
-              <h2>
-                <Text> Less friction. </Text>
-                <br />
-                <em>
-                  <Text>More focus.</Text>
-                </em>
-              </h2>
-            </div>
-            <p>
-              <Text> The details are taken care of. </Text>
-              <br />
-              <Text> Keep your attention on what you’re building. </Text>
-            </p>
-          </div>
-          <div className="feature-grid">
-            {features.map(({ icon: Icon, title, copy }) => (
-              <article className="feature" key={title}>
-                <div className="feature-top">
-                  <Icon size={21} strokeWidth={1.2} />
-                </div>
-                <h3>
-                  <Text>{title}</Text>
-                </h3>
-                <p>
-                  <Text>{copy}</Text>
-                </p>
-              </article>
+
+        <section
+          className="platform-section container section-border"
+          aria-labelledby="platform-heading"
+        >
+          <h2 id="platform-heading" className="platform-heading">
+            <Text>hCaptcha workflows</Text>
+          </h2>
+          <div className="platform-row">
+            {[
+              ['discord', 'Discord'],
+              ['steam', 'Steam'],
+              ['riot', 'Riot Games'],
+              ['epic', 'Epic Games'],
+            ].map(([icon, name]) => (
+              <div
+                key={icon}
+                className="platform-brand"
+                role="img"
+                aria-label={name}
+                tabIndex={0}
+              >
+                <span
+                  className={`platform-logo platform-logo-${icon}`}
+                  aria-hidden="true"
+                />
+                <span className="platform-label" aria-hidden="true">{name}</span>
+              </div>
             ))}
           </div>
         </section>
+
+        <section id="product" className="container landing-features section-border">
+          {features.map(({ icon: Icon, title, copy }) => (
+            <article key={title}>
+              <div className="landing-feature-icon">
+                <Icon size={26} strokeWidth={1.6} />
+              </div>
+              <h3>
+                <Text>{title}</Text>
+              </h3>
+              <p>
+                <Text>{copy}</Text>
+              </p>
+            </article>
+          ))}
+        </section>
+
         <section className="integration-section section-border">
           <div className="container integration-grid">
             <div className="integration-copy">
               <h2>
-                <Text> A few lines. </Text>
-                <br />
-                <em>
-                  <Text>A clear path.</Text>
-                </em>
+                <Text>API example</Text>
               </h2>
-              <p>
-                <Text> A REST API that speaks your language. </Text>
-                <br />
-                <Text> No new stack. No unnecessary ceremony. </Text>
-              </p>
-              <Link className="text-link" href="/docs">
-                <Text> Explore the documentation </Text>
-                <ArrowRight size={17} />
-              </Link>
+              <div className="integration-description">
+                <p>
+                  <Text>Create a task, then request its status and result.</Text>
+                </p>
+                <Link className="button button-outline" href="/docs">
+                  <Text>Explore the documentation</Text>
+                  <ArrowUpRight size={17} />
+                </Link>
+              </div>
             </div>
             <CodeExample compact />
           </div>
         </section>
+
         <section className="container workflow section-border">
+          <h2 className="workflow-heading">
+            <Text>Getting started</Text>
+          </h2>
           <div className="steps">
             {[
-              ['Create an account', 'Your workspace, ready to use.'],
+              ['Create an account', 'Register with your email address.'],
               ['Generate a key', 'A private key for your application.'],
               ['Send a task', 'Submit a site URL and hCaptcha site key.'],
               ['Retrieve the result', 'Poll the task and receive its token.'],
@@ -175,11 +204,7 @@ export default function Home() {
         <section className="container faq-section section-border">
           <div>
             <h2>
-              <Text> Good </Text>
-              <br />
-              <em>
-                <Text>questions.</Text>
-              </em>
+              <Text>FAQ</Text>
             </h2>
           </div>
           <div className="faq-list">
@@ -194,21 +219,6 @@ export default function Home() {
                 </p>
               </details>
             ))}
-          </div>
-        </section>
-        <section className="closing-section">
-          <div className="container closing-inner">
-            <h2>
-              <Text> A quieter way </Text>
-              <br />
-              <em>
-                <Text>to build.</Text>
-              </em>
-            </h2>
-            <Link className="button button-primary" href="/register">
-              <Text> Get started </Text>
-              <ArrowUpRight size={17} />
-            </Link>
           </div>
         </section>
       </main>

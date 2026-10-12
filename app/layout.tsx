@@ -5,17 +5,18 @@ import { I18nProvider, Text } from '@/components/i18n';
 import { RavenInteraction } from '@/components/raven-interaction';
 import { translate } from '@/lib/i18n';
 import './globals.css';
+import './light.css';
 export async function generateMetadata(): Promise<Metadata> {
   const locale = (await cookies()).get('huginn_locale')?.value === 'ru' ? 'ru' : 'en';
   return {
     title: {
-      default: translate('Huginn — Solve what others can’t.', locale),
+      default: translate('Huginn — CAPTCHA solving API', locale),
       template: '%s · Huginn',
     },
     description:
       locale === 'ru'
-        ? 'Инфраструктура решения hCaptcha для разработчиков. Понятный API и контроль расходов.'
-        : 'Developer-first hCaptcha solving infrastructure. A clear API and controlled spending.',
+        ? 'Huginn — API для решения CAPTCHA. hCaptcha для ваших рабочих процессов, задачи и расходы в одном кабинете.'
+        : 'A CAPTCHA solving API for your workflows. Start with hCaptcha, manage tasks, API keys and billing with Huginn.',
   };
 }
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

@@ -7,11 +7,10 @@ export function Footer() {
   const { t } = useI18n();
   return (
     <footer className="footer container">
-      <Brand />
-      <span>
-        © {new Date().getFullYear()}
-        <Text> Huginn</Text>
-      </span>
+      <div className="footer-brand">
+        <Brand />
+        <span>© {new Date().getFullYear()} Huginn</span>
+      </div>
       <nav aria-label={t('Footer')}>
         <Link href="/docs">
           <Text> Documentation </Text>

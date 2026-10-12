@@ -81,11 +81,7 @@ export default function KeysPage() {
       <header className="workspace-page-heading">
         <div>
           <h1>
-            <Text> Your keys. </Text>
-            <br className="mobile-break" />{' '}
-            <em>
-              <Text>Your control.</Text>
-            </em>
+            <Text>API Keys</Text>
           </h1>
           <p>
             <Text>A separate key for every integration.</Text>
