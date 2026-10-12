@@ -33,11 +33,16 @@ export const usd = (value: string | number, precision = 2) =>
     minimumFractionDigits: precision,
     maximumFractionDigits: precision,
   }).format(Number(value));
-export const dateTime = (value: string, timeZone = 'UTC') =>
-  new Date(value).toLocaleString('en-US', {
+export const dateTime = (value: string, timeZone = 'UTC', locale: 'en' | 'ru' = 'en') =>
+  new Date(value).toLocaleString(locale === 'ru' ? 'ru-RU' : 'en-US', {
     month: 'short',
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
     timeZone,
   });
+export const seconds = (milliseconds: number, locale: 'en' | 'ru') =>
+  new Intl.NumberFormat(locale === 'ru' ? 'ru-RU' : 'en-US', {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  }).format(milliseconds / 1000) + (locale === 'ru' ? ' с' : 's');

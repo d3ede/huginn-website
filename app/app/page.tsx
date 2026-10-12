@@ -1,17 +1,25 @@
 'use client';
+import { Text, useI18n } from '@/components/i18n';
+
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import { ArrowRight, ArrowUpRight, RefreshCw } from 'lucide-react';
 import { useWorkspace } from '@/components/workspace';
 import { TaskTable } from '@/components/task-table';
-import { api, usd } from '@/lib/api';
+import { api, usd, seconds } from '@/lib/api';
 import type { Stats } from '@/lib/types';
 const ActivityChart = dynamic(() => import('@/components/activity-chart'), {
   ssr: false,
-  loading: () => <div className="chart-placeholder">Loading chart…</div>,
+  loading: () => (
+    <div className="chart-placeholder">
+      <Text>Loading chart…</Text>
+    </div>
+  ),
 });
 export default function Dashboard() {
+  const { t, locale } = useI18n();
+
   const { user } = useWorkspace();
   const [days, setDays] = useState(30);
   const [stats, setStats] = useState<Stats | null>(null);
@@ -31,15 +39,17 @@ export default function Dashboard() {
     <>
       <header className="workspace-page-heading dashboard-heading">
         <div>
-          <span className="eyebrow">OVERVIEW</span>
           <h1>
-            A clearer view, <em>{user.name.split(' ')[0]}.</em>
+            <Text> A clearer view, </Text>
+            <em>{user.name.split(' ')[0]}.</em>
           </h1>
-          <p>Here’s what’s happening in your workspace.</p>
+          <p>
+            <Text>Here’s what’s happening in your workspace.</Text>
+          </p>
         </div>
         <button
           className="icon-button"
-          aria-label="Refresh dashboard"
+          aria-label={t('Refresh dashboard')}
           onClick={() => setRevision((v) => v + 1)}
         >
           <RefreshCw size={16} />
@@ -47,47 +57,80 @@ export default function Dashboard() {
       </header>
       {error && (
         <p className="form-error" role="alert">
-          {error}
+          <Text>{error}</Text>
         </p>
       )}
       <div className="metrics">
         <div>
-          <span>Available balance</span>
+          <span>
+            <Text>Available balance</Text>
+          </span>
           <strong>{usd(stats?.balance ?? user.balance)}</strong>
           <Link href="/app/billing">
-            Top up <ArrowRight size={14} />
+            <Text> Top up </Text>
+            <ArrowRight size={14} />
           </Link>
         </div>
         <div>
-          <span>Solutions · {days} days</span>
-          <strong>{stats?.solved.toLocaleString() ?? '—'}</strong>
+          <span>
+            <Text>Solutions · </Text>
+            {days}
+            <Text> days</Text>
+          </span>
+          <strong>
+            {stats?.solved.toLocaleString(locale === 'ru' ? 'ru-RU' : 'en-US') ?? '—'}
+          </strong>
           <small>
-            {stats ? `${stats.total.toLocaleString()} tasks submitted` : 'Loading usage'}
+            <Text>
+              {stats
+                ? `${stats.total.toLocaleString(locale === 'ru' ? 'ru-RU' : 'en-US')} tasks submitted`
+                : 'Loading usage'}
+            </Text>
           </small>
         </div>
         <div>
-          <span>Success rate</span>
-          <strong>{stats?.successRate == null ? '—' : `${stats.successRate.toFixed(1)}%`}</strong>
-          <small>Of completed tasks</small>
+          <span>
+            <Text>Success rate</Text>
+          </span>
+          <strong>
+            {stats?.successRate == null
+              ? '—'
+              : `${stats.successRate.toLocaleString(locale === 'ru' ? 'ru-RU' : 'en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%`}
+          </strong>
+          <small>
+            <Text>Of completed tasks</Text>
+          </small>
         </div>
         <div>
-          <span>Average solve time</span>
-          <strong>
-            {stats?.averageMs == null ? '—' : `${(stats.averageMs / 1000).toFixed(1)}s`}
-          </strong>
-          <small>Successful tasks only</small>
+          <span>
+            <Text>Average solve time</Text>
+          </span>
+          <strong>{stats?.averageMs == null ? '—' : seconds(stats.averageMs, locale)}</strong>
+          <small>
+            <Text>Successful tasks only</Text>
+          </small>
         </div>
       </div>
       <div className="dashboard-grid">
         <section className="workspace-panel activity-panel">
           <div className="panel-heading">
-            <h2>Solutions over time</h2>
+            <h2>
+              <Text>Solutions over time</Text>
+            </h2>
             <label className="period-label">
-              <span className="sr-only">Chart period</span>
+              <span className="sr-only">
+                <Text>Chart period</Text>
+              </span>
               <select value={days} onChange={(e) => setDays(Number(e.target.value))}>
-                <option value={7}>Last 7 days</option>
-                <option value={30}>Last 30 days</option>
-                <option value={90}>Last 90 days</option>
+                <option value={7}>
+                  <Text>Last 7 days</Text>
+                </option>
+                <option value={30}>
+                  <Text>Last 30 days</Text>
+                </option>
+                <option value={90}>
+                  <Text>Last 90 days</Text>
+                </option>
               </select>
             </label>
           </div>
@@ -95,33 +138,42 @@ export default function Dashboard() {
             <ActivityChart data={stats.daily} />
           ) : (
             <div className="chart-placeholder">
-              {error ? 'Unable to load activity.' : 'Loading activity…'}
+              <Text>{error ? 'Unable to load activity.' : 'Loading activity…'}</Text>
             </div>
           )}
           <div className="chart-legend">
             <span>
               <i />
-              Solved
+              <Text> Solved </Text>
             </span>
             <span>
               <i className="failed" />
-              Failed
+              <Text> Failed </Text>
             </span>
-            <small>UTC</small>
+            <small>
+              <Text>UTC</Text>
+            </small>
           </div>
         </section>
         <section className="workspace-panel types-panel">
           <div className="panel-heading">
-            <h2>Task types</h2>
-            <span className="muted">{days} days</span>
+            <h2>
+              <Text>Task types</Text>
+            </h2>
+            <span className="muted">
+              {days}
+              <Text> days</Text>
+            </span>
           </div>
           {stats?.types.length ? (
             <div className="type-bars">
               {stats.types.map((type) => (
                 <div key={type.type}>
                   <div>
-                    <span>hCaptcha</span>
-                    <span>{type.count.toLocaleString()}</span>
+                    <span>
+                      <Text>hCaptcha</Text>
+                    </span>
+                    <span>{type.count.toLocaleString(locale === 'ru' ? 'ru-RU' : 'en-US')}</span>
                   </div>
                   <div className="type-track">
                     <span
@@ -134,47 +186,54 @@ export default function Dashboard() {
           ) : (
             <div className="types-empty">
               <span className="type-track" />
-              <p>{stats ? 'No tasks in this period.' : 'Loading task types…'}</p>
+              <p>
+                <Text>{stats ? 'No tasks in this period.' : 'Loading task types…'}</Text>
+              </p>
             </div>
           )}
-          <div className="panel-bottom-note">
-            One task type.
-            <br />
-            One considered integration.
-          </div>
         </section>
         <section className="workspace-panel recent-panel">
           <div className="panel-heading">
-            <h2>Recent tasks</h2>
+            <h2>
+              <Text>Recent tasks</Text>
+            </h2>
             <Link href="/app/tasks" className="text-link small">
-              View all <ArrowRight size={14} />
+              <Text> View all </Text>
+              <ArrowRight size={14} />
             </Link>
           </div>
           {stats ? (
             <TaskTable tasks={stats.recent} />
           ) : (
-            <p className="panel-loading">Loading tasks…</p>
+            <p className="panel-loading">
+              <Text>Loading tasks…</Text>
+            </p>
           )}
         </section>
         <section className="workspace-panel access-panel">
           <div className="panel-heading">
-            <h2>Developer access</h2>
+            <h2>
+              <Text>Developer access</Text>
+            </h2>
             <Link href="/app/keys" className="text-link small">
-              Manage <ArrowUpRight size={14} />
+              <Text> Manage </Text>
+              <ArrowUpRight size={14} />
             </Link>
           </div>
           <div className="key-placeholder">
-            <span>hg_live_</span>
+            <span>
+              <Text>hg_live_</Text>
+            </span>
             <span>••••••••••••••••</span>
           </div>
           <p>
-            Create a key for each integration.
+            <Text> Create a key for each integration. </Text>
             <br />
-            Full keys are shown only once.
+            <Text> Full keys are shown only once. </Text>
           </p>
-          <span className="eyebrow">REST API / V1</span>
           <Link href="/docs" className="text-link small">
-            Read the documentation <ArrowRight size={14} />
+            <Text> Read the documentation </Text>
+            <ArrowRight size={14} />
           </Link>
         </section>
       </div>

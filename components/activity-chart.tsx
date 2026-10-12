@@ -1,12 +1,18 @@
 'use client';
+import { useI18n } from '@/components/i18n';
+
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import type { Stats } from '@/lib/types';
 export default function ActivityChart({ data }: { data: Stats['daily'] }) {
+  const { t, locale } = useI18n();
+
   return (
     <div
       className="activity-chart"
       role="img"
-      aria-label={`Daily solutions chart. ${data.reduce((s, d) => s + d.solved, 0)} solved and ${data.reduce((s, d) => s + d.failed, 0)} failed tasks in this period.`}
+      aria-label={t(
+        `Daily solutions chart. ${data.reduce((s, d) => s + d.solved, 0)} solved and ${data.reduce((s, d) => s + d.failed, 0)} failed tasks in this period.`,
+      )}
     >
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 10, right: 6, bottom: 0, left: -24 }}>
@@ -14,21 +20,21 @@ export default function ActivityChart({ data }: { data: Stats['daily'] }) {
           <XAxis
             dataKey="date"
             tickFormatter={(value) =>
-              new Date(value).toLocaleDateString('en-US', {
+              new Date(value).toLocaleDateString(locale === 'ru' ? 'ru-RU' : 'en-US', {
                 month: 'short',
                 day: 'numeric',
                 timeZone: 'UTC',
               })
             }
             minTickGap={40}
-            tick={{ fill: '#7d8b89', fontSize: 10 }}
+            tick={{ fill: '#7d8b89', fontSize: 12 }}
             axisLine={false}
             tickLine={false}
             dy={8}
           />
           <YAxis
             allowDecimals={false}
-            tick={{ fill: '#7d8b89', fontSize: 10 }}
+            tick={{ fill: '#7d8b89', fontSize: 12 }}
             axisLine={false}
             tickLine={false}
           />
@@ -38,20 +44,20 @@ export default function ActivityChart({ data }: { data: Stats['daily'] }) {
               background: '#141a1a',
               border: '1px solid #303b38',
               borderRadius: 6,
-              fontSize: 12,
+              fontSize: 14,
               color: '#e8edea',
             }}
             labelFormatter={(value) => `${value} · UTC`}
           />
           <Bar
-            name="Solved"
+            name={t('Solved')}
             dataKey="solved"
             fill="#78958D"
             radius={[2, 2, 0, 0]}
             maxBarSize={16}
           />
           <Bar
-            name="Failed"
+            name={t('Failed')}
             dataKey="failed"
             fill="#7f5656"
             radius={[2, 2, 0, 0]}

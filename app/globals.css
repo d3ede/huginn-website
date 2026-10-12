@@ -5,7 +5,7 @@
   --color-surface: #181d1d;
   --color-foreground: #e8edea;
   --color-accent: #a3bfc6;
-  --font-sans: Arial, Helvetica, sans-serif;
+  --font-sans: 'Inter Variable', Inter, sans-serif;
   --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
 }
 :root {
@@ -30,9 +30,11 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 14px;
-  line-height: 1.6;
+  font-family: 'Inter Variable', Inter, sans-serif;
+  font-optical-sizing: auto;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
 }
 a {
@@ -79,11 +81,12 @@ p {
 h1,
 h2,
 h3 {
-  font-weight: 400;
+  font-weight: 600;
 }
 em {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-weight: 400;
+  font-family: inherit;
+  font-style: normal;
+  font-weight: 500;
   color: var(--blue);
   letter-spacing: -0.04em;
 }
@@ -121,11 +124,11 @@ textarea {
 select {
   padding: 8px 30px 8px 12px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 15px;
 }
 label {
   display: block;
-  font-size: 12px;
+  font-size: 15px;
   color: #c1cbc7;
   letter-spacing: 0.015em;
 }
@@ -158,21 +161,21 @@ code {
   margin: 0 auto;
 }
 .brand {
-  font-size: 27px;
+  font-size: 29px;
   line-height: 1;
   letter-spacing: -1.3px;
   color: #c2cecb;
   display: inline-block;
-  font-weight: 400;
+  font-weight: 500;
 }
 .brand span {
   color: var(--blue);
 }
 .eyebrow {
   display: block;
-  font-size: 10px;
+  font-size: 14px;
   letter-spacing: 2.2px;
-  font-weight: 400;
+  font-weight: 500;
   color: var(--green);
   line-height: 1.8;
 }
@@ -185,7 +188,7 @@ code {
   padding: 12px 22px;
   border: 1px solid transparent;
   border-radius: 7px;
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.5;
   transition:
     background 0.2s,
@@ -194,7 +197,7 @@ code {
     color 0.2s;
 }
 .button:hover:not(:disabled) {
-  transform: translateY(-2px);
+  transform: none;
 }
 .button-primary {
   background: #a7bfba;
@@ -216,7 +219,7 @@ code {
 .button-small {
   min-height: 37px;
   padding: 9px 15px;
-  font-size: 11px;
+  font-size: 14px;
   gap: 13px;
 }
 .text-link {
@@ -224,7 +227,7 @@ code {
   align-items: center;
   gap: 14px;
   color: var(--blue);
-  font-size: 12px;
+  font-size: 15px;
   transition:
     color 0.2s,
     gap 0.2s;
@@ -234,7 +237,7 @@ code {
   gap: 19px;
 }
 .text-link.small {
-  font-size: 11px;
+  font-size: 14px;
   gap: 10px;
 }
 .icon-button {
@@ -288,7 +291,7 @@ code {
 }
 .muted {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 14px;
 }
 .bright {
   color: var(--text);
@@ -321,7 +324,7 @@ code {
 .public-links {
   display: flex;
   gap: 39px;
-  font-size: 11px;
+  font-size: 14px;
   color: #c2cac6;
 }
 .public-links a {
@@ -336,7 +339,7 @@ code {
   gap: 26px;
 }
 .sign-in {
-  font-size: 11px;
+  font-size: 14px;
   color: #c2cac6;
 }
 .menu-toggle {
@@ -346,14 +349,15 @@ code {
   position: relative;
   min-height: 790px;
   overflow: hidden;
-  background: #080c0d;
+  background: var(--bg);
 }
 .hero-material {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(90deg, #0b0e0f 3%, #0b0e0fe8 24%, #0b0e0f65 53%, #0b0e0f55 75%),
-    linear-gradient(0deg, #0c0e0f 0%, #0c0e0f80 22%, transparent 58%), url('/images/raven.webp');
+    linear-gradient(90deg, #0c0e0f 3%, #0c0e0ff5 24%, #0c0e0f95 48%, #0c0e0f40 75%),
+    linear-gradient(0deg, #0c0e0f 0%, #0c0e0f80 22%, #0c0e0f00 58%),
+    url('/images/raven-lossless.webp');
   background-position:
     center,
     right center,
@@ -363,17 +367,17 @@ code {
     cover,
     82% auto;
   background-repeat: no-repeat;
-  opacity: 0.83;
-  animation: feather-light 14s ease-in-out infinite alternate;
+  opacity: 1;
 }
 .hero-content {
   position: relative;
+  z-index: 1;
   padding-top: 176px;
   padding-bottom: 42px;
   min-height: 790px;
 }
 .hero h1 {
-  font-size: 84px;
+  font-size: 90px;
   line-height: 1.035;
   letter-spacing: -4.7px;
   margin-top: 27px;
@@ -384,7 +388,7 @@ code {
   line-height: 1.05;
 }
 .hero-description {
-  font-size: 14px;
+  font-size: 17px;
   color: #aab7b3;
   margin-top: 24px;
   line-height: 1.7;
@@ -400,7 +404,7 @@ code {
   gap: 31px;
   margin-top: 63px;
   color: #82928e;
-  font-size: 10px;
+  font-size: 14px;
 }
 .hero-footnote > span {
   display: flex;
@@ -413,7 +417,7 @@ code {
   top: 200px;
   width: 69px;
   color: var(--green);
-  font-size: 9px;
+  font-size: 14px;
   letter-spacing: 1.9px;
 }
 .hero-aside:before {
@@ -426,7 +430,7 @@ code {
   margin-bottom: 16px;
 }
 .crosshair {
-  font-size: 30px;
+  font-size: 32px;
   font-weight: 100;
   display: block;
   text-align: center;
@@ -444,7 +448,7 @@ code {
   position: absolute;
   right: 1px;
   bottom: 63px;
-  font-size: 10px;
+  font-size: 14px;
   color: var(--dim);
   display: flex;
   flex-direction: column;
@@ -480,14 +484,14 @@ code {
 .section-heading h2,
 .integration-copy h2,
 .faq-section h2 {
-  font-size: 49px;
+  font-size: 52px;
   line-height: 1.12;
   letter-spacing: -2.1px;
   margin-top: 21px;
 }
 .section-heading p {
   color: var(--muted);
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.8;
   max-width: 370px;
   padding-bottom: 4px;
@@ -517,16 +521,16 @@ code {
   margin-bottom: 29px;
 }
 .feature-top > span {
-  font-size: 9px;
+  font-size: 14px;
   color: var(--dim);
 }
 .feature h3 {
-  font-size: 15px;
+  font-size: 17px;
   margin-bottom: 12px;
   letter-spacing: -0.3px;
 }
 .feature p {
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.9;
   color: var(--muted);
   max-width: 245px;
@@ -557,7 +561,7 @@ code {
 }
 .integration-copy p {
   color: var(--muted);
-  font-size: 13px;
+  font-size: 16px;
   margin-top: 23px;
   line-height: 1.9;
 }
@@ -570,7 +574,7 @@ code {
   align-items: flex-start;
   margin-top: 42px;
   color: var(--dim);
-  font-size: 8px;
+  font-size: 14px;
   letter-spacing: 1.8px;
   line-height: 2;
 }
@@ -603,7 +607,7 @@ code {
   border: 0;
   border-bottom: 1px solid transparent;
   padding: 0;
-  font-size: 11px;
+  font-size: 14px;
 }
 .code-tabs button.active {
   color: var(--text);
@@ -612,7 +616,7 @@ code {
 .code-window pre {
   padding: 25px 25px 27px;
   color: #9bbab1;
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1.85;
   overflow: auto;
   tab-size: 2;
@@ -628,7 +632,7 @@ code {
   justify-content: space-between;
   color: var(--dim);
   font-family: monospace;
-  font-size: 8px;
+  font-size: 14px;
   letter-spacing: 1.5px;
 }
 .workflow {
@@ -643,18 +647,18 @@ code {
 .step-number {
   display: block;
   font-family: Georgia, serif;
-  font-size: 25px;
-  font-style: italic;
+  font-size: 27px;
+  font-style: normal;
   color: #6b827b;
   margin-bottom: 15px;
 }
 .steps h3 {
-  font-size: 13px;
+  font-size: 16px;
   margin-bottom: 6px;
 }
 .steps p {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1.8;
 }
 .pricing-section {
@@ -673,19 +677,19 @@ code {
 }
 .price {
   margin-top: 16px;
-  font-size: 39px;
+  font-size: 42px;
   line-height: 1.25;
   letter-spacing: -1.5px;
 }
 .price > span {
-  font-size: 11px;
+  font-size: 14px;
   color: var(--muted);
   letter-spacing: 0;
   margin-left: 5px;
 }
 .pricing-panel p {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 14px;
   margin-top: 10px;
 }
 .pricing-panel ul {
@@ -695,7 +699,7 @@ code {
   display: flex;
   flex-direction: column;
   gap: 13px;
-  font-size: 11px;
+  font-size: 14px;
   color: #a9b8b2;
 }
 .pricing-panel li {
@@ -711,7 +715,7 @@ code {
 }
 .availability-note {
   color: var(--dim);
-  font-size: 10px;
+  font-size: 14px;
   display: block;
   max-width: 340px;
   margin-top: 14px;
@@ -737,7 +741,7 @@ code {
   align-items: center;
   gap: 20px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 16px;
   list-style: none;
 }
 .faq-list summary::-webkit-details-marker {
@@ -752,7 +756,7 @@ code {
 }
 .faq-list details p {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.9;
   padding: 17px 30px 3px 0;
   animation: reveal 0.3s both;
@@ -780,13 +784,13 @@ code {
   gap: 50px;
 }
 .closing-inner h2 {
-  font-size: 50px;
+  font-size: 54px;
   letter-spacing: -2px;
   line-height: 1.15;
 }
 .closing-inner > .eyebrow {
   max-width: 160px;
-  font-size: 9px;
+  font-size: 14px;
   line-height: 2.1;
 }
 .footer {
@@ -796,10 +800,10 @@ code {
   gap: 35px;
   min-height: 105px;
   color: var(--dim);
-  font-size: 10px;
+  font-size: 14px;
 }
 .footer .brand {
-  font-size: 23px;
+  font-size: 25px;
 }
 .footer nav {
   display: flex;
@@ -833,7 +837,7 @@ code {
   right: 10%;
 }
 .auth-art h2 {
-  font-size: 40px;
+  font-size: 43px;
   letter-spacing: -1.5px;
   line-height: 1.2;
   margin-top: 22px;
@@ -851,14 +855,14 @@ code {
   margin: auto;
 }
 .auth-form-wrap h1 {
-  font-size: 37px;
+  font-size: 40px;
   line-height: 1.2;
   letter-spacing: -1.6px;
   margin-top: 16px;
 }
 .auth-form-wrap > p {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 15px;
   margin-top: 12px;
 }
 .auth-form-wrap form {
@@ -872,13 +876,13 @@ code {
 }
 .field-hint {
   display: block;
-  font-size: 10px;
+  font-size: 14px;
   line-height: 1.7;
   color: var(--dim);
   margin-top: -6px;
 }
 .auth-terms {
-  font-size: 10px !important;
+  font-size: 14px !important;
   line-height: 1.8;
   margin-top: 21px !important;
 }
@@ -886,7 +890,7 @@ code {
   color: #a9bcb5;
 }
 .auth-form-wrap .auth-switch {
-  font-size: 11px;
+  font-size: 14px;
   margin-top: 28px;
 }
 .auth-switch a {
@@ -897,7 +901,7 @@ code {
   align-items: center;
 }
 .auth-back {
-  font-size: 10px;
+  font-size: 14px;
   color: var(--dim);
   padding-top: 30px;
 }
@@ -907,7 +911,7 @@ code {
   color: #d6a2a2;
   border-radius: 5px;
   padding: 12px 16px;
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.7;
   margin: 12px 0;
 }
@@ -920,7 +924,7 @@ code {
   color: #b3c9bf;
   padding: 12px 16px;
   border-radius: 5px;
-  font-size: 12px;
+  font-size: 15px;
   margin: 12px 0;
 }
 .notice {
@@ -928,7 +932,7 @@ code {
   padding: 14px 18px;
   background: #78958d0a;
   color: #9daea7;
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1.9;
   margin: 24px 0;
 }
@@ -946,7 +950,7 @@ code {
   display: flex;
   flex-direction: column;
   gap: 21px;
-  font-size: 12px;
+  font-size: 15px;
   color: var(--muted);
 }
 .docs-nav .eyebrow {
@@ -969,13 +973,13 @@ code {
 }
 .docs-article h1,
 .policy-page h1 {
-  font-size: 55px;
+  font-size: 59px;
   line-height: 1.13;
   letter-spacing: -2.6px;
   margin-top: 24px;
 }
 .docs-lead {
-  font-size: 14px;
+  font-size: 17px;
   color: var(--muted);
   line-height: 1.9;
   max-width: 560px;
@@ -988,18 +992,18 @@ code {
 }
 .docs-article h2,
 .policy-page h2 {
-  font-size: 23px;
+  font-size: 25px;
   letter-spacing: -0.5px;
   margin-bottom: 18px;
 }
 .docs-article h3 {
-  font-size: 17px;
+  font-size: 19px;
   margin-top: 27px;
   margin-bottom: 15px;
 }
 .docs-article section > p,
 .docs-article ol {
-  font-size: 13px;
+  font-size: 16px;
   color: var(--muted);
   line-height: 2;
   margin: 15px 0;
@@ -1036,11 +1040,11 @@ code {
   border-radius: 5px;
 }
 .endpoint > span {
-  font-size: 10px;
+  font-size: 14px;
   color: var(--blue);
 }
 .endpoint > code {
-  font-size: 12px;
+  font-size: 15px;
 }
 .docs-article .code-window {
   margin-top: 26px;
@@ -1056,7 +1060,7 @@ code {
 }
 .policy-page p {
   color: var(--muted);
-  font-size: 13px;
+  font-size: 16px;
   line-height: 2;
   margin: 16px 0;
 }
@@ -1073,7 +1077,7 @@ code {
   justify-content: center;
 }
 .not-found h1 {
-  font-size: 55px;
+  font-size: 59px;
   line-height: 1.15;
   letter-spacing: -2px;
 }
@@ -1099,7 +1103,7 @@ code {
   margin: 0 12px;
 }
 .sidebar-label {
-  font-size: 8px;
+  font-size: 14px;
   letter-spacing: 1.7px;
   color: var(--dim);
   margin: 52px 12px 16px;
@@ -1115,7 +1119,7 @@ code {
   align-items: center;
   padding: 12px 12px;
   color: #86958f;
-  font-size: 12px;
+  font-size: 15px;
   border-radius: 5px;
   position: relative;
   transition:
@@ -1144,7 +1148,7 @@ code {
 }
 .sidebar-docs {
   color: var(--dim);
-  font-size: 10px;
+  font-size: 14px;
   display: flex;
   gap: 12px;
   align-items: center;
@@ -1166,7 +1170,7 @@ code {
   justify-content: center;
   background: #273432;
   color: #c9d5d0;
-  font-size: 12px;
+  font-size: 15px;
   flex-shrink: 0;
 }
 .sidebar-user > div {
@@ -1177,14 +1181,14 @@ code {
 }
 .sidebar-user > div > span {
   color: #bbc8c1;
-  font-size: 10px;
+  font-size: 14px;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
 }
 .sidebar-user small {
   color: var(--dim);
-  font-size: 8px;
+  font-size: 14px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1208,7 +1212,7 @@ code {
   border-bottom: 1px solid var(--line);
   padding: 30px 0 22px;
   color: var(--dim);
-  font-size: 8px;
+  font-size: 14px;
   letter-spacing: 1.5px;
 }
 .breadcrumb-slash {
@@ -1219,7 +1223,7 @@ code {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 7px;
+  font-size: 14px;
   letter-spacing: 1.5px;
 }
 .workspace-environment i {
@@ -1237,11 +1241,11 @@ code {
   margin-bottom: 32px;
 }
 .workspace-page-heading .eyebrow {
-  font-size: 8px;
+  font-size: 14px;
   letter-spacing: 1.7px;
 }
 .workspace-page-heading h1 {
-  font-size: 34px;
+  font-size: 36px;
   letter-spacing: -1.25px;
   line-height: 1.3;
   margin-top: 11px;
@@ -1249,11 +1253,11 @@ code {
 .workspace-page-heading h1 em {
   font-family: inherit;
   font-style: normal;
-  font-weight: 300;
+  font-weight: 500;
   letter-spacing: -1.25px;
 }
 .workspace-page-heading p {
-  font-size: 12px;
+  font-size: 15px;
   color: var(--muted);
   margin-top: 9px;
 }
@@ -1278,12 +1282,12 @@ code {
 .metrics > div > span {
   display: block;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 14px;
 }
 .metrics strong {
-  font-size: 30px;
+  font-size: 32px;
   letter-spacing: -1px;
-  font-weight: 400;
+  font-weight: 500;
   line-height: 1.5;
   display: block;
   margin-top: 6px;
@@ -1291,7 +1295,7 @@ code {
 .metrics small {
   display: block;
   color: var(--dim);
-  font-size: 9px;
+  font-size: 14px;
   margin-top: 5px;
 }
 .metrics a {
@@ -1299,7 +1303,7 @@ code {
   align-items: center;
   gap: 10px;
   color: var(--blue);
-  font-size: 10px;
+  font-size: 14px;
   margin-top: 5px;
 }
 .dashboard-grid {
@@ -1321,23 +1325,23 @@ code {
   padding: 20px 22px 9px;
 }
 .panel-heading h2 {
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.5;
 }
 .panel-heading .muted {
-  font-size: 9px;
+  font-size: 14px;
 }
 .period-label select {
   border: none;
   background: transparent;
-  font-size: 10px;
+  font-size: 14px;
   padding: 4px 20px 4px 5px;
   color: var(--green);
 }
 .activity-chart {
   height: 208px;
   margin: 18px 16px 5px 20px;
-  font-size: 10px;
+  font-size: 14px;
 }
 .chart-placeholder {
   height: 215px;
@@ -1345,14 +1349,14 @@ code {
   align-items: center;
   justify-content: center;
   color: var(--dim);
-  font-size: 11px;
+  font-size: 14px;
 }
 .chart-legend {
   display: flex;
   gap: 20px;
   padding: 9px 25px 17px;
   color: var(--dim);
-  font-size: 8px;
+  font-size: 14px;
   align-items: center;
 }
 .chart-legend span {
@@ -1372,7 +1376,7 @@ code {
 }
 .chart-legend small {
   margin-left: auto;
-  font-size: 8px;
+  font-size: 14px;
 }
 .types-panel {
   display: flex;
@@ -1385,7 +1389,7 @@ code {
   display: flex;
   justify-content: space-between;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 14px;
 }
 .type-track {
   display: block;
@@ -1406,7 +1410,7 @@ code {
   margin-top: auto;
   padding: 20px 24px;
   color: var(--dim);
-  font-size: 10px;
+  font-size: 14px;
   line-height: 1.8;
 }
 .types-empty {
@@ -1417,7 +1421,7 @@ code {
   width: 75%;
 }
 .types-empty p {
-  font-size: 11px;
+  font-size: 14px;
   color: var(--dim);
   margin-top: 16px;
 }
@@ -1432,10 +1436,10 @@ table {
   white-space: nowrap;
 }
 th {
-  font-size: 8px;
+  font-size: 14px;
   letter-spacing: 1.2px;
   color: var(--dim);
-  font-weight: 400;
+  font-weight: 500;
   padding: 17px 20px 11px;
   border-bottom: 1px solid var(--line);
   text-transform: uppercase;
@@ -1444,7 +1448,7 @@ td {
   padding: 13px 20px;
   border-bottom: 1px solid #ffffff07;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 14px;
 }
 tbody tr:last-child td {
   border-bottom: 0;
@@ -1461,7 +1465,7 @@ tbody tr:hover {
   padding-right: 12px;
 }
 .task-table td {
-  font-size: 10px;
+  font-size: 14px;
   padding-top: 12px;
   padding-bottom: 12px;
 }
@@ -1471,7 +1475,7 @@ tbody tr:hover {
   background: none;
   color: #b0bfb8;
   font-family: Consolas, monospace;
-  font-size: 10px;
+  font-size: 14px;
 }
 .task-id span {
   color: var(--dim);
@@ -1484,7 +1488,7 @@ tbody tr:hover {
   align-items: center;
   gap: 7px;
   white-space: nowrap;
-  font-size: 10px;
+  font-size: 14px;
   color: #9baca5;
 }
 .status i {
@@ -1529,7 +1533,7 @@ tbody tr:hover {
   border-radius: 5px;
   margin: 17px 23px;
   color: #c2cfc8;
-  font-size: 10px;
+  font-size: 14px;
   font-family: Consolas, monospace;
   background: #101819;
   overflow: hidden;
@@ -1540,13 +1544,13 @@ tbody tr:hover {
   color: #6d8178;
 }
 .access-panel > p {
-  font-size: 10px;
+  font-size: 14px;
   line-height: 1.9;
   color: var(--muted);
   margin: 17px 24px;
 }
 .access-panel > .eyebrow {
-  font-size: 7px;
+  font-size: 14px;
   margin: 24px 24px 10px;
 }
 .access-panel > .text-link {
@@ -1563,23 +1567,23 @@ tbody tr:hover {
   color: var(--green);
 }
 .empty-mark {
-  font-size: 26px;
+  font-size: 28px;
   line-height: 1;
 }
 .empty-state h3 {
-  font-size: 12px;
+  font-size: 15px;
   color: #c6d0cb;
   margin-top: 14px;
 }
 .empty-state p {
-  font-size: 10px;
+  font-size: 14px;
   color: var(--dim);
   max-width: 340px;
   line-height: 1.9;
   margin-top: 8px;
 }
 .empty-state .text-link {
-  font-size: 10px;
+  font-size: 14px;
   margin-top: 17px;
 }
 .recent-panel .empty-state {
@@ -1588,7 +1592,7 @@ tbody tr:hover {
 .panel-loading {
   padding: 45px 25px;
   color: var(--dim);
-  font-size: 11px;
+  font-size: 14px;
 }
 .workspace-footer {
   padding: 35px 0 22px;
@@ -1598,11 +1602,11 @@ tbody tr:hover {
   gap: 30px;
   color: var(--dim);
   margin-top: auto;
-  font-size: 7px;
+  font-size: 14px;
   letter-spacing: 1.7px;
 }
 .workspace-footer a {
-  font-size: 12px;
+  font-size: 15px;
   letter-spacing: -0.5px;
 }
 .workspace-loading {
@@ -1613,7 +1617,7 @@ tbody tr:hover {
   gap: 20px;
   flex-direction: column;
   color: var(--dim);
-  font-size: 12px;
+  font-size: 15px;
 }
 .workspace-loading > .brand {
   margin-bottom: 30px;
@@ -1624,7 +1628,7 @@ tbody tr:hover {
 .demo-banner {
   margin-top: 18px;
   padding: 9px 14px;
-  font-size: 10px;
+  font-size: 14px;
   border: 1px solid #b6a57527;
   background: #b6a57508;
   color: #b5ab8d;
@@ -1651,7 +1655,7 @@ tbody tr:hover {
   align-items: center;
   gap: 21px;
   color: var(--dim);
-  font-size: 10px;
+  font-size: 14px;
   padding: 20px 0;
 }
 .pagination button {
@@ -1693,11 +1697,11 @@ tbody tr:hover {
   gap: 15px;
 }
 .dialog h2 {
-  font-size: 20px;
+  font-size: 22px;
   letter-spacing: -0.5px;
 }
 .dialog p {
-  font-size: 12px;
+  font-size: 15px;
   color: var(--muted);
   line-height: 1.8;
   margin-bottom: 24px;
@@ -1710,7 +1714,7 @@ tbody tr:hover {
   margin: 0;
 }
 .dialog .field-hint {
-  font-size: 10px;
+  font-size: 14px;
   margin-bottom: 0;
 }
 .dialog .notice {
@@ -1731,7 +1735,7 @@ tbody tr:hover {
   display: grid;
   grid-template-columns: 65px 1fr;
   gap: 13px;
-  font-size: 11px;
+  font-size: 14px;
   margin: 22px 0 28px;
 }
 .task-details dt {
@@ -1760,11 +1764,11 @@ tbody tr:hover {
   color: var(--blue);
 }
 .secret-reveal h2 {
-  font-size: 14px;
+  font-size: 17px;
   color: var(--text);
 }
 .secret-reveal p {
-  font-size: 11px;
+  font-size: 14px;
   color: var(--muted);
   margin-top: 12px;
 }
@@ -1782,12 +1786,12 @@ tbody tr:hover {
   font-family: Consolas, monospace;
   border: 0;
   background: none;
-  font-size: 12px;
+  font-size: 15px;
   color: #b2cec1;
   padding: 14px;
 }
 .below-table-note {
-  font-size: 10px;
+  font-size: 14px;
   color: var(--dim);
   margin-top: 18px;
 }
@@ -1808,14 +1812,14 @@ tbody tr:hover {
 }
 .balance-large {
   display: block;
-  font-size: 54px;
+  font-size: 58px;
   line-height: 1.3;
   letter-spacing: -2px;
-  font-weight: 400;
+  font-weight: 500;
   margin-top: 14px;
 }
 .billing-overview section > p {
-  font-size: 11px;
+  font-size: 14px;
   color: var(--dim);
   margin-top: 8px;
 }
@@ -1825,7 +1829,7 @@ tbody tr:hover {
   border-top: 1px solid var(--line);
   padding-top: 18px;
   margin-top: 36px;
-  font-size: 10px;
+  font-size: 14px;
   color: var(--muted);
   gap: 15px;
 }
@@ -1834,10 +1838,10 @@ tbody tr:hover {
   gap: 17px;
 }
 .topup-form h2 {
-  font-size: 15px;
+  font-size: 17px;
 }
 .topup-form p {
-  font-size: 11px;
+  font-size: 14px;
   color: var(--muted);
   line-height: 1.8;
 }
@@ -1868,7 +1872,7 @@ tbody tr:hover {
   margin-bottom: 17px;
 }
 .section-subheading h2 {
-  font-size: 14px;
+  font-size: 17px;
 }
 .settings-section {
   display: grid;
@@ -1879,10 +1883,10 @@ tbody tr:hover {
   max-width: 900px;
 }
 .settings-section h2 {
-  font-size: 15px;
+  font-size: 17px;
 }
 .settings-section > div > p {
-  font-size: 11px;
+  font-size: 14px;
   color: var(--muted);
   line-height: 1.9;
   margin-top: 12px;
@@ -1909,16 +1913,6 @@ tbody tr:hover {
     transform: translateY(0);
   }
 }
-@keyframes feather-light {
-  from {
-    opacity: 0.64;
-    filter: brightness(0.9);
-  }
-  to {
-    opacity: 0.8;
-    filter: brightness(0.98);
-  }
-}
 @media (min-width: 1600px) {
   .hero,
   .hero-content {
@@ -1928,7 +1922,7 @@ tbody tr:hover {
     padding-top: 190px;
   }
   .hero h1 {
-    font-size: 94px;
+    font-size: 101px;
   }
   .hero-material {
     background-size:
@@ -1944,7 +1938,7 @@ tbody tr:hover {
     padding-right: 65px;
   }
   .workspace-page-heading h1 {
-    font-size: 39px;
+    font-size: 42px;
   }
   .activity-chart {
     height: 260px;
@@ -1958,7 +1952,7 @@ tbody tr:hover {
     width: calc(100% - 80px);
   }
   .hero h1 {
-    font-size: 74px;
+    font-size: 79px;
   }
   .hero-material {
     background-size:
@@ -1983,7 +1977,7 @@ tbody tr:hover {
   .section-heading h2,
   .integration-copy h2,
   .faq-section h2 {
-    font-size: 43px;
+    font-size: 46px;
   }
   .feature-grid {
     gap: 24px;
@@ -2007,7 +2001,7 @@ tbody tr:hover {
     gap: 35px;
   }
   .closing-inner h2 {
-    font-size: 42px;
+    font-size: 45px;
   }
   .docs-layout {
     gap: 45px;
@@ -2026,10 +2020,10 @@ tbody tr:hover {
     padding: 0 17px;
   }
   .metrics strong {
-    font-size: 26px;
+    font-size: 28px;
   }
   .metrics > div > span {
-    font-size: 10px;
+    font-size: 14px;
   }
   .dashboard-grid {
     grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
@@ -2040,7 +2034,7 @@ tbody tr:hover {
     gap: 10px;
   }
   .panel-heading h2 {
-    font-size: 11px;
+    font-size: 14px;
   }
   .task-table td,
   .task-table th {
@@ -2049,7 +2043,7 @@ tbody tr:hover {
   .key-placeholder {
     margin-left: 17px;
     margin-right: 17px;
-    font-size: 9px;
+    font-size: 14px;
   }
   .access-panel > p,
   .access-panel > .eyebrow,
@@ -2061,7 +2055,7 @@ tbody tr:hover {
     gap: 45px;
   }
   .workspace-page-heading h1 {
-    font-size: 29px;
+    font-size: 31px;
   }
   .activity-chart {
     margin-left: 10px;
@@ -2077,7 +2071,7 @@ tbody tr:hover {
   }
   .public-links {
     gap: 20px;
-    font-size: 10px;
+    font-size: 14px;
   }
   .nav-actions {
     gap: 15px;
@@ -2090,7 +2084,7 @@ tbody tr:hover {
     padding-top: 157px;
   }
   .hero h1 {
-    font-size: 69px;
+    font-size: 74px;
     letter-spacing: -3.5px;
   }
   .hero-material {
@@ -2109,17 +2103,17 @@ tbody tr:hover {
   }
   .hero-footnote {
     gap: 20px;
-    font-size: 9px;
+    font-size: 14px;
     margin-top: 62px;
   }
   .hero-description {
-    font-size: 13px;
+    font-size: 16px;
   }
   .section-heading {
     margin-bottom: 40px;
   }
   .section-heading p {
-    font-size: 11px;
+    font-size: 14px;
     max-width: 230px;
   }
   .feature-grid {
@@ -2164,7 +2158,7 @@ tbody tr:hover {
     display: none;
   }
   .code-window pre {
-    font-size: 11px;
+    font-size: 14px;
   }
   .steps {
     gap: 24px;
@@ -2173,10 +2167,10 @@ tbody tr:hover {
     padding: 45px 0;
   }
   .steps h3 {
-    font-size: 12px;
+    font-size: 15px;
   }
   .steps p {
-    font-size: 10px;
+    font-size: 14px;
   }
   .pricing-section {
     padding: 60px 0;
@@ -2187,7 +2181,7 @@ tbody tr:hover {
     padding: 65px 0;
   }
   .faq-list summary {
-    font-size: 12px;
+    font-size: 15px;
   }
   .closing-inner {
     flex-wrap: wrap;
@@ -2213,10 +2207,10 @@ tbody tr:hover {
     bottom: 13%;
   }
   .auth-art h2 {
-    font-size: 29px;
+    font-size: 31px;
   }
   .auth-form-wrap h1 {
-    font-size: 30px;
+    font-size: 32px;
   }
   .auth-form-wrap {
     padding-top: 35px;
@@ -2242,7 +2236,7 @@ tbody tr:hover {
   }
   .docs-article h1,
   .policy-page h1 {
-    font-size: 45px;
+    font-size: 48px;
   }
   .policy-page {
     padding-top: 135px;
@@ -2253,22 +2247,22 @@ tbody tr:hover {
     padding-right: 14px;
   }
   .sidebar nav a {
-    font-size: 11px;
+    font-size: 14px;
     gap: 11px;
   }
   .sidebar > .brand {
-    font-size: 25px;
+    font-size: 27px;
   }
   .workspace-main {
     margin-left: 170px;
     padding: 0 23px;
   }
   .workspace-topline {
-    font-size: 7px;
+    font-size: 14px;
     padding-top: 28px;
   }
   .workspace-environment {
-    font-size: 6px;
+    font-size: 14px;
     letter-spacing: 1px;
   }
   .workspace-page-heading {
@@ -2276,13 +2270,13 @@ tbody tr:hover {
     gap: 15px;
   }
   .workspace-page-heading h1 {
-    font-size: 25px;
+    font-size: 27px;
   }
   .workspace-page-heading p {
-    font-size: 10px;
+    font-size: 14px;
   }
   .workspace-page-heading > .button {
-    font-size: 10px;
+    font-size: 14px;
     padding: 8px 10px;
     gap: 7px;
   }
@@ -2300,7 +2294,7 @@ tbody tr:hover {
     border-right: 0;
   }
   .metrics strong {
-    font-size: 28px;
+    font-size: 30px;
   }
   .dashboard-grid {
     grid-template-columns: 1fr;
@@ -2358,7 +2352,7 @@ tbody tr:hover {
     padding: 2px;
   }
   .task-table td {
-    font-size: 10px;
+    font-size: 14px;
   }
   .metrics > div:last-child {
     padding-left: 22px;
@@ -2372,7 +2366,7 @@ tbody tr:hover {
     width: calc(100% - 40px);
   }
   .brand {
-    font-size: 26px;
+    font-size: 28px;
   }
   .nav-inner {
     gap: 15px;
@@ -2392,7 +2386,7 @@ tbody tr:hover {
     border-radius: 7px;
     flex-direction: column;
     gap: 22px;
-    font-size: 13px;
+    font-size: 16px;
   }
   .public-links.open {
     display: flex;
@@ -2404,10 +2398,10 @@ tbody tr:hover {
     gap: 10px;
   }
   .sign-in {
-    font-size: 10px;
+    font-size: 14px;
   }
   .nav-actions > .button {
-    font-size: 10px;
+    font-size: 14px;
     padding: 8px 11px;
     gap: 9px;
     min-height: 33px;
@@ -2421,11 +2415,11 @@ tbody tr:hover {
     padding-bottom: 36px;
   }
   .hero .eyebrow {
-    font-size: 8px;
+    font-size: 14px;
     letter-spacing: 1.65px;
   }
   .hero h1 {
-    font-size: 65px;
+    font-size: 70px;
     letter-spacing: -3.6px;
     line-height: 1.05;
     margin-top: 25px;
@@ -2441,11 +2435,11 @@ tbody tr:hover {
       54% 21%;
     opacity: 0.64;
     background-image:
-      linear-gradient(90deg, #0b0e0ffa 0%, #0b0e0fc2 30%, #0b0e0f55 75%),
-      linear-gradient(0deg, #0c0e0f 0%, transparent 40%), url('/images/raven.webp');
+      linear-gradient(90deg, #0c0e0ffa 0%, #0c0e0fc2 30%, #0c0e0f55 75%),
+      linear-gradient(0deg, #0c0e0f 0%, #0c0e0f00 40%), url('/images/raven-lossless.webp');
   }
   .hero-description {
-    font-size: 12px;
+    font-size: 15px;
     max-width: 265px;
     margin-top: 23px;
   }
@@ -2460,10 +2454,10 @@ tbody tr:hover {
     min-height: 44px;
     padding: 11px 17px;
     gap: 18px;
-    font-size: 11px;
+    font-size: 14px;
   }
   .hero-actions > .text-link {
-    font-size: 11px;
+    font-size: 14px;
     gap: 9px;
   }
   .hero-footnote {
@@ -2471,7 +2465,7 @@ tbody tr:hover {
     flex-wrap: wrap;
     margin-top: 62px;
     max-width: 290px;
-    font-size: 8px;
+    font-size: 14px;
     row-gap: 13px;
   }
   .hero-footnote svg {
@@ -2482,7 +2476,7 @@ tbody tr:hover {
     gap: 6px;
   }
   .hero-index {
-    font-size: 8px;
+    font-size: 14px;
     bottom: 46px;
   }
   .product-section {
@@ -2498,13 +2492,13 @@ tbody tr:hover {
   .section-heading h2,
   .integration-copy h2,
   .faq-section h2 {
-    font-size: 42px;
+    font-size: 45px;
     letter-spacing: -1.9px;
     margin-top: 16px;
   }
   .section-heading p {
     max-width: none;
-    font-size: 11px;
+    font-size: 14px;
   }
   .feature-grid {
     gap: 30px 23px;
@@ -2513,12 +2507,12 @@ tbody tr:hover {
     padding-right: 15px;
   }
   .feature h3 {
-    font-size: 12px;
+    font-size: 15px;
     line-height: 1.6;
     max-width: 130px;
   }
   .feature p {
-    font-size: 10px;
+    font-size: 14px;
     line-height: 1.85;
   }
   .feature-top {
@@ -2528,7 +2522,7 @@ tbody tr:hover {
     width: 18px;
   }
   .feature-top span {
-    font-size: 8px;
+    font-size: 14px;
   }
   .integration-section {
     padding: 53px 0;
@@ -2537,12 +2531,12 @@ tbody tr:hover {
     display: block;
   }
   .integration-copy p {
-    font-size: 11px;
+    font-size: 14px;
     margin-top: 22px;
     padding-top: 0;
   }
   .integration-copy > .text-link {
-    font-size: 11px;
+    font-size: 14px;
     margin-top: 25px;
   }
   .integration-grid {
@@ -2553,15 +2547,15 @@ tbody tr:hover {
     height: 49px;
   }
   .code-tabs button {
-    font-size: 10px;
+    font-size: 14px;
   }
   .code-window pre {
     padding: 20px 15px;
-    font-size: 9px;
+    font-size: 14px;
     line-height: 1.95;
   }
   .code-caption {
-    font-size: 7px;
+    font-size: 14px;
     padding: 12px 16px;
   }
   .steps {
@@ -2569,17 +2563,17 @@ tbody tr:hover {
     gap: 29px 22px;
   }
   .steps h3 {
-    font-size: 12px;
+    font-size: 15px;
   }
   .steps p {
-    font-size: 10px;
+    font-size: 14px;
   }
   .step-number {
-    font-size: 24px;
+    font-size: 26px;
     margin-bottom: 10px;
   }
   .workflow > .eyebrow {
-    font-size: 8px;
+    font-size: 14px;
     letter-spacing: 1.7px;
   }
   .pricing-section {
@@ -2596,19 +2590,19 @@ tbody tr:hover {
   .pricing-panel > .button {
     grid-column: 1;
     justify-self: start;
-    font-size: 11px;
+    font-size: 14px;
   }
   .price {
-    font-size: 37px;
+    font-size: 40px;
   }
   .price > span {
-    font-size: 10px;
+    font-size: 14px;
     margin-left: 0;
   }
   .pricing-panel ul {
     padding-top: 20px;
     border-top: 1px solid var(--line);
-    font-size: 11px;
+    font-size: 14px;
     gap: 13px;
   }
   .pricing-panel > .button {
@@ -2616,7 +2610,7 @@ tbody tr:hover {
     justify-content: space-between;
   }
   .availability-note {
-    font-size: 9px;
+    font-size: 14px;
   }
   .faq-section {
     grid-template-columns: 1fr;
@@ -2633,19 +2627,19 @@ tbody tr:hover {
     padding: 20px 0;
   }
   .faq-list details p {
-    font-size: 11px;
+    font-size: 14px;
   }
   .closing-inner h2 {
-    font-size: 44px;
+    font-size: 47px;
   }
   .closing-inner {
     gap: 30px;
   }
   .closing-inner > .eyebrow {
-    font-size: 8px;
+    font-size: 14px;
   }
   .closing-inner > .button {
-    font-size: 11px;
+    font-size: 14px;
     min-height: 42px;
   }
   .footer {
@@ -2656,16 +2650,16 @@ tbody tr:hover {
   }
   .footer > span {
     margin-left: auto;
-    font-size: 8px;
+    font-size: 14px;
   }
   .footer nav {
     width: 100%;
     justify-content: space-between;
-    font-size: 9px;
+    font-size: 14px;
     gap: 20px;
   }
   .footer .brand {
-    font-size: 24px;
+    font-size: 26px;
   }
   .auth-page {
     display: block;
@@ -2691,7 +2685,7 @@ tbody tr:hover {
     align-self: center;
   }
   .auth-form-wrap h1 {
-    font-size: 34px;
+    font-size: 36px;
   }
   .auth-form-wrap form {
     margin-top: 29px;
@@ -2704,36 +2698,36 @@ tbody tr:hover {
     gap: 38px;
   }
   .docs-nav {
-    font-size: 10px;
+    font-size: 14px;
     gap: 15px;
   }
   .docs-nav .eyebrow {
-    font-size: 8px;
+    font-size: 14px;
   }
   .docs-article h1,
   .policy-page h1 {
-    font-size: 40px;
+    font-size: 43px;
     letter-spacing: -1.7px;
   }
   .docs-lead {
-    font-size: 12px;
+    font-size: 15px;
   }
   .docs-article section > p,
   .docs-article ol,
   .policy-page p {
-    font-size: 12px;
+    font-size: 15px;
   }
   .docs-article .code-window pre {
-    font-size: 9px;
+    font-size: 14px;
   }
   .docs-article h2,
   .policy-page h2 {
-    font-size: 22px;
+    font-size: 24px;
   }
   .docs-article table td {
     white-space: normal;
     min-width: 80px;
-    font-size: 10px;
+    font-size: 14px;
   }
   .policy-page {
     padding-top: 125px;
@@ -2743,7 +2737,7 @@ tbody tr:hover {
     padding: 40px 22px;
   }
   .not-found h1 {
-    font-size: 40px;
+    font-size: 43px;
   }
   .workspace-mobile-header {
     display: flex;
@@ -2754,7 +2748,7 @@ tbody tr:hover {
     border-bottom: 1px solid var(--line);
   }
   .workspace-mobile-header .brand {
-    font-size: 24px;
+    font-size: 26px;
   }
   .sidebar {
     transform: translateX(-100%);
@@ -2775,7 +2769,7 @@ tbody tr:hover {
     backdrop-filter: blur(3px);
   }
   .sidebar nav a {
-    font-size: 12px;
+    font-size: 15px;
     gap: 15px;
   }
   .sidebar-user small {
@@ -2791,7 +2785,7 @@ tbody tr:hover {
   }
   .workspace-topline {
     padding: 20px 0 17px;
-    font-size: 6px;
+    font-size: 14px;
     letter-spacing: 1.2px;
   }
   .workspace-page-heading {
@@ -2800,31 +2794,31 @@ tbody tr:hover {
     align-items: flex-start;
   }
   .workspace-page-heading h1 {
-    font-size: 27px;
+    font-size: 29px;
     letter-spacing: -1px;
   }
   .workspace-page-heading h1 em {
     letter-spacing: -1px;
   }
   .dashboard-heading h1 {
-    font-size: 28px;
+    font-size: 30px;
     max-width: 280px;
   }
   .workspace-page-heading p {
-    font-size: 10px;
+    font-size: 14px;
     margin-top: 10px;
     max-width: 280px;
     line-height: 1.8;
   }
   .workspace-page-heading > .button {
-    font-size: 9px;
+    font-size: 14px;
     gap: 6px;
     margin-top: 25px;
     white-space: nowrap;
     min-height: 34px;
   }
   .workspace-page-heading .eyebrow {
-    font-size: 7px;
+    font-size: 14px;
   }
   .dashboard-heading {
     padding-bottom: 3px;
@@ -2834,16 +2828,16 @@ tbody tr:hover {
     gap: 25px 0;
   }
   .metrics strong {
-    font-size: 30px;
+    font-size: 32px;
   }
   .metrics > div > span {
-    font-size: 10px;
+    font-size: 14px;
   }
   .metrics small {
-    font-size: 8px;
+    font-size: 14px;
   }
   .metrics a {
-    font-size: 9px;
+    font-size: 14px;
   }
   .metrics > div {
     padding-left: 23px;
@@ -2861,16 +2855,16 @@ tbody tr:hover {
     padding: 18px 17px 6px;
   }
   .panel-heading h2 {
-    font-size: 12px;
+    font-size: 15px;
   }
   .recent-panel .empty-state {
     min-height: 215px;
   }
   .access-panel p {
-    font-size: 10px;
+    font-size: 14px;
   }
   .key-placeholder {
-    font-size: 11px;
+    font-size: 14px;
     padding: 14px;
   }
   .types-panel {
@@ -2880,7 +2874,7 @@ tbody tr:hover {
     padding-top: 17px;
   }
   .workspace-footer {
-    font-size: 6px;
+    font-size: 14px;
     letter-spacing: 1.2px;
     padding-top: 33px;
   }
@@ -2888,23 +2882,23 @@ tbody tr:hover {
     gap: 12px;
   }
   .table-toolbar select {
-    font-size: 10px;
+    font-size: 14px;
   }
   .pagination {
     gap: 17px;
-    font-size: 9px;
+    font-size: 14px;
   }
   .dialog {
     padding: 23px;
   }
   .dialog h2 {
-    font-size: 18px;
+    font-size: 20px;
   }
   .dialog p {
-    font-size: 11px;
+    font-size: 14px;
   }
   .dialog label {
-    font-size: 11px;
+    font-size: 14px;
   }
   .modal-overlay {
     padding: 16px;
@@ -2913,24 +2907,24 @@ tbody tr:hover {
     padding: 22px 18px;
   }
   .secret-reveal p {
-    font-size: 10px;
+    font-size: 14px;
   }
   .secret-value input {
-    font-size: 9px;
+    font-size: 14px;
     padding: 14px 9px;
   }
   .below-table-note {
-    font-size: 9px;
+    font-size: 14px;
   }
   .billing-overview {
     padding-top: 26px;
     gap: 25px;
   }
   .balance-large {
-    font-size: 49px;
+    font-size: 52px;
   }
   .billing-rate {
-    font-size: 9px;
+    font-size: 14px;
   }
   .topup-form {
     gap: 17px;
@@ -2947,24 +2941,24 @@ tbody tr:hover {
     gap: 18px;
   }
   .settings-section > div > p {
-    font-size: 10px;
+    font-size: 14px;
   }
   .settings-section .field-hint {
-    font-size: 9px;
+    font-size: 14px;
   }
   .notice {
-    font-size: 10px;
+    font-size: 14px;
     padding: 12px 14px;
     margin: 19px 0;
   }
   .demo-banner {
-    font-size: 9px;
+    font-size: 14px;
   }
   .form-error {
-    font-size: 11px;
+    font-size: 14px;
   }
   .form-success {
-    font-size: 11px;
+    font-size: 14px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -2976,5 +2970,275 @@ tbody tr:hover {
   *:after {
     animation: none !important;
     transition: none !important;
+  }
+}
+
+/* Readable type and material interactions. The raven background stays static. */
+.hero-material {
+  animation: none;
+  filter: none;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: url('/images/material-grain.svg') repeat;
+  opacity: 0.018;
+}
+em {
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: inherit;
+}
+.hero h1 {
+  font-size: clamp(64px, 6.2vw, 96px);
+  font-weight: 600;
+  letter-spacing: -0.055em;
+  max-width: 660px;
+}
+.hero h1 em {
+  font-size: 1em;
+}
+.hero-description {
+  font-size: 19px;
+  max-width: 510px;
+  min-height: 65px;
+}
+.hero-content {
+  padding-top: 184px;
+}
+.section-heading h2,
+.integration-copy h2,
+.faq-section h2,
+.closing-inner h2 {
+  font-weight: 600;
+}
+.feature h3,
+.steps h3,
+.panel-heading h2 {
+  font-weight: 650;
+}
+.workspace-page-heading h1 {
+  font-weight: 600;
+}
+.workspace-page-heading h1 em {
+  font-family: inherit;
+  font-weight: 600;
+}
+.button {
+  position: relative;
+  isolation: isolate;
+  font-weight: 650;
+  min-height: 48px;
+  gap: 16px;
+}
+.button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: -1;
+  background: url('/images/raven.webp') 91% 77% / 340% auto;
+  opacity: 0;
+  transition:
+    opacity 650ms ease,
+    background-position 1100ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+.button:hover:not(:disabled)::before,
+.button:focus-visible:not(:disabled)::before {
+  opacity: 0.28;
+  background-position: 86% 70%;
+}
+.button-primary:hover:not(:disabled) {
+  background: #a7bfba;
+}
+.button-outline:hover:not(:disabled)::before {
+  opacity: 0.55;
+}
+.button:hover:not(:disabled) {
+  transform: none;
+}
+.raven-flight {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  pointer-events: none;
+}
+.language-switch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: transparent;
+  border: 1px solid var(--line);
+  color: #b9c8c4;
+  border-radius: 6px;
+  padding: 8px 10px;
+  min-height: 38px;
+  font-size: 14px;
+  font-weight: 650;
+  flex-shrink: 0;
+  transition: background 200ms;
+}
+.language-switch:hover {
+  background: #78958d12;
+}
+.sidebar-brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 44px;
+}
+.sidebar-brand-row .brand {
+  font-size: 27px;
+}
+.sidebar-brand-row .language-switch {
+  border: 0;
+  padding: 7px 2px;
+}
+.sidebar-brand-row .language-switch svg {
+  display: none;
+}
+.auth-brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.workspace-mobile-header .language-switch {
+  margin-left: auto;
+}
+.metrics small {
+  min-height: 28px;
+  line-height: 1.6;
+}
+.metrics > div > span {
+  min-height: 40px;
+}
+.workspace-footer {
+  justify-content: flex-end;
+}
+.demo-banner {
+  line-height: 1.65;
+}
+html[lang='ru'] .integration-copy h2 {
+  font-size: 44px;
+}
+@media (min-width: 561px) and (max-width: 1000px) {
+  .nav-inner {
+    gap: 18px;
+  }
+  .public-links {
+    gap: 20px;
+  }
+  .nav-actions {
+    gap: 14px;
+  }
+  .public-header .button-small {
+    display: none;
+  }
+}
+@media (max-width: 560px) {
+  .public-header .button-small {
+    display: none;
+  }
+  .nav-actions {
+    gap: 13px;
+  }
+  .nav-inner {
+    gap: 12px;
+  }
+  .hero-content {
+    padding-top: 154px;
+  }
+  .hero h1 {
+    font-size: clamp(38px, 12.3vw, 68px);
+    letter-spacing: -0.055em;
+  }
+  .hero-description {
+    font-size: 17px;
+  }
+  .hero-actions {
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .hero-actions .text-link {
+    font-size: 15px;
+  }
+  .hero-actions .button {
+    font-size: 15px;
+  }
+  .section-heading h2,
+  html[lang='ru'] .integration-copy h2 {
+    font-size: 36px;
+  }
+  .closing-inner h2 {
+    font-size: clamp(30px, 8.5vw, 42px);
+    max-width: 100%;
+  }
+  .feature-grid,
+  .steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .auth-brand-row {
+    margin-bottom: 40px;
+  }
+  .sidebar {
+    visibility: hidden;
+    transition:
+      transform 0.25s,
+      visibility 0.25s;
+  }
+  .sidebar-open {
+    visibility: visible;
+  }
+  .sidebar-brand-row {
+    margin-bottom: 34px;
+  }
+  .workspace-page-heading {
+    flex-wrap: wrap;
+  }
+  .metrics > div > span {
+    min-height: 48px;
+    font-size: 14px;
+  }
+  .metrics strong {
+    font-size: 30px;
+  }
+  .panel-heading {
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .language-switch {
+    min-height: 38px;
+  }
+  .footer nav {
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+}
+@media (max-width: 400px) {
+  .feature-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .feature {
+    border-right: 0;
+    padding-right: 0;
+  }
+  .feature h3 {
+    max-width: none;
+    font-size: 18px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .raven-flight {
+    display: none;
+  }
+  .button::before {
+    transition: none;
   }
 }

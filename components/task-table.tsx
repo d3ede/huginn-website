@@ -1,19 +1,27 @@
 'use client';
+import { Text, useI18n } from '@/components/i18n';
+
 import { useState } from 'react';
 import { ArrowUpRight, ChevronDown } from 'lucide-react';
-import { api, dateTime, usd } from '@/lib/api';
+import { api, dateTime, usd, seconds } from '@/lib/api';
 import type { Task } from '@/lib/types';
 import { Modal } from './modal';
 import { useWorkspace } from './workspace';
 export function Status({ status }: { status: Task['status'] }) {
+  const { t, locale } = useI18n();
+
   return (
     <span className={`status status-${status}`}>
       <i />
-      {status === 'succeeded' ? 'Solved' : status.charAt(0).toUpperCase() + status.slice(1)}
+      <Text>
+        {status === 'succeeded' ? 'Solved' : status.charAt(0).toUpperCase() + status.slice(1)}
+      </Text>
     </span>
   );
 }
 export function TaskTable({ tasks, detailed = false }: { tasks: Task[]; detailed?: boolean }) {
+  const { t, locale } = useI18n();
+
   const { user } = useWorkspace();
   const [selected, setSelected] = useState<Task | null>(null);
   const [error, setError] = useState('');
@@ -34,10 +42,15 @@ export function TaskTable({ tasks, detailed = false }: { tasks: Task[]; detailed
     return (
       <div className="empty-state">
         <span className="empty-mark">↗</span>
-        <h3>Your first task starts here.</h3>
-        <p>Once you send a task, its status and result will appear in your workspace.</p>
+        <h3>
+          <Text>Your first task starts here.</Text>
+        </h3>
+        <p>
+          <Text>Once you send a task, its status and result will appear in your workspace.</Text>
+        </p>
         <a href="/docs" className="text-link">
-          Read the quick start <ArrowUpRight size={14} />
+          <Text> Read the quick start </Text>
+          <ArrowUpRight size={14} />
         </a>
       </div>
     );
@@ -47,16 +60,30 @@ export function TaskTable({ tasks, detailed = false }: { tasks: Task[]; detailed
         <table className="task-table">
           <thead>
             <tr>
-              <th>Task ID</th>
-              <th>Type</th>
-              <th>Status</th>
-              <th>Time</th>
+              <th>
+                <Text>Task ID</Text>
+              </th>
+              <th>
+                <Text>Type</Text>
+              </th>
+              <th>
+                <Text>Status</Text>
+              </th>
+              <th>
+                <Text>Time</Text>
+              </th>
               {detailed && (
                 <>
-                  <th>Cost</th>
-                  <th>Created</th>
                   <th>
-                    <span className="sr-only">Details</span>
+                    <Text>Cost</Text>
+                  </th>
+                  <th>
+                    <Text>Created</Text>
+                  </th>
+                  <th>
+                    <span className="sr-only">
+                      <Text>Details</Text>
+                    </span>
                   </th>
                 </>
               )}
@@ -71,21 +98,21 @@ export function TaskTable({ tasks, detailed = false }: { tasks: Task[]; detailed
                     <span>…</span>
                   </button>
                 </td>
-                <td>hCaptcha</td>
+                <td>
+                  <Text>hCaptcha</Text>
+                </td>
                 <td>
                   <Status status={task.status} />
                 </td>
-                <td>
-                  {task.durationMs === null ? '—' : `${(task.durationMs / 1000).toFixed(1)}s`}
-                </td>
+                <td>{task.durationMs === null ? '—' : seconds(task.durationMs, locale)}</td>
                 {detailed && (
                   <>
                     <td>{usd(task.cost, 4)}</td>
-                    <td>{dateTime(task.createdAt, user.timezone)}</td>
+                    <td>{dateTime(task.createdAt, user.timezone, locale)}</td>
                     <td>
                       <button
                         className="icon-button"
-                        aria-label={`View task ${task.id.slice(0, 8)}`}
+                        aria-label={t(`View task ${task.id.slice(0, 8)}`)}
                         onClick={() => void inspect(task)}
                       >
                         <ChevronDown size={14} />
@@ -108,50 +135,68 @@ export function TaskTable({ tasks, detailed = false }: { tasks: Task[]; detailed
             onClick={(e) => e.stopPropagation()}
           >
             <div className="dialog-heading">
-              <h2 id="task-detail-title">Task details</h2>
+              <h2 id="task-detail-title">
+                <Text>Task details</Text>
+              </h2>
               <button
                 className="icon-button"
-                aria-label="Close task details"
+                aria-label={t('Close task details')}
                 onClick={() => setSelected(null)}
               >
                 ✕
               </button>
             </div>
             <dl className="task-details">
-              <dt>ID</dt>
+              <dt>
+                <Text>ID</Text>
+              </dt>
               <dd>{selected.id}</dd>
-              <dt>Website</dt>
+              <dt>
+                <Text>Website</Text>
+              </dt>
               <dd>{selected.websiteURL}</dd>
-              <dt>Status</dt>
+              <dt>
+                <Text>Status</Text>
+              </dt>
               <dd>
                 <Status status={selected.status} />
               </dd>
-              <dt>Cost</dt>
+              <dt>
+                <Text>Cost</Text>
+              </dt>
               <dd>{usd(selected.cost, 4)}</dd>
               {selected.errorCode && (
                 <>
-                  <dt>Error</dt>
+                  <dt>
+                    <Text>Error</Text>
+                  </dt>
                   <dd>{selected.errorCode}</dd>
                 </>
               )}
             </dl>
-            {loading && <p className="field-hint">Loading result…</p>}
+            {loading && (
+              <p className="field-hint">
+                <Text>Loading result…</Text>
+              </p>
+            )}
             {error && (
               <p className="form-error" role="alert">
-                {error}
+                <Text>{error}</Text>
               </p>
             )}
             {selected.result?.token && (
               <label>
-                Result token
+                <Text> Result token </Text>
                 <textarea readOnly value={selected.result.token} rows={4} />
               </label>
             )}
             {selected.status === 'succeeded' && !selected.result?.token && !loading && (
-              <p className="field-hint">Result tokens expire after 24 hours.</p>
+              <p className="field-hint">
+                <Text>Result tokens expire after 24 hours.</Text>
+              </p>
             )}
             <button className="button button-outline" onClick={() => setSelected(null)}>
-              Close
+              <Text> Close </Text>
             </button>
           </section>
         </Modal>

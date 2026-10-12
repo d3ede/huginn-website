@@ -1,16 +1,20 @@
+import { Text } from '@/components/i18n';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { PublicNav } from '@/components/public-nav';
 import { Footer } from '@/components/footer';
 import { CodeExample } from '@/components/code-example';
-export const metadata = { title: 'Documentation' };
+import { localizedTitle } from '@/lib/metadata';
+export const generateMetadata = () => localizedTitle('Documentation');
 export default function Docs() {
   return (
     <>
       <PublicNav />
       <main id="main" className="container docs-layout">
         <aside className="docs-nav">
-          <span className="eyebrow">DOCUMENTATION</span>
+          <span className="eyebrow">
+            <Text>DOCUMENTATION</Text>
+          </span>
           {[
             ['#start', 'Quick start'],
             ['#authentication', 'Authentication'],
@@ -19,134 +23,218 @@ export default function Docs() {
             ['#errors', 'Errors & limits'],
           ].map(([href, label]) => (
             <a href={href} key={href}>
-              {label}
+              <Text>{label}</Text>
             </a>
           ))}
           <Link href="/app">
-            Open workspace <ArrowRight size={14} />
+            <Text> Open workspace </Text>
+            <ArrowRight size={14} />
           </Link>
         </aside>
         <article className="docs-article">
-          <span className="eyebrow">HUGINN / API REFERENCE</span>
+          <span className="eyebrow">
+            <Text>HUGINN / API REFERENCE</Text>
+          </span>
           <h1>
-            A small API.
+            <Text> A small API. </Text>
             <br />
-            <em>Everything you need.</em>
+            <em>
+              <Text>Everything you need.</Text>
+            </em>
           </h1>
           <p className="docs-lead">
-            Submit an hCaptcha task, check its status, and retrieve the result. Standard HTTP.
-            Standard JSON.
+            <Text>
+              {' '}
+              Submit an hCaptcha task, check its status, and retrieve the result. Standard HTTP.
+              Standard JSON.{' '}
+            </Text>
           </p>
           <section id="start">
-            <h2>Quick start</h2>
+            <h2>
+              <Text>Quick start</Text>
+            </h2>
             <ol>
               <li>
-                <Link href="/register">Create an account</Link> and sign in.
+                <Link href="/register">
+                  <Text>Create an account</Text>
+                </Link>
+                <Text> and sign in. </Text>
               </li>
               <li>
-                Generate a key in <Link href="/app/keys">API Keys</Link>. Save it securely; it is
-                shown once.
+                <Text> Generate a key in </Text>
+                <Link href="/app/keys">
+                  <Text>API Keys</Text>
+                </Link>
+                <Text>. Save it securely; it is shown once. </Text>
               </li>
-              <li>Add balance from Billing when payments are enabled.</li>
               <li>
-                Set <code>HUGINN_BASE_URL</code> to your deployment URL plus <code>/api</code>{' '}
-                (locally: <code>http://localhost:3000/api</code>).
+                <Text>Add balance from Billing when payments are enabled.</Text>
               </li>
-              <li>Send a task and poll for a terminal status.</li>
+              <li>
+                <Text> Set </Text>
+                <code>HUGINN_BASE_URL</code>
+                <Text> to your deployment URL plus </Text>
+                <code>/api</code> <Text> (locally: </Text>
+                <code>http://localhost:3000/api</code>).
+              </li>
+              <li>
+                <Text>Send a task and poll for a terminal status.</Text>
+              </li>
             </ol>
             <div className="notice">
-              This preview has no solving or payment provider enabled by default. Unavailable
-              operations return an explicit 503 without changing your balance.
+              <Text>
+                {' '}
+                This preview has no solving or payment provider enabled by default. Unavailable
+                operations return an explicit 503 without changing your balance.{' '}
+              </Text>
             </div>
           </section>
           <section id="authentication">
-            <h2>Authentication</h2>
+            <h2>
+              <Text>Authentication</Text>
+            </h2>
             <p>
-              Use <code>Authorization: Bearer hg_live_…</code> for every external request. Keep API
-              keys in server environment variables. Never embed them in browser code. All production
-              requests must use HTTPS.
+              <Text> Use </Text>
+              <code>Authorization: Bearer hg_live_…</code>
+              <Text>
+                {' '}
+                for every external request. Keep API keys in server environment variables. Never
+                embed them in browser code. All production requests must use HTTPS.{' '}
+              </Text>
             </p>
             <p>
-              <code>GET /v1/balance</code> returns{' '}
-              <code>{'{ "balance": "0.000000", "currency": "USD" }'}</code>. Amounts are decimal USD
-              strings.
+              <code>GET /v1/balance</code>
+              <Text> returns</Text> <code>{'{ "balance": "0.000000", "currency": "USD" }'}</code>
+              <Text>. Amounts are decimal USD strings. </Text>
             </p>
           </section>
           <section id="tasks">
-            <h2>Create a task</h2>
+            <h2>
+              <Text>Create a task</Text>
+            </h2>
             <div className="endpoint">
-              <span>POST</span>
+              <span>
+                <Text>POST</Text>
+              </span>
               <code>/v1/tasks</code>
             </div>
-            <p>Send JSON with these required fields:</p>
+            <p>
+              <Text>Send JSON with these required fields:</Text>
+            </p>
             <div className="table-scroll">
               <table>
                 <thead>
                   <tr>
-                    <th>Field</th>
-                    <th>Value</th>
+                    <th>
+                      <Text>Field</Text>
+                    </th>
+                    <th>
+                      <Text>Value</Text>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td>type</td>
+                    <td>
+                      <Text>type</Text>
+                    </td>
                     <td>
                       <code>hcaptcha</code>
                     </td>
                   </tr>
                   <tr>
-                    <td>websiteURL</td>
-                    <td>The HTTP(S) URL of your authorized application</td>
+                    <td>
+                      <Text>websiteURL</Text>
+                    </td>
+                    <td>
+                      <Text>The HTTP(S) URL of your authorized application</Text>
+                    </td>
                   </tr>
                   <tr>
-                    <td>websiteKey</td>
-                    <td>The hCaptcha site key</td>
+                    <td>
+                      <Text>websiteKey</Text>
+                    </td>
+                    <td>
+                      <Text>The hCaptcha site key</Text>
+                    </td>
                   </tr>
                 </tbody>
               </table>
             </div>
             <p>
-              The API returns HTTP 202 with the task’s <code>id</code> and <code>status</code>.
-              Supply a unique <code>Idempotency-Key</code> header to make retries safe. Reusing a
-              key for different task input returns 409.
+              <Text> The API returns HTTP 202 with the task’s </Text>
+              <code>id</code>
+              <Text> and </Text>
+              <code>status</code>
+              <Text>. Supply a unique </Text>
+              <code>Idempotency-Key</code>
+              <Text>
+                {' '}
+                header to make retries safe. Reusing a key for different task input returns
+                409.{' '}
+              </Text>
             </p>
-            <h3>Retrieve a task</h3>
+            <h3>
+              <Text>Retrieve a task</Text>
+            </h3>
             <div className="endpoint">
-              <span>GET</span>
+              <span>
+                <Text>GET</Text>
+              </span>
               <code>/v1/tasks/:id</code>
             </div>
             <p>
-              Poll every two seconds with a bounded timeout. Status is <code>queued</code>,{' '}
-              <code>processing</code>, <code>succeeded</code>, or <code>failed</code>. A successful
-              result includes <code>result.token</code>. A failure includes an{' '}
-              <code>errorCode</code> and is refunded automatically.
+              <Text> Poll every two seconds with a bounded timeout. Status is </Text>
+              <code>queued</code>, <code>processing</code>, <code>succeeded</code>
+              <Text>, or </Text>
+              <code>failed</code>
+              <Text>. A successful result includes </Text>
+              <code>result.token</code>
+              <Text>. A failure includes an</Text> <code>errorCode</code>
+              <Text> and is refunded automatically. </Text>
             </p>
             <p>
-              Task result tokens are cleared after 24 hours. Retrieve and use results promptly. A
-              pending request reserves the configured task price; this becomes the final charge only
-              on success.
+              <Text>
+                {' '}
+                Task result tokens are cleared after 24 hours. Retrieve and use results promptly. A
+                pending request reserves the configured task price; this becomes the final charge
+                only on success.{' '}
+              </Text>
             </p>
           </section>
           <section id="example">
-            <h2>Working examples</h2>
+            <h2>
+              <Text>Working examples</Text>
+            </h2>
             <p>
-              Python requires <code>pip install requests</code>. JavaScript requires Node.js 22 or
-              later. Set <code>HUGINN_BASE_URL</code> and <code>HUGINN_API_KEY</code> before
-              running.
+              <Text> Python requires </Text>
+              <code>pip install requests</code>
+              <Text>. JavaScript requires Node.js 22 or later. Set </Text>
+              <code>HUGINN_BASE_URL</code>
+              <Text> and </Text>
+              <code>HUGINN_API_KEY</code>
+              <Text> before running. </Text>
             </p>
             <CodeExample />
           </section>
           <section id="errors">
-            <h2>Errors & limits</h2>
+            <h2>
+              <Text>Errors &amp; limits</Text>
+            </h2>
             <p>
-              Errors use <code>{'{ "error": { "code": "…", "message": "…" } }'}</code>.
+              <Text> Errors use </Text>
+              <code>{'{ "error": { "code": "…", "message": "…" } }'}</code>.
             </p>
             <div className="table-scroll">
               <table>
                 <thead>
                   <tr>
-                    <th>HTTP</th>
-                    <th>Meaning</th>
+                    <th>
+                      <Text>HTTP</Text>
+                    </th>
+                    <th>
+                      <Text>Meaning</Text>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -168,9 +256,12 @@ export default function Docs() {
               </table>
             </div>
             <p>
-              Default API limit: 120 requests per minute per client IP. Authentication is limited to
-              10 attempts per 15 minutes. Keep retries bounded and use exponential backoff on
-              temporary failures.
+              <Text>
+                {' '}
+                Default API limit: 120 requests per minute per client IP. Authentication is limited
+                to 10 attempts per 15 minutes. Keep retries bounded and use exponential backoff on
+                temporary failures.{' '}
+              </Text>
             </p>
           </section>
         </article>

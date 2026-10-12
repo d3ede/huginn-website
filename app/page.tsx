@@ -1,3 +1,4 @@
+import { Text } from '@/components/i18n';
 import Link from 'next/link';
 import {
   ArrowRight,
@@ -68,78 +69,61 @@ export default function Home() {
         <section className="hero">
           <div className="hero-material" aria-hidden="true" />
           <div className="container hero-content">
-            <span className="eyebrow reveal">INTELLIGENCE BEHIND AUTOMATION</span>
             <h1 className="reveal">
-              Solve
+              <Text> Solve </Text>
               <br />
-              what others
+              <Text> what others </Text>
               <br />
-              <em>can’t.</em>
+              <em>
+                <Text>can’t.</Text>
+              </em>
             </h1>
             <p className="hero-description reveal">
-              Developer-first hCaptcha
-              <br className="mobile-break" /> solving infrastructure.
+              <Text> Developer-first hCaptcha </Text>
+              <br className="mobile-break" />
+              <Text> solving infrastructure. </Text>
             </p>
             <div className="hero-actions reveal">
               <Link className="button button-primary" href="/register">
-                Get started <ArrowUpRight size={17} />
+                <Text> Get started </Text>
+                <ArrowUpRight size={17} />
               </Link>
               <Link className="text-link" href="/docs">
-                Documentation <ArrowRight size={17} />
+                <Text> Documentation </Text>
+                <ArrowRight size={17} />
               </Link>
             </div>
-            <div className="hero-footnote">
-              <span>
-                <Terminal size={14} /> A precise API
-              </span>
-              <span>
-                <KeyRound size={14} /> Complete control
-              </span>
-              <span>
-                <ShieldCheck size={14} /> Transparent billing
-              </span>
-            </div>
-            <div className="hero-aside" aria-hidden="true">
-              <span className="crosshair">⊕</span>
-              <p>
-                OBSERVE.
-                <br />
-                ADAPT.
-                <br />
-                AUTOMATE.
-              </p>
-              <span className="small-rule" />
-            </div>
-            <span className="hero-index" aria-hidden="true">
-              01 <span>/</span> 04
-            </span>
           </div>
         </section>
         <section id="product" className="container product-section section-border">
           <div className="section-heading">
             <div>
-              <span className="eyebrow">01 / CONSIDERED INFRASTRUCTURE</span>
               <h2>
-                Less friction.
+                <Text> Less friction. </Text>
                 <br />
-                <em>More focus.</em>
+                <em>
+                  <Text>More focus.</Text>
+                </em>
               </h2>
             </div>
             <p>
-              The details are taken care of.
+              <Text> The details are taken care of. </Text>
               <br />
-              Keep your attention on what you’re building.
+              <Text> Keep your attention on what you’re building. </Text>
             </p>
           </div>
           <div className="feature-grid">
-            {features.map(({ icon: Icon, title, copy }, i) => (
+            {features.map(({ icon: Icon, title, copy }) => (
               <article className="feature" key={title}>
                 <div className="feature-top">
                   <Icon size={21} strokeWidth={1.2} />
-                  <span>0{i + 1}</span>
                 </div>
-                <h3>{title}</h3>
-                <p>{copy}</p>
+                <h3>
+                  <Text>{title}</Text>
+                </h3>
+                <p>
+                  <Text>{copy}</Text>
+                </p>
               </article>
             ))}
           </div>
@@ -147,34 +131,27 @@ export default function Home() {
         <section className="integration-section section-border">
           <div className="container integration-grid">
             <div className="integration-copy">
-              <span className="eyebrow">02 / QUICK START</span>
               <h2>
-                A few lines.
+                <Text> A few lines. </Text>
                 <br />
-                <em>A clear path.</em>
+                <em>
+                  <Text>A clear path.</Text>
+                </em>
               </h2>
               <p>
-                A REST API that speaks your language.
+                <Text> A REST API that speaks your language. </Text>
                 <br />
-                No new stack. No unnecessary ceremony.
+                <Text> No new stack. No unnecessary ceremony. </Text>
               </p>
               <Link className="text-link" href="/docs">
-                Explore the documentation <ArrowRight size={17} />
+                <Text> Explore the documentation </Text>
+                <ArrowRight size={17} />
               </Link>
-              <div className="integration-detail">
-                <span className="small-rule" />
-                <span>
-                  SIMPLE BY DESIGN.
-                  <br />
-                  PRECISE BY NATURE.
-                </span>
-              </div>
             </div>
             <CodeExample compact />
           </div>
         </section>
         <section className="container workflow section-border">
-          <span className="eyebrow">FROM FIRST KEY TO FIRST RESULT</span>
           <div className="steps">
             {[
               ['Create an account', 'Your workspace, ready to use.'],
@@ -184,8 +161,12 @@ export default function Home() {
             ].map(([title, copy], i) => (
               <article key={title}>
                 <span className="step-number">0{i + 1}</span>
-                <h3>{title}</h3>
-                <p>{copy}</p>
+                <h3>
+                  <Text>{title}</Text>
+                </h3>
+                <p>
+                  <Text>{copy}</Text>
+                </p>
               </article>
             ))}
           </div>
@@ -193,35 +174,40 @@ export default function Home() {
         <Pricing />
         <section className="container faq-section section-border">
           <div>
-            <span className="eyebrow">04 / A LITTLE CLARITY</span>
             <h2>
-              Good
+              <Text> Good </Text>
               <br />
-              <em>questions.</em>
+              <em>
+                <Text>questions.</Text>
+              </em>
             </h2>
           </div>
           <div className="faq-list">
             {faqs.map(([question, answer]) => (
               <details key={question}>
                 <summary>
-                  {question}
+                  <Text>{question}</Text>
                   <Plus size={18} />
                 </summary>
-                <p>{answer}</p>
+                <p>
+                  <Text>{answer}</Text>
+                </p>
               </details>
             ))}
           </div>
         </section>
         <section className="closing-section">
           <div className="container closing-inner">
-            <span className="eyebrow">BUILT FOR THOSE WHO SEE FURTHER</span>
             <h2>
-              A quieter way
+              <Text> A quieter way </Text>
               <br />
-              <em>to build.</em>
+              <em>
+                <Text>to build.</Text>
+              </em>
             </h2>
             <Link className="button button-primary" href="/register">
-              Get started <ArrowUpRight size={17} />
+              <Text> Get started </Text>
+              <ArrowUpRight size={17} />
             </Link>
           </div>
         </section>

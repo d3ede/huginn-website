@@ -1,4 +1,6 @@
 'use client';
+import { Text, useI18n } from '@/components/i18n';
+
 import { useEffect, useState } from 'react';
 import { ArrowUpRight, LoaderCircle, Wallet } from 'lucide-react';
 import { useWorkspace } from '@/components/workspace';
@@ -15,6 +17,7 @@ const labels: Record<string, string> = {
   dev_credit: 'Development demo credit',
 };
 export default function BillingPage() {
+  const { locale } = useI18n();
   const { config, user } = useWorkspace();
   const [data, setData] = useState<Billing | null>(null);
   const [page, setPage] = useState(1);
@@ -50,33 +53,44 @@ export default function BillingPage() {
     <>
       <header className="workspace-page-heading">
         <div>
-          <span className="eyebrow">BALANCE & TRANSACTIONS</span>
           <h1>
-            Clear spending.
-            <br className="mobile-break" /> <em>Full control.</em>
+            <Text> Clear spending. </Text>
+            <br className="mobile-break" />{' '}
+            <em>
+              <Text>Full control.</Text>
+            </em>
           </h1>
-          <p>Only successful solutions become final charges.</p>
+          <p>
+            <Text>Only successful solutions become final charges.</Text>
+          </p>
         </div>
       </header>
       <div className="billing-overview">
         <section>
-          <span className="eyebrow">AVAILABLE BALANCE</span>
           <strong className="balance-large">{data ? usd(data.balance) : '—'}</strong>
-          <p>USD · prepaid balance</p>
+          <p>
+            <Text>USD · prepaid balance</Text>
+          </p>
           <div className="billing-rate">
-            <span>Current hCaptcha rate</span>
+            <span>
+              <Text>Current hCaptcha rate</Text>
+            </span>
             <span>{usd(Number(config.pricePerTask) * 1000)} / 1,000</span>
           </div>
         </section>
         <form className="topup-form" onSubmit={checkout}>
-          <h2>Add to your balance</h2>
+          <h2>
+            <Text>Add to your balance</Text>
+          </h2>
           <p>
-            {config.paymentsAvailable
-              ? 'You’ll continue to a secure provider checkout.'
-              : 'Payments are not connected yet. Your balance will not change.'}
+            <Text>
+              {config.paymentsAvailable
+                ? 'You’ll continue to a secure provider checkout.'
+                : 'Payments are not connected yet. Your balance will not change.'}
+            </Text>
           </p>
           <label>
-            Amount in USD
+            <Text> Amount in USD </Text>
             <div className="amount-input">
               <span>$</span>
               <input
@@ -95,47 +109,71 @@ export default function BillingPage() {
               <LoaderCircle className="spin" size={16} />
             ) : (
               <>
-                Continue to checkout <ArrowUpRight size={15} />
+                <Text> Continue to checkout </Text>
+                <ArrowUpRight size={15} />
               </>
             )}
           </button>
-          <span className="field-hint">Balance is credited only after a confirmed payment.</span>
+          <span className="field-hint">
+            <Text>Balance is credited only after a confirmed payment.</Text>
+          </span>
         </form>
       </div>
       {error && (
         <p className="form-error" role="alert">
-          {error}
+          <Text>{error}</Text>
         </p>
       )}
       <div className="section-subheading">
-        <h2>Transaction history</h2>
-        <span className="muted">{data?.total ?? '—'} entries</span>
+        <h2>
+          <Text>Transaction history</Text>
+        </h2>
+        <span className="muted">
+          {data?.total ?? '—'}
+          <Text> entries</Text>
+        </span>
       </div>
       <section className="workspace-panel full-panel">
         {!data ? (
-          <p className="panel-loading">Loading transactions…</p>
+          <p className="panel-loading">
+            <Text>Loading transactions…</Text>
+          </p>
         ) : !data.entries.length ? (
           <div className="empty-state">
             <Wallet size={23} strokeWidth={1.2} />
-            <h3>A clean ledger.</h3>
-            <p>Payments, reservations, and refunds will appear here.</p>
+            <h3>
+              <Text>A clean ledger.</Text>
+            </h3>
+            <p>
+              <Text>Payments, reservations, and refunds will appear here.</Text>
+            </p>
           </div>
         ) : (
           <div className="table-scroll">
             <table>
               <thead>
                 <tr>
-                  <th>Transaction</th>
-                  <th>Date</th>
-                  <th>Amount</th>
-                  <th>Balance after</th>
+                  <th>
+                    <Text>Transaction</Text>
+                  </th>
+                  <th>
+                    <Text>Date</Text>
+                  </th>
+                  <th>
+                    <Text>Amount</Text>
+                  </th>
+                  <th>
+                    <Text>Balance after</Text>
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {data.entries.map((entry) => (
                   <tr key={entry.id}>
-                    <td className="bright">{labels[entry.kind] ?? entry.kind}</td>
-                    <td>{dateTime(entry.createdAt, user.timezone)}</td>
+                    <td className="bright">
+                      <Text>{labels[entry.kind] ?? entry.kind}</Text>
+                    </td>
+                    <td>{dateTime(entry.createdAt, user.timezone, locale)}</td>
                     <td className={Number(entry.amount) > 0 ? 'positive' : ''}>
                       {Number(entry.amount) > 0 ? '+' : ''}
                       {usd(entry.amount, 4)}
@@ -150,11 +188,14 @@ export default function BillingPage() {
       </section>
       <div className="pagination">
         <button disabled={page === 1} onClick={() => setPage((v) => v - 1)}>
-          ← Previous
+          <Text> ← Previous </Text>
         </button>
-        <span>Page {page}</span>
+        <span>
+          <Text>Page </Text>
+          {page}
+        </span>
         <button disabled={!data || page * 20 >= data.total} onClick={() => setPage((v) => v + 1)}>
-          Next →
+          <Text> Next → </Text>
         </button>
       </div>
     </>

@@ -1,4 +1,6 @@
 'use client';
+import { Text, useI18n, LanguageSwitch } from '@/components/i18n';
+
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -6,6 +8,8 @@ import { ArrowUpRight, LoaderCircle } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Brand } from './brand';
 export function AuthForm({ register = false }: { register?: boolean }) {
+  const { t, locale } = useI18n();
+
   const router = useRouter();
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -32,52 +36,49 @@ export function AuthForm({ register = false }: { register?: boolean }) {
   }
   return (
     <main id="main" className="auth-page">
-      <div className="auth-art" aria-hidden="true">
-        <div className="auth-art-copy">
-          <span className="eyebrow">OBSERVE. ADAPT. AUTOMATE.</span>
-          <h2>
-            Thoughtfully built.
-            <br />
-            <em>Quietly capable.</em>
-          </h2>
-        </div>
-      </div>
+      <div className="auth-art" aria-hidden="true" />
       <div className="auth-content">
-        <Brand />
+        <div className="auth-brand-row">
+          <Brand />
+          <LanguageSwitch />
+        </div>
         <div className="auth-form-wrap">
-          <span className="eyebrow">YOUR HUGINN WORKSPACE</span>
-          <h1>{register ? 'See further.' : 'Welcome back.'}</h1>
+          <h1>
+            <Text>{register ? 'See further.' : 'Welcome back.'}</Text>
+          </h1>
           <p>
-            {register
-              ? 'Create an account. Build with a clearer view.'
-              : 'Sign in to your workspace.'}
+            <Text>
+              {register
+                ? 'Create an account. Build with a clearer view.'
+                : 'Sign in to your workspace.'}
+            </Text>
           </p>
           <form onSubmit={submit}>
             {register && (
               <label>
-                Name
+                <Text> Name </Text>
                 <input
                   name="name"
                   autoComplete="name"
                   required
                   maxLength={80}
-                  placeholder="Your name"
+                  placeholder={t('Your name')}
                 />
               </label>
             )}
             <label>
-              Email
+              <Text> Email </Text>
               <input
                 name="email"
                 type="email"
                 autoComplete="email"
                 required
                 maxLength={254}
-                placeholder="you@company.com"
+                placeholder={t('you@company.com')}
               />
             </label>
             <label>
-              Password
+              <Text> Password </Text>
               <input
                 name="password"
                 type="password"
@@ -85,15 +86,17 @@ export function AuthForm({ register = false }: { register?: boolean }) {
                 required
                 minLength={register ? 12 : 1}
                 maxLength={128}
-                placeholder={register ? 'At least 12 characters' : 'Your password'}
+                placeholder={t(register ? 'At least 12 characters' : 'Your password')}
               />
             </label>
             {register && (
-              <p className="field-hint">Use at least 12 characters. Keep this password unique.</p>
+              <p className="field-hint">
+                <Text>Use at least 12 characters. Keep this password unique.</Text>
+              </p>
             )}
             {error && (
               <p role="alert" className="form-error">
-                {error}
+                <Text>{error}</Text>
               </p>
             )}
             <button disabled={busy} className="button button-primary full-width">
@@ -101,7 +104,7 @@ export function AuthForm({ register = false }: { register?: boolean }) {
                 <LoaderCircle className="spin" size={17} />
               ) : (
                 <>
-                  {register ? 'Create account' : 'Sign in'}
+                  <Text>{register ? 'Create account' : 'Sign in'}</Text>
                   <ArrowUpRight size={16} />
                 </>
               )}
@@ -109,19 +112,26 @@ export function AuthForm({ register = false }: { register?: boolean }) {
           </form>
           {register && (
             <p className="auth-terms">
-              By creating an account, you agree to our <Link href="/terms">terms</Link> and{' '}
-              <Link href="/privacy">privacy policy</Link>.
+              <Text> By creating an account, you agree to our </Text>
+              <Link href="/terms">
+                <Text>terms</Text>
+              </Link>
+              <Text> and</Text>{' '}
+              <Link href="/privacy">
+                <Text>privacy policy</Text>
+              </Link>
+              .
             </p>
           )}
           <p className="auth-switch">
-            {register ? 'Already have an account?' : 'New to Huginn?'}{' '}
+            <Text>{register ? 'Already have an account?' : 'New to Huginn?'}</Text>{' '}
             <Link href={register ? '/login' : '/register'}>
-              {register ? 'Sign in' : 'Create an account'} <ArrowUpRight size={12} />
+              <Text>{register ? 'Sign in' : 'Create an account'}</Text> <ArrowUpRight size={12} />
             </Link>
           </p>
         </div>
         <Link className="auth-back" href="/">
-          ← Back to Huginn
+          <Text> ← Back to Huginn </Text>
         </Link>
       </div>
     </main>

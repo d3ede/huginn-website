@@ -1,4 +1,6 @@
 'use client';
+import { Text, useI18n } from '@/components/i18n';
+
 import { useEffect, useState } from 'react';
 import { Plus, Copy, Check, LoaderCircle, KeyRound, Trash2 } from 'lucide-react';
 import { api, dateTime } from '@/lib/api';
@@ -13,6 +15,8 @@ type Key = {
   revokedAt: string | null;
 };
 export default function KeysPage() {
+  const { t, locale } = useI18n();
+
   const { user } = useWorkspace();
   const [keys, setKeys] = useState<Key[] | null>(null);
   const [error, setError] = useState('');
@@ -76,12 +80,16 @@ export default function KeysPage() {
     <>
       <header className="workspace-page-heading">
         <div>
-          <span className="eyebrow">DEVELOPER ACCESS</span>
           <h1>
-            Your keys.
-            <br className="mobile-break" /> <em>Your control.</em>
+            <Text> Your keys. </Text>
+            <br className="mobile-break" />{' '}
+            <em>
+              <Text>Your control.</Text>
+            </em>
           </h1>
-          <p>A separate key for every integration.</p>
+          <p>
+            <Text>A separate key for every integration.</Text>
+          </p>
         </div>
         <button
           className="button button-primary button-small"
@@ -90,32 +98,38 @@ export default function KeysPage() {
             setError('');
           }}
         >
-          <Plus size={15} /> Create key
+          <Plus size={15} />
+          <Text> Create key </Text>
         </button>
       </header>
       {error && (
         <p className="form-error" role="alert">
-          {error}
+          <Text>{error}</Text>
         </p>
       )}
       {secret && (
         <section className="secret-reveal">
           <div>
             <KeyRound size={18} />
-            <h2>Save your new key.</h2>
+            <h2>
+              <Text>Save your new key.</Text>
+            </h2>
           </div>
           <p>
-            This is the only time the full key is shown. Keep it out of source control and browser
-            code.
+            <Text>
+              {' '}
+              This is the only time the full key is shown. Keep it out of source control and browser
+              code.{' '}
+            </Text>
           </p>
           <div className="secret-value">
             <input
-              aria-label="New API key"
+              aria-label={t('New API key')}
               readOnly
               value={secret}
               onFocus={(e) => e.target.select()}
             />
-            <button className="icon-button" onClick={copy} aria-label="Copy API key">
+            <button className="icon-button" onClick={copy} aria-label={t('Copy API key')}>
               {copied ? <Check size={17} /> : <Copy size={17} />}
             </button>
           </div>
@@ -126,29 +140,45 @@ export default function KeysPage() {
               setCopied(false);
             }}
           >
-            I’ve saved this key →
+            <Text> I’ve saved this key → </Text>
           </button>
         </section>
       )}
       <section className="workspace-panel full-panel">
         {keys === null ? (
-          <p className="panel-loading">Loading keys…</p>
+          <p className="panel-loading">
+            <Text>Loading keys…</Text>
+          </p>
         ) : keys.length === 0 ? (
           <div className="empty-state">
             <KeyRound size={23} strokeWidth={1.2} />
-            <h3>Your integration begins with a key.</h3>
-            <p>Create your first API key and save it somewhere secure.</p>
+            <h3>
+              <Text>Your integration begins with a key.</Text>
+            </h3>
+            <p>
+              <Text>Create your first API key and save it somewhere secure.</Text>
+            </p>
           </div>
         ) : (
           <div className="table-scroll">
             <table>
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Key</th>
-                  <th>Created</th>
-                  <th>Last used</th>
-                  <th>Status</th>
+                  <th>
+                    <Text>Name</Text>
+                  </th>
+                  <th>
+                    <Text>Key</Text>
+                  </th>
+                  <th>
+                    <Text>Created</Text>
+                  </th>
+                  <th>
+                    <Text>Last used</Text>
+                  </th>
+                  <th>
+                    <Text>Status</Text>
+                  </th>
                   <th />
                 </tr>
               </thead>
@@ -157,21 +187,25 @@ export default function KeysPage() {
                   <tr key={key.id}>
                     <td className="bright">{key.name}</td>
                     <td className="mono">{key.prefix}••••</td>
-                    <td>{dateTime(key.createdAt, user.timezone)}</td>
-                    <td>{key.lastUsedAt ? dateTime(key.lastUsedAt, user.timezone) : 'Never'}</td>
+                    <td>{dateTime(key.createdAt, user.timezone, locale)}</td>
+                    <td>
+                      <Text>
+                        {key.lastUsedAt ? dateTime(key.lastUsedAt, user.timezone, locale) : 'Never'}
+                      </Text>
+                    </td>
                     <td>
                       <span
                         className={`status ${key.revokedAt ? 'status-failed' : 'status-succeeded'}`}
                       >
                         <i />
-                        {key.revokedAt ? 'Revoked' : 'Active'}
+                        <Text>{key.revokedAt ? 'Revoked' : 'Active'}</Text>
                       </span>
                     </td>
                     <td>
                       {!key.revokedAt && (
                         <button
                           className="icon-button danger-hover"
-                          aria-label={`Revoke ${key.name}`}
+                          aria-label={t(`Revoke ${key.name}`)}
                           onClick={() => {
                             setRevoking(key);
                             setError('');
@@ -189,7 +223,7 @@ export default function KeysPage() {
         )}
       </section>
       <p className="below-table-note">
-        Only hashes are stored. Revoking a key immediately disables its access.
+        <Text> Only hashes are stored. Revoking a key immediately disables its access. </Text>
       </p>
       {modal && (
         <Modal onClose={() => setModal(false)} canClose={!busy}>
@@ -201,33 +235,35 @@ export default function KeysPage() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="dialog-heading">
-              <h2 id="create-key-title">Create API key</h2>
+              <h2 id="create-key-title">
+                <Text>Create API key</Text>
+              </h2>
               <button
                 className="icon-button"
                 onClick={() => setModal(false)}
                 disabled={busy}
-                aria-label="Close key form"
+                aria-label={t('Close key form')}
               >
                 ✕
               </button>
             </div>
             <form onSubmit={create}>
               <label>
-                Key name
+                <Text> Key name </Text>
                 <input
                   name="name"
-                  placeholder="e.g. Production application"
+                  placeholder={t('e.g. Production application')}
                   required
                   maxLength={80}
                 />
               </label>
               {error && (
                 <p className="form-error" role="alert">
-                  {error}
+                  <Text>{error}</Text>
                 </p>
               )}
               <button className="button button-primary" disabled={busy}>
-                {busy ? <LoaderCircle className="spin" size={16} /> : 'Generate key'}
+                <Text>{busy ? <LoaderCircle className="spin" size={16} /> : 'Generate key'}</Text>
               </button>
             </form>
           </section>
@@ -241,13 +277,21 @@ export default function KeysPage() {
             aria-modal="true"
             aria-labelledby="revoke-title"
           >
-            <h2 id="revoke-title">Revoke “{revoking.name}”?</h2>
+            <h2 id="revoke-title">
+              <Text>Revoke “</Text>
+              {revoking.name}
+              {locale === 'ru' ? '»?' : '”?'}
+            </h2>
             <p>
-              Applications using this key will immediately lose API access. This cannot be undone.
+              <Text>
+                {' '}
+                Applications using this key will immediately lose API access. This cannot be
+                undone.{' '}
+              </Text>
             </p>
             {error && (
               <p className="form-error" role="alert">
-                {error}
+                <Text>{error}</Text>
               </p>
             )}
             <div className="dialog-actions">
@@ -256,10 +300,10 @@ export default function KeysPage() {
                 disabled={busy}
                 onClick={() => setRevoking(null)}
               >
-                Keep key
+                <Text> Keep key </Text>
               </button>
               <button className="button button-danger" disabled={busy} onClick={revoke}>
-                {busy ? 'Revoking…' : 'Revoke key'}
+                <Text>{busy ? 'Revoking…' : 'Revoke key'}</Text>
               </button>
             </div>
           </section>

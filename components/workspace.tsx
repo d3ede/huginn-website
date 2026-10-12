@@ -1,4 +1,6 @@
 'use client';
+import { Text, useI18n, LanguageSwitch } from '@/components/i18n';
+
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
@@ -32,6 +34,8 @@ const navigation = [
   { href: '/app/settings', label: 'Settings', icon: Settings },
 ];
 export function Workspace({ children }: { children: React.ReactNode }) {
+  const { t, locale } = useI18n();
+
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
@@ -85,16 +89,18 @@ export function Workspace({ children }: { children: React.ReactNode }) {
         {error ? (
           <>
             <p className="form-error" role="alert">
-              {error}
+              <Text>{error}</Text>
             </p>
             <button className="button button-outline" onClick={load}>
-              Try again
+              <Text> Try again </Text>
             </button>
           </>
         ) : (
           <>
             <LoaderCircle size={22} className="spin" />
-            <span>Opening your workspace…</span>
+            <span>
+              <Text>Opening your workspace…</Text>
+            </span>
           </>
         )}
       </main>
@@ -104,10 +110,11 @@ export function Workspace({ children }: { children: React.ReactNode }) {
       <div className="workspace">
         <div className="workspace-mobile-header">
           <Brand />
+          <LanguageSwitch />
           <button
             className="icon-button"
             onClick={() => setMenu(!menu)}
-            aria-label={menu ? 'Close menu' : 'Open menu'}
+            aria-label={t(menu ? 'Close menu' : 'Open menu')}
             aria-expanded={menu}
           >
             {menu ? <X size={22} /> : <Menu size={22} />}
@@ -115,15 +122,17 @@ export function Workspace({ children }: { children: React.ReactNode }) {
         </div>
         {menu && (
           <button
-            aria-label="Close navigation"
+            aria-label={t('Close navigation')}
             className="sidebar-backdrop"
             onClick={() => setMenu(false)}
           />
         )}
         <aside className={`sidebar ${menu ? 'sidebar-open' : ''}`}>
-          <Brand />
-          <span className="sidebar-label">WORKSPACE</span>
-          <nav aria-label="Workspace navigation">
+          <div className="sidebar-brand-row">
+            <Brand />
+            <LanguageSwitch />
+          </div>
+          <nav aria-label={t('Workspace navigation')}>
             {navigation.map(({ href, label, icon: Icon }) => (
               <Link
                 href={href}
@@ -132,13 +141,14 @@ export function Workspace({ children }: { children: React.ReactNode }) {
                 aria-current={pathname === href ? 'page' : undefined}
               >
                 <Icon size={17} strokeWidth={1.4} />
-                {label}
+                <Text>{label}</Text>
               </Link>
             ))}
           </nav>
           <div className="sidebar-bottom">
             <Link href="/docs" className="sidebar-docs">
-              Documentation <ArrowUpRight size={14} />
+              <Text> Documentation </Text>
+              <ArrowUpRight size={14} />
             </Link>
             <div className="sidebar-user">
               <span className="avatar">{user.name.slice(0, 1).toUpperCase()}</span>
@@ -150,7 +160,7 @@ export function Workspace({ children }: { children: React.ReactNode }) {
                 onClick={logout}
                 disabled={loggingOut}
                 className="icon-button"
-                aria-label="Sign out"
+                aria-label={t('Sign out')}
               >
                 {loggingOut ? <LoaderCircle size={16} className="spin" /> : <LogOut size={16} />}
               </button>
@@ -160,29 +170,32 @@ export function Workspace({ children }: { children: React.ReactNode }) {
         <main className="workspace-main" id="main">
           <div className="workspace-topline">
             <span>
-              HUGINN <span className="breadcrumb-slash">/</span>{' '}
-              {navigation.find((n) => n.href === pathname)?.label.toUpperCase() ?? 'WORKSPACE'}
-            </span>
-            <span className="workspace-environment">
-              <i />
-              {config.demoMode ? 'DEVELOPMENT DEMO' : 'YOUR WORKSPACE'}
+              <Text> HUGINN </Text>
+              <span className="breadcrumb-slash">/</span>{' '}
+              <Text>
+                {navigation.find((n) => n.href === pathname)?.label.toUpperCase() ?? 'WORKSPACE'}
+              </Text>
             </span>
           </div>
           {error && (
             <p className="form-error" role="alert">
-              {error}
+              <Text>{error}</Text>
             </p>
           )}
           {config.demoMode && (
             <div className="demo-banner">
-              Development demo · Sample records are stored in this local database. Metrics are not
-              service performance claims.
+              <Text>
+                {' '}
+                Development demo · Sample records are stored in this local database. Metrics are not
+                service performance claims.{' '}
+              </Text>
             </div>
           )}
           {children}
           <footer className="workspace-footer">
-            <span>OBSERVE. ADAPT. AUTOMATE.</span>
-            <Link href="/">huginn.</Link>
+            <Link href="/">
+              <Text>huginn.</Text>
+            </Link>
           </footer>
         </main>
       </div>

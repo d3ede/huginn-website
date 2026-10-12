@@ -1,8 +1,12 @@
 'use client';
+import { Text, useI18n } from '@/components/i18n';
+
 import { useState } from 'react';
 import { Check, Copy } from 'lucide-react';
 import { pythonExample, javascriptExample } from '@/lib/examples';
 export function CodeExample({ compact = false }: { compact?: boolean }) {
+  const { t, locale } = useI18n();
+
   const [language, setLanguage] = useState<'Python' | 'JavaScript'>('Python');
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState(false);
@@ -20,7 +24,7 @@ export function CodeExample({ compact = false }: { compact?: boolean }) {
   return (
     <div className={`code-window ${compact ? 'code-compact' : ''}`}>
       <div className="code-toolbar">
-        <div className="code-tabs" role="tablist" aria-label="Example language">
+        <div className="code-tabs" role="tablist" aria-label={t('Example language')}>
           {(['Python', 'JavaScript'] as const).map((l) => (
             <button
               role="tab"
@@ -33,7 +37,7 @@ export function CodeExample({ compact = false }: { compact?: boolean }) {
             </button>
           ))}
         </div>
-        <button className="icon-button" onClick={copy} aria-label="Copy complete example">
+        <button className="icon-button" onClick={copy} aria-label={t('Copy complete example')}>
           {copied ? <Check size={16} /> : <Copy size={16} />}
         </button>
       </div>
@@ -46,15 +50,9 @@ export function CodeExample({ compact = false }: { compact?: boolean }) {
             : code}
         </code>
       </pre>
-      {compact && (
-        <div className="code-caption">
-          <span>01 / CREATE A TASK</span>
-          <span>REST API</span>
-        </div>
-      )}
       {copyError && (
         <p className="form-error" role="status">
-          Select the code to copy it manually.
+          <Text> Select the code to copy it manually. </Text>
         </p>
       )}
     </div>

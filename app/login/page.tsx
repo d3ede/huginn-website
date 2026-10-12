@@ -1,5 +1,6 @@
 import { AuthForm } from '@/components/auth-form';
-export const metadata = { title: 'Sign in' };
+import { localizedTitle } from '@/lib/metadata';
+export const generateMetadata = () => localizedTitle('Sign in');
 export default function Login() {
   return <AuthForm />;
 }

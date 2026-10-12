@@ -1,4 +1,6 @@
 'use client';
+import { Text } from '@/components/i18n';
+
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { ArrowUpRight, Check } from 'lucide-react';
@@ -16,47 +18,57 @@ export function Pricing() {
     <section id="pricing" className="pricing-section container section-border">
       <div className="section-heading">
         <div>
-          <span className="eyebrow">03 / SIMPLE ECONOMICS</span>
           <h2>
-            Only pay for
+            <Text> Only pay for </Text>
             <br />
-            <em>the result.</em>
+            <em>
+              <Text>the result.</Text>
+            </em>
           </h2>
         </div>
         <p>
-          One clear rate. A balance you control.
+          <Text> One clear rate. A balance you control. </Text>
           <br />
-          No subscription to keep track of.
+          <Text> No subscription to keep track of. </Text>
         </p>
       </div>
       <div className="pricing-panel">
         <div>
-          <span className="eyebrow">PAY AS YOU GO</span>
           <div className="price">
             {config ? usd(Number(config.pricePerTask) * 1000) : '—'}
-            <span> / 1,000 solutions</span>
+            <span>
+              <Text> / 1,000 solutions</Text>
+            </span>
           </div>
-          <p>hCaptcha · USD · charged per successful task</p>
+          <p>
+            <Text>hCaptcha · USD · charged per successful task</Text>
+          </p>
           {config && (!config.paymentsAvailable || !config.solverAvailable) && (
             <span className="availability-note">
-              Preview release. {config.paymentsAvailable ? '' : 'Payments are not connected yet.'}{' '}
-              {config.solverAvailable ? '' : 'Task processing is not enabled yet.'}
+              <Text> Preview release. </Text>
+              <Text>{config.paymentsAvailable ? '' : 'Payments are not connected yet.'}</Text>{' '}
+              <Text>{config.solverAvailable ? '' : 'Task processing is not enabled yet.'}</Text>
             </span>
           )}
-          {error && <p className="availability-note">Pricing is temporarily unavailable.</p>}
+          {error && (
+            <p className="availability-note">
+              <Text>Pricing is temporarily unavailable.</Text>
+            </p>
+          )}
         </div>
         <ul>
           {['No recurring fees', 'Failed tasks refunded', 'Usage and spending visibility'].map(
             (t) => (
               <li key={t}>
                 <Check size={15} />
-                {t}
+                <Text>{t}</Text>
               </li>
             ),
           )}
         </ul>
         <Link className="button button-primary" href="/register">
-          Create an account <ArrowUpRight size={16} />
+          <Text> Create an account </Text>
+          <ArrowUpRight size={16} />
         </Link>
       </div>
     </section>
