@@ -4037,3 +4037,288 @@ meter::-webkit-meter-optimum-value {
     margin-left: 0;
   }
 }
+/* Compact API reference: shared surfaces and predictable spacing. */
+.docs-visual {
+  max-width: 850px;
+}
+.docs-visual section > p {
+  line-height: 1.7;
+}
+.docs-visual .docs-caption {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--muted);
+  margin: 14px 0;
+}
+.docs-visual table {
+  width: 100%;
+}
+.docs-visual table td {
+  font-size: 13px;
+  line-height: 1.65;
+  vertical-align: top;
+}
+.docs-visual table td:first-child {
+  width: 38%;
+}
+.docs-visual table code {
+  overflow-wrap: anywhere;
+}
+.docs-start-grid,
+.docs-status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+.docs-start-grid > a,
+.docs-status-grid > div {
+  position: relative;
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+.docs-start-grid > a {
+  display: grid;
+  gap: 9px;
+  transition: border-color 0.15s;
+}
+.docs-start-grid > a:hover {
+  border-color: var(--blue);
+}
+.docs-start-grid > a > svg:first-child,
+.docs-status-grid svg {
+  color: var(--blue);
+}
+.docs-start-grid > a > svg:last-child {
+  position: absolute;
+  top: 24px;
+  right: 22px;
+  color: var(--muted);
+}
+.docs-start-grid strong,
+.docs-status-grid strong {
+  font-size: 15px;
+}
+.docs-start-grid span,
+.docs-status-grid p {
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+.docs-flow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 22px 0;
+}
+.docs-flow > div {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  padding: 20px;
+}
+.docs-flow > div + div {
+  border-left: 1px solid var(--line);
+}
+.docs-flow svg {
+  color: var(--blue);
+}
+.docs-flow strong,
+.docs-flow > div > span:last-child {
+  grid-column: 1 / -1;
+}
+.docs-flow strong {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+.docs-flow > div > span {
+  color: var(--muted);
+  font-size: 12px;
+}
+.docs-step-number {
+  opacity: 0.6;
+}
+.docs-note {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 16px 18px;
+  background: var(--surface);
+  border-radius: 6px;
+  margin: 18px 0;
+}
+.docs-note > svg {
+  color: var(--blue);
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.docs-note p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.docs-json {
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  overflow: hidden;
+  margin: 18px 0;
+  background: #fff;
+}
+.docs-json-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  background: var(--surface);
+  padding: 10px 16px;
+  color: var(--muted);
+  font-size: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.docs-json-head button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  color: var(--blue);
+  padding: 4px;
+  font-size: 12px;
+}
+.docs-json pre {
+  margin: 0;
+  padding: 18px 20px;
+  overflow-x: auto;
+  font-size: 12px;
+  line-height: 1.85;
+  color: #315879;
+}
+.docs-json pre code {
+  font-size: inherit;
+}
+.docs-json > p {
+  padding: 0 16px 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.docs-inline-result {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+  border-radius: 6px;
+  background: var(--surface);
+  font-size: 12px;
+  margin-top: 18px;
+}
+.docs-inline-result > span {
+  color: var(--muted);
+}
+.docs-inline-result > code {
+  overflow-wrap: anywhere;
+}
+.docs-disclosure {
+  border-top: 1px solid var(--line);
+  margin-top: 16px;
+}
+.docs-disclosure summary {
+  cursor: pointer;
+  padding: 16px 0;
+  color: var(--text);
+  font-size: 14px;
+}
+.docs-disclosure summary::marker {
+  color: var(--blue);
+}
+.docs-site-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+  margin: 20px 0;
+}
+.docs-site-body > h3 {
+  margin-top: 0;
+}
+.docs-site-body {
+  padding: 22px;
+  min-width: 0;
+}
+.docs-status-grid > div {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 10px;
+}
+.docs-status-grid p,
+.docs-status-grid code {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.docs-status-grid code {
+  font-size: 12px;
+  color: var(--muted);
+}
+.docs-billing-flow {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 20px 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+.docs-billing-flow strong {
+  display: block;
+  font-size: 14px;
+  color: var(--text);
+  margin-top: 4px;
+}
+.docs-billing-flow svg {
+  flex-shrink: 0;
+  color: var(--blue);
+}
+@media (max-width: 600px) {
+  .docs-start-grid,
+  .docs-status-grid {
+    grid-template-columns: 1fr;
+  }
+  .docs-flow {
+    grid-template-columns: 1fr;
+  }
+  .docs-flow > div + div {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+  .docs-flow > div {
+    grid-template-columns: auto auto 1fr;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+  }
+  .docs-flow strong {
+    grid-column: auto;
+  }
+  .docs-flow > div > span:last-child {
+    grid-column: 3;
+  }
+  .docs-site-body {
+    padding: 16px;
+  }
+  .docs-visual table td:first-child {
+    width: 44%;
+  }
+  .docs-visual table td,
+  .docs-visual table th {
+    padding: 12px 8px;
+  }
+  .docs-billing-flow {
+    gap: 16px;
+  }
+}

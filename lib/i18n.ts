@@ -1,5 +1,115 @@
 export type Locale = 'en' | 'ru';
 export const russian: Record<string, string> = {
+  'Website integrations': 'Интеграции сайтов',
+  'Boolean; defaults to false.': 'Boolean; по умолчанию false.',
+  'Use the captcha details from Steam’s /refreshcaptcha response in the same browser session.':
+    'Используйте данные капчи из ответа Steam на /refreshcaptcha в рамках той же браузерной сессии.',
+  'The hCaptcha site key returned by Steam.': 'Site key hCaptcha, полученный от Steam.',
+  'Copy gid from /refreshcaptcha as a string (1–32 digits).':
+    'Передайте gid из /refreshcaptcha строкой (1–32 цифры).',
+  'Copy s from /refreshcaptcha when present.':
+    'Передайте s из /refreshcaptcha, если он присутствует.',
+  'Keep the same proxy, cookies and user agent when continuing the Steam registration flow.':
+    'Продолжайте регистрацию Steam с теми же прокси, cookies и user agent.',
+  'Steam uses checkbox mode. Site settings are applied automatically and take priority over isInvisible; you can omit this field.':
+    'Steam использует режим checkbox. Настройки сайта применяются автоматически и имеют приоритет над isInvisible; это поле можно не передавать.',
+  'Replace the placeholders with your current session values. Omit s if Steam did not return it. Use HCaptchaTask with proxy fields when using your own proxy.':
+    'Замените значения в примере данными текущей сессии. Не передавайте s, если Steam его не вернул. Для своего прокси используйте HCaptchaTask с параметрами прокси.',
+  'Check balance': 'Проверка баланса',
+  '2Captcha-compatible JSON API. Create a task, wait for the result, use the token.':
+    'JSON API, совместимый с 2Captcha. Создайте задачу, дождитесь результата, используйте токен.',
+  'Create an API key': 'Создать API-ключ',
+  'Sign in. Save your key when it is shown.': 'Войдите и сохраните ключ при создании.',
+  'Add funds': 'Пополнить баланс',
+  'Top up your prepaid USD balance.': 'Пополните предоплаченный баланс в USD.',
+  'Save taskId': 'Сохраните taskId',
+  'Poll every 5 seconds': 'Проверяйте каждые 5 секунд',
+  'Use the solution token': 'Используйте токен решения',
+  'What to send': 'Что передать',
+  'Your site origin + /api': 'Адрес вашего сайта + /api',
+  'Your API key; keep it in server environment variables.':
+    'API-ключ; храните в переменных окружения сервера.',
+  'application/json · POST requests over HTTPS': 'application/json · POST-запросы по HTTPS',
+  'Include your API key in every JSON request.': 'Передавайте API-ключ в каждом JSON-запросе.',
+  'Keys never expire. Revoke them in API Keys. Any active key can retrieve your account’s tasks.':
+    'Ключи бессрочные. Отзывайте их в разделе API Keys. Любой активный ключ может получать задачи вашего аккаунта.',
+  'The full HTTP(S) URL where the captcha runs.': 'Полный HTTP(S) URL страницы с капчей.',
+  Request: 'Запрос',
+  Response: 'Ответ',
+  Copy: 'Копировать',
+  Copied: 'Скопировано',
+  'Save taskId. Each createTask call creates a new task; do not blindly retry a lost response.':
+    'Сохраните taskId. Каждый вызов createTask создаёт новую задачу; не повторяйте запрос вслепую при потере ответа.',
+  'Session and optional fields': 'Сессия и дополнительные поля',
+  'Boolean; defaults to false. Site settings take priority.':
+    'Boolean; по умолчанию false. Настройки сайта имеют приоритет.',
+  'Use the user agent of your browser session when needed.':
+    'При необходимости передайте user agent своей браузерной сессии.',
+  'Session cookies: name=value pairs separated by semicolons.':
+    'Cookies сессии: пары name=value через точку с запятой.',
+  'Language code, such as en or en-US.': 'Код языка, например en или en-US.',
+  'For Enterprise integrations: an object containing rqdata.':
+    'Для Enterprise-интеграций: объект с rqdata.',
+  'Site-specific session values. See the integration below.':
+    'Данные сессии для конкретного сайта. См. интеграцию ниже.',
+  'Using your own proxy': 'Использование своего прокси',
+  'HCaptchaTask (proxy fields are not accepted for HCaptchaTaskProxyless).':
+    'HCaptchaTask (HCaptchaTaskProxyless не принимает параметры прокси).',
+  'Proxy host and port.': 'Адрес и порт прокси.',
+  'Send both together if the proxy requires authentication.':
+    'Передавайте оба поля, если прокси требует авторизации.',
+  'Site settings take priority. Your parameters apply to everything the site does not override.':
+    'Настройки сайта имеют приоритет. Ваши параметры применяются ко всему, что сайт не переопределяет.',
+  'Website integration': 'Интеграция сайта',
+  'Other websites': 'Другие сайты',
+  'Matches /join and /join/, including URL query parameters.':
+    'Применяется к /join и /join/, в том числе с параметрами URL.',
+  'Your task settings apply unless this URL has its own site configuration.':
+    'Применяются ваши настройки задачи, если для URL нет отдельных настроек сайта.',
+  'Your request': 'Ваш запрос',
+  'Applied setting': 'Применяется',
+  'Invisible mode': 'Невидимый режим',
+  'Checkbox mode': 'Режим checkbox',
+  'Steam Join always uses a checkbox. Changing isInvisible does not change its mode.':
+    'Steam Join всегда использует checkbox. Изменение isInvisible не меняет режим.',
+  'Try changing isInvisible: the applied mode follows your request.':
+    'Измените isInvisible: применяемый режим соответствует вашему запросу.',
+  'For Steam Join': 'Для Steam Join',
+  'Join URL and the current hCaptcha site key.': 'URL регистрации и актуальный site key hCaptcha.',
+  'You can omit it. The site applies false.': 'Можно не передавать. Сайт применит false.',
+  "Optional: the site's gid, as a string of 1–32 digits.":
+    'Необязательно: gid сайта, строка из 1–32 цифр.',
+  'Optional: the integration state string from the site.':
+    'Необязательно: строка состояния интеграции с сайта.',
+  'Supply the session values your integration needs; site settings do not replace them.':
+    'Передайте данные сессии, нужные интеграции; настройки сайта их не заменяют.',
+  'View request example': 'Показать пример запроса',
+  'If supplied by the site, add websiteContext to task using your actual session values.':
+    'Если сайт предоставил эти данные, добавьте websiteContext в task со значениями своей сессии.',
+  'All supplied fields still need valid types and formats, even when a site overrides their value.':
+    'Типы и форматы всех переданных полей должны быть корректными, даже если сайт переопределяет значение.',
+  'Wait 5 seconds, then poll again.': 'Подождите 5 секунд и повторите проверку.',
+  'Stop polling. Read solution.gRecaptchaResponse.':
+    'Завершите проверку. Получите solution.gRecaptchaResponse.',
+  'View response examples': 'Показать примеры ответов',
+  Ready: 'Готово',
+  'The solution token. Use it promptly.': 'Токен решения. Используйте сразу.',
+  'Alias of gRecaptchaResponse.': 'Алиас gRecaptchaResponse.',
+  'The user agent is returned; respKey may also be present.':
+    'Возвращается user agent; также может присутствовать respKey.',
+  'Use a bounded timeout. Stop on ready or an error. Stored results expire after 24 hours by default.':
+    'Ограничьте время ожидания. Завершайте проверку при ready или ошибке. Результаты по умолчанию хранятся 24 часа.',
+  'Response · USD': 'Ответ · USD',
+  'Task accepted': 'Задача принята',
+  'Price reserved': 'Сумма зарезервирована',
+  'Success / failure': 'Успех / ошибка',
+  'Charged / refunded': 'Списание / возврат',
+  'Set HUGINN_BASE_URL and HUGINN_API_KEY first. Python: pip install requests. JavaScript: Node.js 22+.':
+    'Задайте HUGINN_BASE_URL и HUGINN_API_KEY. Python: pip install requests. JavaScript: Node.js 22+.',
+  'Always check errorId, including HTTP 200 responses. 0 means success; 1 means an error. Handle network and HTTP failures separately.':
+    'Всегда проверяйте errorId, даже при HTTP 200. 0 — успех, 1 — ошибка. Сетевые и HTTP-ошибки обрабатывайте отдельно.',
+  'Error response': 'Ответ с ошибкой',
+  'All error codes': 'Все коды ошибок',
   'Site-specific settings': 'Настройки конкретных сайтов',
   'Steam account creation': 'Создание аккаунта Steam',
   'Known site settings take priority over conflicting task parameters. Your parameters apply wherever the site does not specify a setting. All submitted values must still have valid types and formats.':

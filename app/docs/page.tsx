@@ -1,14 +1,60 @@
 import { Text } from '@/components/i18n';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, KeyRound, Wallet, Send, Clock3, CheckCircle2 } from 'lucide-react';
 import { PublicNav } from '@/components/public-nav';
 import { Footer } from '@/components/footer';
 import { CodeExample } from '@/components/code-example';
+import { JsonExample } from '@/components/docs-explorer';
 import { createTaskPayload, pollTaskPayload, readyTaskPayload } from '@/lib/examples';
 import { localizedTitle } from '@/lib/metadata';
 
 export const generateMetadata = () => localizedTitle('Documentation');
-
+function Fields({
+  rows,
+  first = 'Field',
+  second = 'What to send',
+}: {
+  rows: [string, string][];
+  first?: string;
+  second?: string;
+}) {
+  return (
+    <div className="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>
+              <Text>{first}</Text>
+            </th>
+            <th>
+              <Text>{second}</Text>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(([field, meaning]) => (
+            <tr key={field}>
+              <td>
+                <code>{field}</code>
+              </td>
+              <td>
+                <Text>{meaning}</Text>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+function Endpoint({ path }: { path: string }) {
+  return (
+    <div className="endpoint">
+      <span>POST</span>
+      <code>/{path}</code>
+    </div>
+  );
+}
 export default function Docs() {
   return (
     <>
@@ -22,7 +68,7 @@ export default function Docs() {
             ['#start', 'Quick start'],
             ['#requests', 'Request format'],
             ['#tasks', 'Create a task'],
-            ['#site-settings', 'Site-specific settings'],
+            ['#site-settings', 'Website integrations'],
             ['#result', 'Retrieve a task'],
             ['#balance', 'Check balance'],
             ['#example', 'Examples'],
@@ -37,7 +83,7 @@ export default function Docs() {
             <ArrowRight size={14} />
           </Link>
         </aside>
-        <article className="docs-article">
+        <article className="docs-article docs-visual">
           <span className="eyebrow">
             <Text>HUGINN / API REFERENCE</Text>
           </span>
@@ -46,264 +92,263 @@ export default function Docs() {
           </h1>
           <p className="docs-lead">
             <Text>
-              Use the 2Captcha-compatible JSON API to submit hCaptcha tasks and retrieve solution
-              tokens.
+              2Captcha-compatible JSON API. Create a task, wait for the result, use the token.
             </Text>
           </p>
           <section id="start">
             <h2>
               <Text>Quick start</Text>
             </h2>
-            <ol>
-              <li>
-                <Link href="/register">
-                  <Text>Create an account</Text>
-                </Link>
-                <Text> and sign in.</Text>
-              </li>
-              <li>
-                <Text>Generate a key in</Text>{' '}
-                <Link href="/app/keys">
-                  <Text>API Keys</Text>
-                </Link>
-                <Text>. Save it securely; it is shown once.</Text>
-              </li>
-              <li>
-                <Text>Add funds to your prepaid balance in Billing.</Text>
-              </li>
-              <li>
-                <Text>
-                  Set HUGINN_BASE_URL to your site origin followed by /api and HUGINN_API_KEY to
-                  your key.
-                </Text>
-              </li>
-              <li>
-                <Text>
-                  Call createTask, save taskId, then poll getTaskResult until status is ready.
-                </Text>
-              </li>
-            </ol>
+            <div className="docs-start-grid">
+              <Link href="/app/keys">
+                <KeyRound size={20} />
+                <strong>
+                  <Text>Create an API key</Text>
+                </strong>
+                <span>
+                  <Text>Sign in. Save your key when it is shown.</Text>
+                </span>
+                <ArrowRight size={15} />
+              </Link>
+              <Link href="/app/billing">
+                <Wallet size={20} />
+                <strong>
+                  <Text>Add funds</Text>
+                </strong>
+                <span>
+                  <Text>Top up your prepaid USD balance.</Text>
+                </span>
+                <ArrowRight size={15} />
+              </Link>
+            </div>
+            <div className="docs-flow">
+              <div>
+                <Send size={19} />
+                <span className="docs-step-number">1</span>
+                <strong>createTask</strong>
+                <span>
+                  <Text>Save taskId</Text>
+                </span>
+              </div>
+              <div>
+                <Clock3 size={19} />
+                <span className="docs-step-number">2</span>
+                <strong>getTaskResult</strong>
+                <span>
+                  <Text>Poll every 5 seconds</Text>
+                </span>
+              </div>
+              <div>
+                <CheckCircle2 size={19} />
+                <span className="docs-step-number">3</span>
+                <strong>ready</strong>
+                <span>
+                  <Text>Use the solution token</Text>
+                </span>
+              </div>
+            </div>
           </section>
           <section id="requests">
             <h2>
               <Text>Request format</Text>
             </h2>
-            <p>
-              <Text>
-                Send POST requests with Content-Type: application/json. Method paths are relative to
-                HUGINN_BASE_URL.
-              </Text>
-            </p>
-            <p>
-              <Text>
-                The JSON request includes clientKey. Keep your API key in server environment
-                variables and outside browser code. Use HTTPS for public requests.
-              </Text>
-            </p>
-            <p>
-              <Text>
-                Keys never expire. Revoke them in API Keys whenever needed. Revoked keys cannot
-                create tasks, retrieve results, or check balance. Any active key on your account can
-                retrieve your tasks.
-              </Text>
-            </p>
-            <p>
-              <Text>
-                Check errorId in every response, including HTTP 200 responses. An errorId of 0
-                indicates success; an errorId of 1 includes errorCode and errorDescription.
-              </Text>
-            </p>
+            <Fields
+              rows={[
+                ['HUGINN_BASE_URL', 'Your site origin + /api'],
+                ['HUGINN_API_KEY', 'Your API key; keep it in server environment variables.'],
+                ['Content-Type', 'application/json · POST requests over HTTPS'],
+                ['clientKey', 'Include your API key in every JSON request.'],
+              ]}
+            />
+            <div className="docs-note">
+              <KeyRound size={17} />
+              <p>
+                <Text>
+                  Keys never expire. Revoke them in API Keys. Any active key can retrieve your
+                  account’s tasks.
+                </Text>
+              </p>
+            </div>
           </section>
           <section id="tasks">
             <h2>
               <Text>Create a task</Text>
             </h2>
-            <div className="endpoint">
-              <span>POST</span>
-              <code>/createTask</code>
-            </div>
-            <pre>
-              <code>{JSON.stringify(createTaskPayload, null, 2)}</code>
-            </pre>
-            <div className="table-scroll">
-              <table>
-                <thead>
-                  <tr>
-                    <th>
-                      <Text>Field</Text>
-                    </th>
-                    <th>
-                      <Text>Value</Text>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    ['clientKey', 'Your API key'],
-                    ['task.type', 'HCaptchaTaskProxyless or HCaptchaTask'],
-                    ['task.websiteURL', 'The HTTP(S) URL of your authorized application'],
-                    ['task.websiteKey', 'The hCaptcha site key'],
-                  ].map(([field, value]) => (
-                    <tr key={field}>
-                      <td>
-                        <code>{field}</code>
-                      </td>
-                      <td>
-                        <Text>{value}</Text>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <p>
-              <Text>
-                A successful response returns errorId: 0 and taskId. Save that taskId and use it for
-                polling.
-              </Text>
-            </p>
-            <pre>
+            <Endpoint path="createTask" />
+            <JsonExample label="Request" value={createTaskPayload} />
+            <Fields
+              rows={[
+                ['clientKey', 'Your API key'],
+                ['task.type', 'HCaptchaTaskProxyless or HCaptchaTask'],
+                ['task.websiteURL', 'The full HTTP(S) URL where the captcha runs.'],
+                ['task.websiteKey', 'The hCaptcha site key'],
+              ]}
+            />
+            <div className="docs-inline-result">
+              <span>
+                <Text>Response</Text>
+              </span>
               <code>{'{ "errorId": 0, "taskId": "TASK_ID" }'}</code>
-            </pre>
-            <p>
-              <Text>
-                Each createTask call creates a new task. If the response is lost, do not blindly
-                resubmit: a second request can create another task.
-              </Text>
-            </p>
-            <h3>
-              <Text>Optional task fields</Text>
-            </h3>
-            <div className="table-scroll">
-              <table>
-                <thead>
-                  <tr>
-                    <th>
-                      <Text>Field</Text>
-                    </th>
-                    <th>
-                      <Text>Value</Text>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    ['isInvisible', 'Boolean; defaults to false'],
-                    ['userAgent', 'Browser user-agent string'],
-                    ['cookies', 'Cookie string using name=value pairs separated by semicolons'],
-                    ['languagePool', 'Language code such as en or en-US'],
-                    ['enterprisePayload', 'Object containing rqdata'],
-                    ['websiteContext', 'Optional website integration context'],
-                  ].map(([field, value]) => (
-                    <tr key={field}>
-                      <td>
-                        <code>{field}</code>
-                      </td>
-                      <td>
-                        <Text>{value}</Text>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
             </div>
-            <h3>
-              <Text>Tasks with a proxy</Text>
-            </h3>
-            <p>
+            <p className="docs-caption">
               <Text>
-                Use HCaptchaTask with proxyType, proxyAddress, and proxyPort. Supported proxy types
-                are http, https, and socks5. Supply proxyLogin and proxyPassword together when
-                required. Proxy fields are not accepted for HCaptchaTaskProxyless.
+                Save taskId. Each createTask call creates a new task; do not blindly retry a lost
+                response.
               </Text>
             </p>
+            <details className="docs-disclosure">
+              <summary>
+                <Text>Session and optional fields</Text>
+              </summary>
+              <Fields
+                rows={[
+                  ['isInvisible', 'Boolean; defaults to false.'],
+                  ['userAgent', 'Use the user agent of your browser session when needed.'],
+                  ['cookies', 'Session cookies: name=value pairs separated by semicolons.'],
+                  ['languagePool', 'Language code, such as en or en-US.'],
+                  [
+                    'enterprisePayload',
+                    'For Enterprise integrations: an object containing rqdata.',
+                  ],
+                  ['websiteContext', 'Site-specific session values. See the integration below.'],
+                ]}
+              />
+            </details>
+            <details className="docs-disclosure">
+              <summary>
+                <Text>Using your own proxy</Text>
+              </summary>
+              <Fields
+                rows={[
+                  [
+                    'type',
+                    'HCaptchaTask (proxy fields are not accepted for HCaptchaTaskProxyless).',
+                  ],
+                  ['proxyType', 'http, https or socks5'],
+                  ['proxyAddress · proxyPort', 'Proxy host and port.'],
+                  [
+                    'proxyLogin · proxyPassword',
+                    'Send both together if the proxy requires authentication.',
+                  ],
+                ]}
+              />
+            </details>
           </section>
           <section id="site-settings">
             <h2>
-              <Text>Site-specific settings</Text>
+              <Text>Website integrations</Text>
             </h2>
-            <p>
-              <Text>
-                Known site settings take priority over conflicting task parameters. Your parameters
-                apply wherever the site does not specify a setting. All submitted values must still
-                have valid types and formats.
-              </Text>
-            </p>
-            <h3>
-              <Text>Steam account creation</Text>
-            </h3>
-            <p>
-              <Text>
-                For https://store.steampowered.com/join/ (with or without a query string), hCaptcha
-                runs in checkbox mode. isInvisible: true is ignored for this integration. Other URLs
-                keep the requested mode unless their own site settings specify otherwise.
-              </Text>
-            </p>
-            <p>
-              <Text>
-                Use websiteContext for integration values obtained from the website. Steam Join
-                accepts gid as a numeric string of up to 32 digits, and s as the integration state
-                string. These fields are optional and validated for the matching website; they are
-                not universal task fields.
-              </Text>
-            </p>
-            <pre>
-              <code>
-                {JSON.stringify(
-                  {
-                    clientKey: 'YOUR_API_KEY',
-                    task: {
-                      type: 'HCaptchaTaskProxyless',
-                      websiteURL: 'https://store.steampowered.com/join/',
-                      websiteKey: 'SITE_KEY',
-                      isInvisible: false,
-                      websiteContext: { gid: '2971917980901569', s: '' },
-                    },
-                  },
-                  null,
-                  2,
-                )}
-              </code>
-            </pre>
-            <p>
-              <Text>
-                Continue supplying the website key, proxy, cookies, user agent, language and
-                Enterprise data required by your integration. Site-specific configuration only
-                overrides established settings; it does not replace missing session data.
-              </Text>
-            </p>
+            <div className="docs-site-card">
+              <div className="docs-site-body">
+                <h3>
+                  <Text>Steam account creation</Text>
+                </h3>
+                <p className="docs-caption">
+                  <Text>
+                    Use the captcha details from Steam’s /refreshcaptcha response in the same
+                    browser session.
+                  </Text>
+                </p>
+                <Fields
+                  rows={[
+                    ['websiteURL', 'https://store.steampowered.com/join/'],
+                    ['websiteKey', 'The hCaptcha site key returned by Steam.'],
+                    [
+                      'websiteContext.gid',
+                      'Copy gid from /refreshcaptcha as a string (1–32 digits).',
+                    ],
+                    ['websiteContext.s', 'Copy s from /refreshcaptcha when present.'],
+                  ]}
+                />
+                <p className="docs-caption">
+                  <Text>
+                    Keep the same proxy, cookies and user agent when continuing the Steam
+                    registration flow.
+                  </Text>
+                </p>
+                <div className="docs-note">
+                  <p>
+                    <Text>
+                      Steam uses checkbox mode. Site settings are applied automatically and take
+                      priority over isInvisible; you can omit this field.
+                    </Text>
+                  </p>
+                </div>
+                <details className="docs-disclosure">
+                  <summary>
+                    <Text>View request example</Text>
+                  </summary>
+                  <JsonExample
+                    label="Request"
+                    value={{
+                      clientKey: 'YOUR_API_KEY',
+                      task: {
+                        type: 'HCaptchaTaskProxyless',
+                        websiteURL: 'https://store.steampowered.com/join/',
+                        websiteKey: 'SITE_KEY_FROM_STEAM',
+                        websiteContext: {
+                          gid: 'GID_FROM_REFRESHCAPTCHA',
+                          s: 'S_FROM_REFRESHCAPTCHA',
+                        },
+                      },
+                    }}
+                  />
+                  <p className="docs-caption">
+                    <Text>
+                      Replace the placeholders with your current session values. Omit s if Steam did
+                      not return it. Use HCaptchaTask with proxy fields when using your own proxy.
+                    </Text>
+                  </p>
+                </details>
+              </div>
+            </div>
           </section>
           <section id="result">
             <h2>
               <Text>Retrieve a task</Text>
             </h2>
-            <div className="endpoint">
-              <span>POST</span>
-              <code>/getTaskResult</code>
+            <Endpoint path="getTaskResult" />
+            <JsonExample label="Request" value={pollTaskPayload} />
+            <div className="docs-status-grid">
+              <div>
+                <Clock3 size={19} />
+                <strong>processing</strong>
+                <p>
+                  <Text>Wait 5 seconds, then poll again.</Text>
+                </p>
+                <code>errorId: 0</code>
+              </div>
+              <div>
+                <CheckCircle2 size={19} />
+                <strong>ready</strong>
+                <p>
+                  <Text>Stop polling. Read solution.gRecaptchaResponse.</Text>
+                </p>
+                <code>errorId: 0</code>
+              </div>
             </div>
-            <pre>
-              <code>{JSON.stringify(pollTaskPayload, null, 2)}</code>
-            </pre>
-            <p>
-              <Text>While the task is pending, the response is:</Text>
-            </p>
-            <pre>
-              <code>{'{ "errorId": 0, "status": "processing" }'}</code>
-            </pre>
-            <p>
+            <details className="docs-disclosure">
+              <summary>
+                <Text>View response examples</Text>
+              </summary>
+              <JsonExample label="Processing" value={{ errorId: 0, status: 'processing' }} />
+              <JsonExample label="Ready" value={readyTaskPayload} />
+            </details>
+            <Fields
+              second="Meaning"
+              rows={[
+                ['solution.gRecaptchaResponse', 'The solution token. Use it promptly.'],
+                ['solution.token', 'Alias of gRecaptchaResponse.'],
+                [
+                  'solution.userAgent · respKey',
+                  'The user agent is returned; respKey may also be present.',
+                ],
+              ]}
+            />
+            <p className="docs-caption">
               <Text>
-                Poll every five seconds with a bounded timeout. When status is ready, read
-                solution.gRecaptchaResponse:
-              </Text>
-            </p>
-            <pre>
-              <code>{JSON.stringify(readyTaskPayload, null, 2)}</code>
-            </pre>
-            <p>
-              <Text>
-                solution.token is an alias of gRecaptchaResponse. The response also includes
-                userAgent and may include respKey. Use the returned token promptly; stored results
-                expire after 24 hours by default.
+                Use a bounded timeout. Stop on ready or an error. Stored results expire after 24
+                hours by default.
               </Text>
             </p>
           </section>
@@ -311,36 +356,39 @@ export default function Docs() {
             <h2>
               <Text>Check balance</Text>
             </h2>
-            <div className="endpoint">
-              <span>POST</span>
-              <code>/getBalance</code>
-            </div>
-            <pre>
-              <code>{'{ "clientKey": "YOUR_API_KEY" }'}</code>
-            </pre>
-            <p>
-              <Text>The response contains your available prepaid balance in USD.</Text>
-            </p>
-            <pre>
+            <Endpoint path="getBalance" />
+            <JsonExample label="Request" value={{ clientKey: 'YOUR_API_KEY' }} />
+            <div className="docs-inline-result">
+              <span>
+                <Text>Response · USD</Text>
+              </span>
               <code>{'{ "errorId": 0, "balance": 10.5 }'}</code>
-            </pre>
-            <p>
-              <Text>
-                The task price is reserved when accepted, charged on success, and refunded
-                automatically on failure.
-              </Text>
-            </p>
+            </div>
+            <div className="docs-billing-flow">
+              <span>
+                <Text>Task accepted</Text>
+                <strong>
+                  <Text>Price reserved</Text>
+                </strong>
+              </span>
+              <ArrowRight size={17} />
+              <span>
+                <Text>Success / failure</Text>
+                <strong>
+                  <Text>Charged / refunded</Text>
+                </strong>
+              </span>
+            </div>
           </section>
           <section id="example">
             <h2>
               <Text>Working examples</Text>
             </h2>
-            <p>
-              <Text>Python requires</Text> <code>pip install requests</code>
-              <Text>. JavaScript requires Node.js 22 or later. Set</Text>{' '}
-              <code>HUGINN_BASE_URL</code>
-              <Text> and</Text> <code>HUGINN_API_KEY</code>
-              <Text> before running.</Text>
+            <p className="docs-caption">
+              <Text>
+                Set HUGINN_BASE_URL and HUGINN_API_KEY first. Python: pip install requests.
+                JavaScript: Node.js 22+.
+              </Text>
             </p>
             <CodeExample />
           </section>
@@ -348,64 +396,45 @@ export default function Docs() {
             <h2>
               <Text>Errors</Text>
             </h2>
-            <pre>
-              <code>
-                {JSON.stringify(
-                  {
-                    errorId: 1,
-                    errorCode: 'ERROR_BAD_PARAMETERS',
-                    errorDescription: 'task must be a JSON object',
-                  },
-                  null,
-                  2,
-                )}
-              </code>
-            </pre>
-            <div className="table-scroll">
-              <table>
-                <thead>
-                  <tr>
-                    <th>
-                      <Text>Code</Text>
-                    </th>
-                    <th>
-                      <Text>Meaning</Text>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    ['ERROR_KEY_DOES_NOT_EXIST', 'Missing, invalid, or revoked API key'],
-                    ['ERROR_ZERO_BALANCE', 'Insufficient available balance'],
-                    ['ERROR_BAD_PARAMETERS', 'Invalid request fields'],
-                    ['ERROR_TASK_NOT_SUPPORTED', 'Unsupported task type'],
-                    ['ERROR_PROXY_FORMAT', 'Invalid proxy configuration'],
-                    ['ERROR_TASK_NOT_FOUND', 'Task does not exist or its result has expired'],
-                    ['ERROR_NO_SLOT_AVAILABLE', 'The task could not be queued'],
-                    ['ERROR_SERVICE_UNAVAILABLE', 'Service temporarily unavailable'],
-                    ['ERROR_CAPTCHA_TIMEOUT', 'Task processing timed out'],
-                    ['ERROR_CAPTCHA_UNSOLVABLE', 'The task could not be solved'],
-                    ['ERROR_UNSUPPORTED_CAPABILITY', 'The requested task option is unavailable'],
-                    ['ERROR_CONTRACT_REVIEW_REQUIRED', 'The task requires additional review'],
-                  ].map(([code, meaning]) => (
-                    <tr key={code}>
-                      <td>
-                        <code>{code}</code>
-                      </td>
-                      <td>
-                        <Text>{meaning}</Text>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="docs-note">
+              <p>
+                <Text>
+                  Always check errorId, including HTTP 200 responses. 0 means success; 1 means an
+                  error. Handle network and HTTP failures separately.
+                </Text>
+              </p>
             </div>
-            <p>
-              <Text>
-                Stop polling after an error or a ready response. Network failures and HTTP errors
-                must also be handled separately from JSON protocol errors.
-              </Text>
-            </p>
+            <JsonExample
+              label="Error response"
+              value={{
+                errorId: 1,
+                errorCode: 'ERROR_BAD_PARAMETERS',
+                errorDescription: 'task must be a JSON object',
+              }}
+            />
+            <details className="docs-disclosure">
+              <summary>
+                <Text>All error codes</Text>
+              </summary>
+              <Fields
+                first="Code"
+                second="Meaning"
+                rows={[
+                  ['ERROR_KEY_DOES_NOT_EXIST', 'Missing, invalid, or revoked API key'],
+                  ['ERROR_ZERO_BALANCE', 'Insufficient available balance'],
+                  ['ERROR_BAD_PARAMETERS', 'Invalid request fields'],
+                  ['ERROR_TASK_NOT_SUPPORTED', 'Unsupported task type'],
+                  ['ERROR_PROXY_FORMAT', 'Invalid proxy configuration'],
+                  ['ERROR_TASK_NOT_FOUND', 'Task does not exist or its result has expired'],
+                  ['ERROR_NO_SLOT_AVAILABLE', 'The task could not be queued'],
+                  ['ERROR_SERVICE_UNAVAILABLE', 'Service temporarily unavailable'],
+                  ['ERROR_CAPTCHA_TIMEOUT', 'Task processing timed out'],
+                  ['ERROR_CAPTCHA_UNSOLVABLE', 'The task could not be solved'],
+                  ['ERROR_UNSUPPORTED_CAPABILITY', 'The requested task option is unavailable'],
+                  ['ERROR_CONTRACT_REVIEW_REQUIRED', 'The task requires additional review'],
+                ]}
+              />
+            </details>
           </section>
         </article>
       </main>
