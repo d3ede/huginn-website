@@ -4,6 +4,7 @@ import { LoaderCircle, Plus, RefreshCw, Trash2 } from 'lucide-react';
 import { Text, useI18n } from '@/components/i18n';
 import { useWorkspace } from '@/components/workspace';
 import { api, dateTime } from '@/lib/api';
+import { AdminAnalytics } from '@/components/admin-analytics';
 
 type Product = {
   id: string;
@@ -25,7 +26,7 @@ type BillingSettings = {
   changedByName?: string | null;
   updatedAt: string;
 };
-const sections = ['Task types', 'Payments', 'Settings history'] as const;
+const sections = ['Statistics', 'Task types', 'Payments', 'Settings history'] as const;
 export default function AdminPage() {
   const { user, refreshConfig } = useWorkspace();
   const { locale, t } = useI18n();
@@ -35,7 +36,7 @@ export default function AdminPage() {
   const [history, setHistory] = useState<{ changes: BillingSettings[]; total: number } | null>(
     null,
   );
-  const [section, setSection] = useState<(typeof sections)[number]>('Task types');
+  const [section, setSection] = useState<(typeof sections)[number]>('Statistics');
   const [page, setPage] = useState(1);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -149,6 +150,7 @@ export default function AdminPage() {
           </button>
         ))}
       </nav>
+      {section === 'Statistics' && <AdminAnalytics />}
       {error && (
         <p className="form-error" role="alert">
           {error}
@@ -179,7 +181,7 @@ export default function AdminPage() {
               setDirty(true);
               setSuccess(false);
             }}
-            hidden={section === 'Settings history'}
+            hidden={section === 'Settings history' || section === 'Statistics'}
           >
             <fieldset disabled={busy}>
               <section

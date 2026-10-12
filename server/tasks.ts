@@ -145,6 +145,7 @@ export async function settleTask(
   result: SolverResult | null,
   errorCode = 'TASK_FAILED',
   leaseId?: string,
+  telemetry?: Pick<SolverResult, 'solveMode' | 'reportSummary'>,
 ) {
   if (result && !result.token.trim()) throw new Error('Solver returned an empty token');
   await db.$transaction(async (tx) => {
@@ -164,6 +165,10 @@ export async function settleTask(
         leaseId: null,
         leaseUntil: null,
         errorCode: result ? null : errorCode,
+        solveMode: (result ?? telemetry)?.solveMode ?? null,
+        reportSummary: (result ?? telemetry)?.reportSummary
+          ? ((result ?? telemetry)!.reportSummary as Prisma.InputJsonValue)
+          : Prisma.DbNull,
         solverTask: Prisma.DbNull,
         costMicro: result ? task.reservedMicro : 0n,
         completedAt,
@@ -250,6 +255,7 @@ export async function workOne(engine: SolverEngine = solver, shutdown?: AbortSig
             ? error.code
             : 'TASK_FAILED',
         leaseId,
+        error instanceof SolverFailure ? error.telemetry : undefined,
       );
   } finally {
     clearInterval(heartbeat);

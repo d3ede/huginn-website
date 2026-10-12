@@ -3582,6 +3582,444 @@ form :is(input, select, textarea) {
 .activity-chart .recharts-tooltip-wrapper {
   outline: none;
 }
+.admin-analytics {
+  display: grid;
+  gap: 24px;
+  min-width: 0;
+}
+.analytics-toolbar,
+.analytics-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.analytics-toolbar {
+  justify-content: space-between;
+}
+.analytics-toolbar p {
+  color: var(--muted);
+  margin: 6px 0 0;
+}
+.compact-select {
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+  min-width: 120px;
+}
+.compact-select select {
+  margin: 0;
+  min-height: 38px;
+  width: 100%;
+}
+.analytics-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+  gap: 16px;
+}
+.analytics-metrics > div {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 20px;
+  min-width: 0;
+}
+.analytics-metrics span,
+.analytics-metrics small {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+}
+.analytics-metrics strong {
+  display: block;
+  font-size: 27px;
+  font-weight: 550;
+  margin: 10px 0;
+  overflow-wrap: anywhere;
+}
+.analytics-metrics small {
+  line-height: 1.6;
+}
+.analytics-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 24px;
+}
+.admin-analytics .panel,
+.report-dialog .panel {
+  min-width: 0;
+  padding: 24px;
+}
+.admin-analytics h3,
+.report-dialog h3 {
+  margin: 0 0 16px;
+  font-size: 16px;
+}
+.muted {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+.path-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  padding: 14px 0;
+  width: 100%;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+.path-row:hover {
+  color: var(--blue);
+}
+.path-row meter {
+  grid-column: 1/-1;
+  width: 100%;
+  height: 8px;
+}
+meter::-webkit-meter-bar {
+  background: var(--surface);
+  border: 0;
+}
+meter::-webkit-meter-optimum-value {
+  background: var(--blue);
+}
+.failure-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--line);
+  padding: 12px 0;
+}
+.failure-row code {
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}
+.analytics-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--strong-line);
+  border-radius: 7px;
+  padding: 0 12px;
+  width: min(320px, 100%);
+}
+.analytics-search input {
+  border: 0;
+  padding: 10px 0;
+  margin: 0;
+  width: 100%;
+  background: transparent;
+}
+.analytics-search:focus-within {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+.table-scroll {
+  overflow-x: auto;
+  max-width: 100%;
+}
+.admin-analytics table,
+.report-dialog table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.admin-analytics th,
+.report-dialog th {
+  text-align: left;
+  color: var(--muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.admin-analytics td,
+.admin-analytics th,
+.report-dialog td,
+.report-dialog th {
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.admin-analytics td {
+  white-space: nowrap;
+}
+.user-drilldown {
+  display: block;
+  text-align: left;
+  color: var(--blue);
+  font-weight: 600;
+}
+.user-drilldown small,
+.table-subtext {
+  display: block;
+  margin-top: 5px;
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 11px;
+}
+.selected-row {
+  background: var(--surface);
+}
+.analytics-pager {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  align-items: center;
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.analytics-tasks .website-cell {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.report-dialog {
+  margin: auto;
+  width: min(1450px, calc(100vw - 48px));
+  max-width: none;
+  max-height: calc(100dvh - 48px);
+  padding: 28px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--strong-line);
+  border-radius: 12px;
+  overscroll-behavior: contain;
+}
+.report-dialog::backdrop,
+.report-lightbox::backdrop {
+  background: #10283799;
+}
+.report-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: center;
+  margin-bottom: 20px;
+  position: sticky;
+  top: -28px;
+  background: var(--bg);
+  padding: 12px 0;
+  z-index: 2;
+}
+.report-toolbar h2 {
+  margin: 6px 0 0;
+}
+.report-identification {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.report-identification code,
+.report-site {
+  overflow-wrap: anywhere;
+}
+.status-badge {
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: #e1edf7;
+  color: var(--blue);
+}
+.report-metrics {
+  margin: 24px 0;
+}
+.report-layout {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 24px;
+  margin: 24px 0;
+}
+.report-rounds {
+  min-width: 0;
+}
+.report-rounds button {
+  width: 100%;
+  display: flex;
+  gap: 12px;
+  text-align: left;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  margin-bottom: 10px;
+}
+.report-rounds button[aria-current] {
+  border-color: var(--blue);
+  background: var(--surface);
+}
+.report-rounds button strong {
+  color: var(--blue);
+}
+.report-rounds button span {
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.report-rounds small {
+  display: block;
+  color: var(--muted);
+  margin-top: 6px;
+  font-size: 11px;
+}
+.report-round-content {
+  min-width: 0;
+}
+.report-images {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.report-image {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  text-align: left;
+}
+.report-image.overlay {
+  border-color: var(--blue);
+}
+.report-image img {
+  width: 100%;
+  height: 220px;
+  object-fit: contain;
+  display: block;
+  background: var(--surface);
+}
+.report-image > span {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  gap: 10px;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.report-answers {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.answer-chip {
+  display: inline-block;
+  border-radius: 4px;
+  background: var(--surface);
+  padding: 3px 8px;
+  margin: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.answer-list {
+  padding-left: 20px;
+  margin: 10px 0;
+}
+.answer-list li {
+  padding: 3px 0;
+}
+.answer-fields {
+  margin: 12px 0;
+  display: grid;
+  gap: 10px;
+}
+.answer-fields dt {
+  color: var(--muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.answer-fields dd {
+  margin: 4px 0 0;
+}
+.report-details {
+  margin-bottom: 16px;
+}
+.report-details summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  padding-bottom: 8px;
+}
+.phase-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 16px;
+}
+.phase-list > div {
+  display: grid;
+  grid-template-columns: minmax(130px, 1fr) 2fr 70px;
+  gap: 16px;
+  align-items: center;
+  font-size: 12px;
+}
+.phase-list meter {
+  width: 100%;
+  height: 10px;
+}
+.phase-list strong {
+  text-align: right;
+  font-weight: 500;
+}
+.report-lightbox {
+  margin: auto;
+  width: min(1200px, calc(100vw - 32px));
+  max-width: none;
+  max-height: calc(100dvh - 32px);
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px;
+}
+.report-lightbox header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.report-lightbox img {
+  width: 100%;
+  max-height: calc(100dvh - 140px);
+  object-fit: contain;
+}
+@media (max-width: 1000px) {
+  .analytics-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .report-layout {
+    grid-template-columns: 180px minmax(0, 1fr);
+  }
+}
+@media (max-width: 650px) {
+  .report-dialog {
+    width: calc(100vw - 16px);
+    padding: 16px;
+    max-height: calc(100dvh - 16px);
+  }
+  .report-toolbar {
+    top: -16px;
+  }
+  .report-layout,
+  .report-answers {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .report-rounds {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+  }
+  .report-rounds h3 {
+    display: none;
+  }
+  .report-rounds button {
+    min-width: 160px;
+    max-width: 220px;
+  }
+  .phase-list > div {
+    grid-template-columns: minmax(100px, 1fr) 1fr 55px;
+    gap: 8px;
+  }
+}
 @media (min-width: 561px) and (max-width: 800px) {
   .workspace {
     --sidebar-width: 220px;

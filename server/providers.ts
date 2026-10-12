@@ -5,16 +5,24 @@ import { createMimicSolver } from './solver-client';
 import type { SolverTask } from './solver-protocol';
 import type { BillingSettings } from '@prisma/client';
 import { paymentSecret } from './billing-settings';
+import type { SolveReport } from '../lib/admin-types';
 
 export type SolverResult = {
   token: string;
   serverAcceptance?: string;
   userAgent?: string;
   respKey?: string;
+  solveMode?: 'instant' | 'challenge' | 'unknown';
+  reportSummary?: SolveReport['summary'];
 };
 
 export interface SolverEngine {
   available: boolean;
+  report?(taskId: string): Promise<SolveReport | null>;
+  reportImage?(
+    taskId: string,
+    imageId: number,
+  ): Promise<{ data: Buffer; contentType: string } | null>;
   solve(
     input: { taskId: string; websiteURL: string; websiteKey: string; task?: SolverTask },
     signal: AbortSignal,

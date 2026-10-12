@@ -348,7 +348,7 @@ commercial launch. Public copy is customer facing, not a deployment-status page.
 
 ## Task catalog and adding solver capabilities
 
-The admin panel at `/app/admin` separates **Task types**, **Payments**, and
+The admin panel at `/app/admin` separates **Statistics**, **Task types**, **Payments**, and
 **Settings history**. Every task product has a stable ID, display name, its own
 USD rate per 1,000 successful solutions, and an availability switch. Catalog
 changes and payment changes are saved together as an immutable revision;
@@ -377,3 +377,33 @@ To add a future capability:
 hCaptcha aliases for existing clients. Reservations and the UI use the versioned
 `taskProducts` catalog. Historical invoices retain their payment revision and
 webhook credentials even after current credentials are rotated or cleared.
+
+## Administration analytics and evidence
+
+Statistics use stored platform tasks and confirmed payments, with 7/30/90-day
+UTC windows. Success rate excludes queued/processing tasks; average and P95
+durations use successful tasks. Revenue is settled task charges, deposits use
+confirmation time, and available balances are current snapshots. User search
+supports name/email and ranks by tasks in the selected period. Task types are
+data-driven. All endpoints recheck `User.isAdmin` on every request.
+
+The private worker projects terminal run telemetry into `Task.solveMode` and
+`Task.reportSummary`, including failed runs when available. Instant PASS,
+challenge execution, and unknown evidence stay distinct. Model cost is reported
+as partial when some calls lack cost telemetry; absence is never counted as zero.
+Historical tasks are not reclassified from elapsed time.
+
+`GET /admin/tasks/:id/report` and its `/images/:imageId` routes proxy the private
+solver using the service secret. They never return result tokens, website keys,
+cookies, proxy credentials, raw transcripts, or stored HTML. Reports render in
+React with round navigation, image filters/lightbox, typed selections, observed
+actions, expandable timing and model usage. Only bounded raster evidence assets
+inside the run archive can be served; SVG/HTML and arbitrary paths are rejected.
+
+Compose puts platform-api on the private solver network and mounts solver-data
+in the private API. SQLite is opened in read-only mode; the mount permits WAL
+shared-memory sidecars required by concurrent readers. `HCAPTCHA_STATISTICS_DB`
+and `HCAPTCHA_STATISTICS_ARTIFACTS_DIR` must match the worker. Evidence expires
+according to `HCAPTCHA_STATISTICS_RETENTION_DAYS` (default 90 days); the routes
+enforce expiry even before pruning. Aggregates stored on the platform survive
+artifact expiry. Missing/disabled evidence yields an unavailable-report state.

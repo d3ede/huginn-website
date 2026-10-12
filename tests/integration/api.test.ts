@@ -1,6 +1,7 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID, createHmac } from 'node:crypto';
+import type { SolveReport } from '../../lib/admin-types';
 process.env.PAYMENT_WEBHOOK_SECRET = 'integration-test-secret-at-least-32-chars';
 process.env.SETTINGS_ENCRYPTION_KEY = 'integration-fixture-encryption-key-at-least-32-chars';
 const { buildApp } = await import('../../server/app');
@@ -15,6 +16,173 @@ const engine = {
     return { token: 'explicit-integration-test-fixture' };
   },
 };
+
+test('admin analytics scopes periods and users, classifies evidence and guards reports', async () => {
+  const report = {
+    runId: '',
+    status: 'token_received',
+    serverAcceptance: 'not_observed',
+    solveMode: 'challenge',
+    createdAt: new Date().toISOString(),
+    finishedAt: new Date().toISOString(),
+    expiresAt: new Date(Date.now() + 86400000).toISOString(),
+    durationMs: 2500,
+    rounds: [],
+    phases: [],
+    models: [],
+    summary: {
+      rounds: 2,
+      modelCalls: 3,
+      inputTokens: 400,
+      outputTokens: 80,
+      modelCostUsd: 0.001,
+      costComplete: true,
+    },
+  } as SolveReport;
+  const isolated = await buildApp({
+    engine: {
+      ...engine,
+      async report(id) {
+        return { ...report, runId: id.replaceAll('-', '') };
+      },
+      async reportImage() {
+        return { data: Buffer.from('synthetic-image'), contentType: 'image/png' };
+      },
+    },
+    logger: false,
+  });
+  let analyticsOwner: string | undefined;
+  try {
+    const registered = await isolated.inject({
+      method: 'POST',
+      url: '/auth/register',
+      headers: { origin },
+      payload: {
+        email: `${randomUUID()}@analytics.test`,
+        password: 'testpass',
+        name: 'Analytics fixture',
+      },
+    });
+    const owner = registered.json().user.id;
+    ids.push(owner);
+    analyticsOwner = owner;
+    const headers = { cookie: String(registered.headers['set-cookie']).split(';')[0] };
+    assert.equal((await isolated.inject({ url: '/admin/stats' })).statusCode, 401);
+    assert.equal((await isolated.inject({ url: '/admin/stats', headers })).statusCode, 403);
+    await db.user.update({ where: { id: owner }, data: { isAdmin: true, balanceMicro: 123456n } });
+    const common = {
+      userId: owner,
+      type: 'future_task',
+      websiteURL: 'https://example.test',
+      websiteKey: 'private-key',
+      reservedMicro: 2000n,
+    };
+    const solved = await db.task.create({
+      data: {
+        ...common,
+        status: 'SUCCEEDED',
+        costMicro: 2000n,
+        durationMs: 2500,
+        solveMode: 'challenge',
+        resultToken: 'private-token',
+        reportSummary: report.summary,
+      },
+    });
+    await db.task.create({
+      data: {
+        ...common,
+        reservedMicro: 3000n,
+        status: 'SUCCEEDED',
+        costMicro: 3000n,
+        durationMs: 500,
+        solveMode: 'instant',
+      },
+    });
+    await db.task.create({
+      data: { ...common, status: 'FAILED', errorCode: 'FIXTURE_FAILURE', durationMs: 1000 },
+    });
+    await db.task.create({ data: { ...common, status: 'QUEUED' } });
+    await db.task.create({
+      data: {
+        ...common,
+        reservedMicro: 999000n,
+        status: 'SUCCEEDED',
+        costMicro: 999000n,
+        createdAt: new Date(Date.now() - 100 * 86400000),
+      },
+    });
+    await db.payment.create({
+      data: { userId: owner, status: 'CONFIRMED', amountMicro: 1000000n, confirmedAt: new Date() },
+    });
+    const response = await isolated.inject({ url: `/admin/stats?userId=${owner}&days=7`, headers });
+    assert.equal(response.statusCode, 200, response.body);
+    const stats = response.json();
+    assert.equal(stats.total, 4);
+    assert.equal(stats.solved, 2);
+    assert.equal(stats.failed, 1);
+    assert.equal(stats.queued, 1);
+    assert.equal(stats.instant, 1);
+    assert.equal(stats.challenge, 1);
+    assert.equal(stats.unknown, 0);
+    assert.equal(stats.revenue, '0.005000');
+    assert.equal(stats.balance, '0.123456');
+    assert.equal(stats.deposits, '1.000000');
+    assert.equal(stats.averageMs, 1500);
+    assert.equal(stats.p95Ms, 2400);
+    assert.equal(stats.daily.length, 7);
+    assert.equal(stats.modelCostUsd, 0.001);
+    assert.equal(stats.costCoverage, 1);
+    const global = (await isolated.inject({ url: '/admin/stats?days=7', headers })).json();
+    assert.ok(global.total >= stats.total);
+    const users = (
+      await isolated.inject({ url: '/admin/users?search=Analytics%20fixture&days=7', headers })
+    ).json();
+    assert.equal(users.total, 1);
+    assert.equal(users.users[0].total, 4);
+    assert.equal(users.users[0].revenue, '0.005000');
+    const tasks = (
+      await isolated.inject({ url: `/admin/tasks?userId=${owner}&mode=challenge&days=7`, headers })
+    ).json();
+    assert.equal(tasks.total, 1);
+    assert.equal(tasks.tasks[0].id, solved.id);
+    assert.ok(!JSON.stringify(tasks).includes('private-token'));
+    const detail = await isolated.inject({ url: `/admin/tasks/${solved.id}/report`, headers });
+    assert.equal(detail.statusCode, 200);
+    assert.equal(detail.json().report.runId, solved.id.replaceAll('-', ''));
+    assert.ok(!detail.body.includes('private-token'));
+    assert.ok(!detail.body.includes('private-key'));
+    const image = await isolated.inject({
+      url: `/admin/tasks/${solved.id}/report/images/0`,
+      headers,
+    });
+    assert.equal(image.statusCode, 200);
+    assert.equal(image.headers['content-type'], 'image/png');
+    assert.equal(
+      (await isolated.inject({ url: `/admin/tasks/${solved.id}/report/images/-1`, headers }))
+        .statusCode,
+      400,
+    );
+    assert.equal(
+      (await isolated.inject({ url: `/admin/tasks/${randomUUID()}/report`, headers })).statusCode,
+      404,
+    );
+    await db.user.update({ where: { id: owner }, data: { isAdmin: false } });
+    for (const url of [
+      '/admin/users',
+      '/admin/tasks',
+      `/admin/tasks/${solved.id}/report`,
+      `/admin/tasks/${solved.id}/report/images/0`,
+    ])
+      assert.equal((await isolated.inject({ url, headers })).statusCode, 403);
+  } finally {
+    if (analyticsOwner)
+      await db.task.updateMany({
+        where: { userId: analyticsOwner, status: 'QUEUED' },
+        data: { status: 'FAILED' },
+      });
+    await isolated.close();
+  }
+});
 const payment = {
   available: true,
   async checkout(input: { paymentId: string }) {

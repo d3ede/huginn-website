@@ -1,4 +1,5 @@
 'use client';
+import { usePathname } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 
 type Flight = { x: number; y: number; start: number; seed: number };
@@ -36,7 +37,10 @@ function feather(ctx: CanvasRenderingContext2D, length: number, width: number, a
 
 export function RavenInteraction() {
   const ref = useRef<HTMLCanvasElement>(null);
+  const pathname = usePathname();
+  const inWorkspace = pathname === '/app' || pathname.startsWith('/app/');
   useEffect(() => {
+    if (inWorkspace) return;
     const canvas = ref.current;
     const ctx = canvas?.getContext('2d');
     if (!canvas || !ctx) return;
@@ -121,6 +125,6 @@ export function RavenInteraction() {
       window.removeEventListener('resize', resize);
       reduced.removeEventListener('change', stop);
     };
-  }, []);
-  return <canvas ref={ref} className="raven-flight" aria-hidden="true" />;
+  }, [inWorkspace]);
+  return inWorkspace ? null : <canvas ref={ref} className="raven-flight" aria-hidden="true" />;
 }

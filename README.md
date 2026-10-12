@@ -61,6 +61,11 @@ existing account. Payment secrets are encrypted, write-only, and versioned for
 pending invoices. `TASK_PRICE_MICRO_USD` / `PAYMENT_*` seed the DB once;
 subsequent configuration is stored in the DB. See the operations guide for setup.
 
+Administration includes overall and per-user analytics, task filters, and
+interactive solve reports with rounds, images, action evidence, timing, and model
+usage. Evidence follows the private solver's retention period; older tasks without
+telemetry remain unclassified. Reports and images require a current admin session.
+
 Configuration, integration contracts, retention, and deployment:
 [operations guide](docs/operations.md) and [.env.example](.env.example).
 

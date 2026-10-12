@@ -1,4 +1,5 @@
 import Fastify from 'fastify';
+import { registerAdminAnalytics } from './admin-analytics';
 import cookie from '@fastify/cookie';
 import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
@@ -244,6 +245,7 @@ export async function buildApp(
     };
   });
   const authLimit = { config: { rateLimit: { max: 10, timeWindow: '15 minutes' } } };
+  registerAdminAnalytics(app, engine);
   app.post('/auth/register', authLimit, async (request, reply) => {
     const input = z
       .object({ email, password, name: z.string().trim().min(1).max(80) })
