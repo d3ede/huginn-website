@@ -1,7 +1,56 @@
 export type Locale = 'en' | 'ru';
 export const russian: Record<string, string> = {
-  'Huginn supports hCaptcha tasks through a REST API.':
-    'Huginn поддерживает задачи hCaptcha через REST API.',
+  'Use the 2Captcha-compatible JSON API to submit hCaptcha tasks and retrieve solution tokens.':
+    'Отправляйте задачи hCaptcha и получайте токены решения через JSON API, совместимый с 2Captcha.',
+  'Request format': 'Формат запросов',
+  Errors: 'Ошибки',
+  'Set HUGINN_BASE_URL to your API base URL and HUGINN_API_KEY to your key.':
+    'Укажите адрес API в HUGINN_BASE_URL, а свой ключ — в HUGINN_API_KEY.',
+  'Call createTask, save taskId, then poll getTaskResult until status is ready.':
+    'Вызовите createTask, сохраните taskId и проверяйте getTaskResult до статуса ready.',
+  'Send POST requests with Content-Type: application/json. Method paths are relative to HUGINN_BASE_URL.':
+    'Отправляйте POST-запросы с Content-Type: application/json. Пути методов отсчитываются от HUGINN_BASE_URL.',
+  'The JSON request includes clientKey. Keep your API key in server environment variables and outside browser code. Use HTTPS for public requests.':
+    'JSON-запрос содержит clientKey. Храните API-ключ в переменных окружения сервера и не включайте его в браузерный код. Используйте HTTPS для публичных запросов.',
+  'Check errorId in every response, including HTTP 200 responses. An errorId of 0 indicates success; an errorId of 1 includes errorCode and errorDescription.':
+    'Проверяйте errorId в каждом ответе, включая ответы HTTP 200. Значение 0 означает успех; при значении 1 ответ содержит errorCode и errorDescription.',
+  'Your API key': 'Ваш API-ключ',
+  'HCaptchaTaskProxyless or HCaptchaTask': 'HCaptchaTaskProxyless или HCaptchaTask',
+  'A successful response returns errorId: 0 and taskId. Save that taskId and use it for polling.':
+    'При успехе ответ содержит errorId: 0 и taskId. Сохраните taskId для проверки результата.',
+  'Each createTask call creates a new task. If the response is lost, do not blindly resubmit: a second request can create another task.':
+    'Каждый вызов createTask создаёт новую задачу. Если ответ потерян, не повторяйте запрос вслепую: повторный вызов может создать ещё одну задачу.',
+  'Optional task fields': 'Необязательные поля задачи',
+  'Boolean; defaults to false': 'Логическое значение; по умолчанию false',
+  'Browser user-agent string': 'Строка user-agent браузера',
+  'Cookie string using name=value pairs separated by semicolons':
+    'Строка cookies из пар name=value, разделённых точкой с запятой',
+  'Language code such as en or en-US': 'Код языка, например en или en-US',
+  'Object containing rqdata': 'Объект с полем rqdata',
+  'Optional website integration context': 'Необязательный контекст интеграции сайта',
+  'Tasks with a proxy': 'Задачи с прокси',
+  'Use HCaptchaTask with proxyType, proxyAddress, and proxyPort. Supported proxy types are http, https, and socks5. Supply proxyLogin and proxyPassword together when required. Proxy fields are not accepted for HCaptchaTaskProxyless.':
+    'Используйте HCaptchaTask с proxyType, proxyAddress и proxyPort. Поддерживаются http, https и socks5. При необходимости передавайте proxyLogin и proxyPassword вместе. HCaptchaTaskProxyless не принимает поля прокси.',
+  'While the task is pending, the response is:': 'Пока задача обрабатывается, ответ выглядит так:',
+  'Poll every five seconds with a bounded timeout. When status is ready, read solution.gRecaptchaResponse:':
+    'Проверяйте результат раз в пять секунд с ограничением времени ожидания. При статусе ready получите токен из solution.gRecaptchaResponse:',
+  'solution.token is an alias of gRecaptchaResponse. The response also includes userAgent and may include respKey. Use the returned token promptly; stored results expire after 24 hours by default.':
+    'solution.token содержит тот же токен, что и gRecaptchaResponse. Ответ также включает userAgent и может содержать respKey. Используйте токен своевременно: сохранённые результаты по умолчанию истекают через 24 часа.',
+  Code: 'Код',
+  'Unsupported task type': 'Неподдерживаемый тип задачи',
+  'Invalid proxy configuration': 'Неверные параметры прокси',
+  'Task does not exist or its result has expired': 'Задача не существует или её результат истёк',
+  'The task could not be queued': 'Не удалось поставить задачу в очередь',
+  'Service temporarily unavailable': 'Сервис временно недоступен',
+  'Task processing timed out': 'Истекло время обработки задачи',
+  'The task could not be solved': 'Не удалось решить задачу',
+  'The requested task option is unavailable': 'Запрошенная опция задачи недоступна',
+  'The task requires additional review': 'Задача требует дополнительной проверки',
+  'Stop polling after an error or a ready response. Network failures and HTTP errors must also be handled separately from JSON protocol errors.':
+    'Завершайте проверку после ошибки или ответа ready. Сетевые сбои и ошибки HTTP обрабатывайте отдельно от ошибок JSON-протокола.',
+  'Huginn supports hCaptcha through a 2Captcha-compatible JSON API.':
+    'Huginn поддерживает hCaptcha через JSON API, совместимый с 2Captcha.',
+  '2Captcha-compatible API': 'API, совместимый с 2Captcha',
   'How do I get started?': 'Как начать работу?',
   'Create an account, add funds to your balance and generate an API key. Submit your first task using the examples in the documentation.':
     'Создайте аккаунт, пополните баланс и сгенерируйте API-ключ. Отправьте первую задачу по примерам в документации.',

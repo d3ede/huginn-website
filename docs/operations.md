@@ -21,7 +21,7 @@ remain available for development.
 ```mermaid
 flowchart LR
   Browser[Account portal] --> Gateway
-  Customer[Customer code / Bearer key] --> Gateway
+  Customer[Current portal API prototype] --> Gateway
   Gateway --> Web[Next.js]
   Gateway --> API[Fastify]
   API --> DB[(PostgreSQL: accounts, keys, wallet, tasks)]
@@ -36,8 +36,10 @@ flowchart LR
 
 Only gateway publishes a host port, normally `127.0.0.1:3000`. Platform, ingress,
 and solver networks isolate traffic. PostgreSQL, Redis, Python API, and CDP are
-private. Browser requests use relative `/api` URLs; customers use `/api/v1` with
-their own keys, never the solver secret.
+private. Browser account requests use relative `/api` URLs. The advertised solver
+contract is the Python service's 2Captcha-compatible JSON protocol below. The
+current gateway only forwards account/prototype routes to Fastify; routing the
+solver protocol through customer authentication is a future integration.
 
 ## Configuration and Cloudflare
 
@@ -76,36 +78,47 @@ Gateway addresses are runtime settings. Direct Next.js servers use
 `API_INTERNAL_URL` in a build-time rewrite. Docker sets `API_PROXY_ENABLED=false`
 because gateway owns routing.
 
-## Customer API and accounts
+## Solver JSON contract and future customer authorization
 
-Base: `https://your-domain.example/api/v1` (local: `http://localhost:3000/api/v1`).
-Send `Authorization: Bearer hg_live_…`:
+The published solver contract follows the implemented Python JSON service:
 
-| Method | Path         | Purpose                                                                                        |
-| ------ | ------------ | ---------------------------------------------------------------------------------------------- |
-| GET    | `/balance`   | USD balance as a decimal string                                                                |
-| POST   | `/tasks`     | Submit `{ "type": "hcaptcha", "websiteURL": "https://example.com", "websiteKey": "site-key" }` |
-| GET    | `/tasks/:id` | Owned task status and result                                                                   |
+| Method | Path             | Request                                                                                                                              | Response                                                              |
+| ------ | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------- |
+| POST   | `/createTask`    | `{ "clientKey": "KEY", "task": { "type": "HCaptchaTaskProxyless", "websiteURL": "https://example.com", "websiteKey": "SITE_KEY" } }` | `{ "errorId": 0, "taskId": "ID" }`                                    |
+| POST   | `/getTaskResult` | `{ "clientKey": "KEY", "taskId": "ID" }`                                                                                             | `{ "errorId": 0, "status": "processing" }` or `ready` with `solution` |
 
-Creation returns HTTP 202. An account-scoped `Idempotency-Key` returns the same
-task for identical input; different input returns 409. The public contract
-accepts those three fields only. Private options such as proxies, cookies,
-invisible mode, and Enterprise context are not exposed here.
+Supported types: `HCaptchaTaskProxyless` and `HCaptchaTask`. The latter requires
+proxyType/proxyAddress/proxyPort, plus paired proxyLogin/proxyPassword if needed.
+Optional fields include isInvisible, userAgent, cookies, languagePool,
+enterprisePayload containing rqdata, and bounded websiteContext. Unknown task
+fields are rejected. A ready solution contains gRecaptchaResponse, the same token
+in token, userAgent, serverAcceptance, and optional respKey. Protocol errors use
+errorId: 1, errorCode, errorDescription, including under HTTP 200. Each createTask
+call creates a new task; no Idempotency-Key guarantee applies to this protocol.
 
-Statuses: `queued`, `processing`, `succeeded`, `failed`. Success includes
-`result.token` and nullable `serverAcceptance`, `userAgent`, `respKey`.
-Acceptance is observed solver evidence, not proof that a customer's application
-accepted the token. Cleanup nulls token/userAgent/respKey, retaining history.
+Customer authorization is not implemented for these JSON endpoints yet.
+The current Python parser accepts but ignores clientKey. SOLVER_SECRET authenticates
+private service-to-service transport, not a customer's account or task ownership.
+Keep Python ingress private until customer key validation, ownership, wallet
+reservations/refunds, and gateway routing are attached to this protocol. The final
+customer authorization integration is separate future work; this update documents
+the intended 2Captcha wire format without implementing it.
+
+Current Fastify `/v1/balance`, `/v1/tasks`, `/v1/tasks/:id` remain a different portal
+prototype with Bearer API keys, HTTP 202, account-scoped Idempotency-Key, and
+queued/processing/succeeded/failed statuses. They are not the advertised solver
+contract and are not examples for customer solver integrations. Their existing
+wallet accounting does not automatically apply to Python createTask calls.
+The public docs intentionally omit deployment and integration status.
 
 Account endpoints under `/api` use sessions: `/auth/register`, `/auth/login`,
 `/auth/logout`, `/account`, `/account/password`, `/stats`, `/tasks`, `/keys`,
-`/billing`, `/billing/checkout`. Browser mutations validate Origin; Bearer
-requests do not need a browser Origin. New accounts start at zero. Passwords
-accept 8–128 characters and use salted scrypt. Sessions last seven days by
-default. Password changes revoke all sessions and establish a new current one.
-API secrets appear once; only SHA-256 hashes are stored, with 20 active keys
-maximum per account. Lists use 20 entries per page. Statistics use UTC days in
-7/30/90-day windows; display timezone changes only table timestamps.
+`/billing`, `/billing/checkout`. Browser mutations validate Origin. New accounts
+start at zero. Passwords accept 8–128 characters and use salted scrypt. Sessions
+last seven days by default. Password changes revoke all sessions and establish a
+new current one. API secrets appear once; only SHA-256 hashes are stored, with 20
+active keys maximum per account. Lists use 20 entries per page. Statistics use UTC
+days in 7/30/90-day windows; display timezone changes only table timestamps.
 
 ## Wallet and task recovery
 
@@ -136,7 +149,8 @@ Compose uses `SOLVER_PROVIDER=mimic`, an internal HTTP(S) `SOLVER_URL`, and
 - Transient/lost acknowledgments retry the same ID; terminal errors or the
   remaining processing deadline cause failure/refund.
 
-Legacy Python `/createTask` and `/getTaskResult` are also private; `clientKey`
+Python `/createTask` and `/getTaskResult` implement the advertised JSON contract
+but are currently private; `clientKey`
 is not customer authentication. Do not publish that port.
 
 For a separate synchronous adapter, `SOLVER_PROVIDER=http` sends a Bearer POST

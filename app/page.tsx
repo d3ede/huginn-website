@@ -18,7 +18,7 @@ import { SolverPreview } from '@/components/solver-preview';
 const features = [
   {
     icon: Terminal,
-    title: 'REST API',
+    title: '2Captcha-compatible API',
     copy: 'Create tasks and retrieve their results.',
   },
   {
@@ -38,7 +38,7 @@ const features = [
   },
 ];
 const faqs = [
-  ['What does Huginn support?', 'Huginn supports hCaptcha tasks through a REST API.'],
+  ['What does Huginn support?', 'Huginn supports hCaptcha through a 2Captcha-compatible JSON API.'],
   [
     'How are tasks billed?',
     'The task price is reserved when a task is accepted. Successful tasks keep that charge; failed tasks receive an automatic refund. You can review each entry in Billing.',
@@ -68,7 +68,7 @@ export default function Home() {
                 </span>
                 <span>
                   <Terminal size={17} strokeWidth={1.5} />
-                  REST API
+                  JSON API
                 </span>
               </div>
               <h1 className="reveal">

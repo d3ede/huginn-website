@@ -26,7 +26,7 @@ export function SolverPreview() {
       </button>
       <div className="preview-result" aria-live="polite">
         <code>
-          <span>{solved ? 'status' : 'type'}</span>: "{solved ? 'succeeded' : 'hcaptcha'}"
+          <span>{solved ? 'status' : 'type'}</span>: "{solved ? 'ready' : 'HCaptchaTaskProxyless'}"
         </code>
         <span>
           {solved ? (
@@ -42,9 +42,7 @@ export function SolverPreview() {
           )}
         </span>
       </div>
-      <span className="sr-only">
-        Illustrative preview. No real task is submitted.
-      </span>
+      <span className="sr-only">Illustrative preview. No real task is submitted.</span>
     </div>
   );
 }

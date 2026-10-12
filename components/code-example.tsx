@@ -3,7 +3,12 @@ import { Text, useI18n } from '@/components/i18n';
 
 import { useId, useMemo, useState } from 'react';
 import { Check, Copy } from 'lucide-react';
-import { pythonExample, javascriptExample } from '@/lib/examples';
+import {
+  pythonExample,
+  javascriptExample,
+  compactPythonExample,
+  compactJavascriptExample,
+} from '@/lib/examples';
 import { highlightCode } from '@/lib/highlight-code';
 export function CodeExample({ compact = false }: { compact?: boolean }) {
   const { t } = useI18n();
@@ -15,8 +20,8 @@ export function CodeExample({ compact = false }: { compact?: boolean }) {
   const code = language === 'Python' ? pythonExample : javascriptExample;
   const displayedCode = compact
     ? language === 'Python'
-      ? `import os, requests\n\nresponse = requests.post(\n    os.environ["HUGINN_BASE_URL"] + "/v1/tasks",\n    headers={"Authorization":\n        "Bearer " + os.environ["HUGINN_API_KEY"]},\n    json={\n        "type": "hcaptcha",\n        "websiteURL": "https://example.com",\n        "websiteKey": "YOUR_SITE_KEY"\n    }\n)\nresponse.raise_for_status()\ntask = response.json()`
-      : `const response = await fetch(\n  process.env.HUGINN_BASE_URL + "/v1/tasks", {\n    method: "POST",\n    headers: {\n      Authorization: "Bearer " + process.env.HUGINN_API_KEY,\n      "Content-Type": "application/json"\n    },\n    body: JSON.stringify({\n      type: "hcaptcha",\n      websiteURL: "https://example.com",\n      websiteKey: "YOUR_SITE_KEY"\n    })\n  }\n);\nif (!response.ok) throw new Error("Request failed");\nconst task = await response.json();`
+      ? compactPythonExample
+      : compactJavascriptExample
     : code;
   const highlightedCode = useMemo(
     () => highlightCode(displayedCode, language),

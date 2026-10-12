@@ -38,12 +38,22 @@ then use `npm start` to run web, API, and worker.
 
 ## API and billing
 
-Clients use `/api/v1` with Bearer API keys: `GET /balance`, `POST /tasks`, and
-`GET /tasks/:id`. `Idempotency-Key` prevents duplicate reservations. See `/docs`
-for the customer contract and Python/JavaScript examples.
+The solver contract is 2Captcha-compatible JSON: `POST /createTask` and
+`POST /getTaskResult`, with `clientKey`, nested `task`, `errorId`, `taskId`,
+`processing` / `ready`, and `solution.gRecaptchaResponse`. See `/docs` for the
+contract and matching Python/JavaScript examples, including hCaptcha proxy and
+Enterprise fields.
 
-Amounts use integer microdollars: reserve on creation, settle on token delivery,
-refund on failure. New accounts start at zero. Parent Compose connects the private
+Customer authorization for that solver contract is future work. The Python
+parser currently accepts `clientKey` without validating it; the private transport
+secret is separate. Existing Fastify `/v1/*` routes are a portal prototype,
+not the documented solver protocol. No new authorization or routing is introduced
+by this documentation update; see the operations guide for the current wiring.
+
+The existing portal wallet uses integer microdollars: reserve on creation, settle
+on token delivery, refund on failure. Connecting this accounting to the
+2Captcha-compatible customer endpoints is future work. New accounts start at zero.
+Parent Compose connects the private
 Mimic adapter; standalone defaults disable integrations. Crypto checkout still
 requires a real payment adapter. Only a signed payment confirmation credits funds.
 
