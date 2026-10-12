@@ -61,11 +61,7 @@ export default function SettingsPage() {
       <header className="workspace-page-heading">
         <div>
           <h1>
-            <Text> The details. </Text>
-            <br className="mobile-break" />{' '}
-            <em>
-              <Text>Made yours.</Text>
-            </em>
+            <Text>Settings</Text>
           </h1>
           <p>
             <Text>Manage your profile and account security.</Text>

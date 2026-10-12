@@ -1,10 +1,38 @@
 export type Locale = 'en' | 'ru';
 export const russian: Record<string, string> = {
-  Solve: 'Решаем то,',
-  'what others': 'что другим',
-  'can’t.': 'не под силу.',
-  'Developer-first hCaptcha': 'Инфраструктура решения hCaptcha',
-  'solving infrastructure.': 'для разработчиков.',
+  'hCaptcha solving': 'Решение hCaptcha',
+  'for applications': 'для приложений',
+  'Connect your application through the API. Your account includes API keys, usage statistics and billing.':
+    'Интеграция с приложениями через API. Ключи доступа, статистика использования и расходы доступны в личном кабинете.',
+  Features: 'Возможности',
+  'REST API': 'REST API',
+  'Submit hCaptcha tasks and retrieve their results over HTTP.':
+    'Отправка задач hCaptcha и получение результатов по HTTP.',
+  'Create separate keys for your integrations and revoke them when needed.':
+    'Отдельные ключи для интеграций с возможностью отзыва.',
+  'Task history': 'История задач',
+  'View task statuses, results, duration and cost in your account.':
+    'Статусы, результаты, время выполнения и стоимость задач в кабинете.',
+  'API example': 'Пример API',
+  'Create a task, then request its status and result.':
+    'Создайте задачу, затем запросите её статус и результат.',
+  'Getting started': 'Как подключиться',
+  'Register with your email address.': 'Зарегистрируйтесь с помощью почты.',
+  'Prepaid balance. No subscription.': 'Оплата с баланса. Без подписки.',
+  FAQ: 'Вопросы и ответы',
+  Registration: 'Регистрация',
+  'Register to create API keys and manage tasks.':
+    'Создавайте API-ключи и управляйте задачами в кабинете.',
+  'API documentation': 'Документация API',
+  'Submit hCaptcha tasks, check their status and retrieve results. Requests and responses use JSON.':
+    'Отправляйте задачи hCaptcha, проверяйте статус и получайте результат. Запросы и ответы используют JSON.',
+  'Balance and task statistics.': 'Баланс и статистика задач.',
+  'No transactions yet.': 'Операций пока нет.',
+  'No tasks yet.': 'Задач пока нет.',
+  'Page not found.': 'Страница не найдена.',
+  'Huginn — hCaptcha API': 'Huginn — API для hCaptcha',
+  'Privacy policy': 'Политика конфиденциальности',
+  'Terms of use': 'Условия использования',
   'Get started': 'Начать работу',
   Product: 'Возможности',
   Pricing: 'Тарифы',

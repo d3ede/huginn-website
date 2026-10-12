@@ -16,22 +16,22 @@ import { Pricing } from '@/components/pricing';
 const features = [
   {
     icon: Terminal,
-    title: 'Built for developers.',
-    copy: 'Create a task. Retrieve a result. A small, predictable API that fits your existing workflow.',
+    title: 'REST API',
+    copy: 'Submit hCaptcha tasks and retrieve their results over HTTP.',
   },
   {
     icon: KeyRound,
-    title: 'Your keys. Your control.',
-    copy: 'Create named API keys for each integration. Revoke access whenever you need to.',
+    title: 'API Keys',
+    copy: 'Create separate keys for your integrations and revoke them when needed.',
   },
   {
     icon: SlidersHorizontal,
-    title: 'Nothing out of sight.',
-    copy: 'Track task states, solution times, and spending from one considered workspace.',
+    title: 'Task history',
+    copy: 'View task statuses, results, duration and cost in your account.',
   },
   {
     icon: ShieldCheck,
-    title: 'A measured approach.',
+    title: 'Billing',
     copy: 'Only successful tasks are charged. Failed tasks release their reserved balance automatically.',
   },
 ];
@@ -45,20 +45,12 @@ const faqs = [
     'The task price is reserved when a task is accepted. Successful tasks keep that charge; failed tasks receive an automatic refund. You can review each entry in Billing.',
   ],
   [
-    'Do you offer a subscription?',
-    'No. Huginn uses a prepaid balance and charges per successful task. The configured rate is shown above and in your workspace.',
-  ],
-  [
     'Is task processing available now?',
     'This release includes the workspace and API. Processing becomes available when the service operator connects a solving provider. If it is unavailable, requests fail explicitly without charging your balance.',
   ],
   [
     'How do I keep my API key safe?',
     'Keep keys on your server and outside source control. Each key is shown only once when created. Revoke it from your workspace if it may have been exposed.',
-  ],
-  [
-    'Can I use it in my own application?',
-    'Use Huginn only for applications you own or are authorized to automate, and comply with the applicable website terms. Start with the documented REST API.',
   ],
 ];
 export default function Home() {
@@ -69,19 +61,29 @@ export default function Home() {
         <section className="hero">
           <div className="hero-material" aria-hidden="true" />
           <div className="container hero-content">
+            <div className="hero-supported reveal">
+              <span>
+                <img src="/images/hcaptcha.svg" width="26" height="26" alt="" />
+                hCaptcha
+              </span>
+              <span>
+                <Terminal size={17} strokeWidth={1.5} />
+                REST API
+              </span>
+            </div>
             <h1 className="reveal">
-              <Text> Solve </Text>
-              <br />
-              <Text> what others </Text>
-              <br />
+              <span className="hero-title-first">
+                <Text>hCaptcha solving</Text>
+              </span>
               <em>
-                <Text>can’t.</Text>
+                <Text>for applications</Text>
               </em>
             </h1>
             <p className="hero-description reveal">
-              <Text> Developer-first hCaptcha </Text>
-              <br className="mobile-break" />
-              <Text> solving infrastructure. </Text>
+              <Text>
+                Connect your application through the API. Your account includes API keys, usage
+                statistics and billing.
+              </Text>
             </p>
             <div className="hero-actions reveal">
               <Link className="button button-primary" href="/register">
@@ -99,18 +101,9 @@ export default function Home() {
           <div className="section-heading">
             <div>
               <h2>
-                <Text> Less friction. </Text>
-                <br />
-                <em>
-                  <Text>More focus.</Text>
-                </em>
+                <Text>Features</Text>
               </h2>
             </div>
-            <p>
-              <Text> The details are taken care of. </Text>
-              <br />
-              <Text> Keep your attention on what you’re building. </Text>
-            </p>
           </div>
           <div className="feature-grid">
             {features.map(({ icon: Icon, title, copy }) => (
@@ -132,16 +125,10 @@ export default function Home() {
           <div className="container integration-grid">
             <div className="integration-copy">
               <h2>
-                <Text> A few lines. </Text>
-                <br />
-                <em>
-                  <Text>A clear path.</Text>
-                </em>
+                <Text>API example</Text>
               </h2>
               <p>
-                <Text> A REST API that speaks your language. </Text>
-                <br />
-                <Text> No new stack. No unnecessary ceremony. </Text>
+                <Text>Create a task, then request its status and result.</Text>
               </p>
               <Link className="text-link" href="/docs">
                 <Text> Explore the documentation </Text>
@@ -152,9 +139,12 @@ export default function Home() {
           </div>
         </section>
         <section className="container workflow section-border">
+          <h2 className="workflow-heading">
+            <Text>Getting started</Text>
+          </h2>
           <div className="steps">
             {[
-              ['Create an account', 'Your workspace, ready to use.'],
+              ['Create an account', 'Register with your email address.'],
               ['Generate a key', 'A private key for your application.'],
               ['Send a task', 'Submit a site URL and hCaptcha site key.'],
               ['Retrieve the result', 'Poll the task and receive its token.'],
@@ -175,11 +165,7 @@ export default function Home() {
         <section className="container faq-section section-border">
           <div>
             <h2>
-              <Text> Good </Text>
-              <br />
-              <em>
-                <Text>questions.</Text>
-              </em>
+              <Text>FAQ</Text>
             </h2>
           </div>
           <div className="faq-list">
@@ -194,21 +180,6 @@ export default function Home() {
                 </p>
               </details>
             ))}
-          </div>
-        </section>
-        <section className="closing-section">
-          <div className="container closing-inner">
-            <h2>
-              <Text> A quieter way </Text>
-              <br />
-              <em>
-                <Text>to build.</Text>
-              </em>
-            </h2>
-            <Link className="button button-primary" href="/register">
-              <Text> Get started </Text>
-              <ArrowUpRight size={17} />
-            </Link>
           </div>
         </section>
       </main>

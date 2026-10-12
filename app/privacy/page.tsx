@@ -12,11 +12,7 @@ export default function Privacy() {
           <Text>HUGINN / PRIVACY</Text>
         </span>
         <h1>
-          <Text> Your data. </Text>
-          <br />
-          <em>
-            <Text>A clear view.</Text>
-          </em>
+          <Text>Privacy policy</Text>
         </h1>
         <p>
           <Text>

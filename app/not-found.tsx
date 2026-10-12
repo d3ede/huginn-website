@@ -5,15 +5,9 @@ export default function NotFound() {
   return (
     <main id="main" className="not-found">
       <Brand />
-      <span className="eyebrow">
-        <Text>404 / OUT OF SIGHT</Text>
-      </span>
+      <span className="eyebrow">404</span>
       <h1>
-        <Text> Nothing here. </Text>
-        <br />
-        <em>
-          <Text>Look a little further.</Text>
-        </em>
+        <Text>Page not found.</Text>
       </h1>
       <Link href="/" className="button button-primary">
         <Text> Back to Huginn → </Text>

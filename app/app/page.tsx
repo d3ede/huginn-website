@@ -40,11 +40,10 @@ export default function Dashboard() {
       <header className="workspace-page-heading dashboard-heading">
         <div>
           <h1>
-            <Text> A clearer view, </Text>
-            <em>{user.name.split(' ')[0]}.</em>
+            <Text>Dashboard</Text>
           </h1>
           <p>
-            <Text>Here’s what’s happening in your workspace.</Text>
+            <Text>Balance and task statistics.</Text>
           </p>
         </div>
         <button

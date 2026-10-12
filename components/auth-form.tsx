@@ -44,12 +44,12 @@ export function AuthForm({ register = false }: { register?: boolean }) {
         </div>
         <div className="auth-form-wrap">
           <h1>
-            <Text>{register ? 'See further.' : 'Welcome back.'}</Text>
+            <Text>{register ? 'Registration' : 'Sign in'}</Text>
           </h1>
           <p>
             <Text>
               {register
-                ? 'Create an account. Build with a clearer view.'
+                ? 'Register to create API keys and manage tasks.'
                 : 'Sign in to your workspace.'}
             </Text>
           </p>

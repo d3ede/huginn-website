@@ -352,20 +352,19 @@ code {
   background: var(--bg);
 }
 .hero-material {
+  --raven-size: 82% auto;
+  --raven-position: right 38%;
   position: absolute;
   inset: 0;
   background-image:
     linear-gradient(90deg, #0c0e0f 3%, #0c0e0ff5 24%, #0c0e0f95 48%, #0c0e0f40 75%),
     linear-gradient(0deg, #0c0e0f 0%, #0c0e0f80 22%, #0c0e0f00 58%),
-    url('/images/raven-lossless.webp');
+    url('/images/raven-blue-eye-lossless.webp');
   background-position:
     center,
     right center,
-    right 38%;
-  background-size:
-    cover,
-    cover,
-    82% auto;
+    var(--raven-position);
+  background-size: cover, cover, var(--raven-size);
   background-repeat: no-repeat;
   opacity: 1;
 }
@@ -548,7 +547,7 @@ code {
   bottom: -58%;
   width: 56%;
   height: 170%;
-  background: url('/images/raven.webp') center bottom/cover no-repeat;
+  background: url('/images/raven-blue-eye.webp') center bottom/cover no-repeat;
   opacity: 0.08;
   mask-image: linear-gradient(90deg, black, transparent);
 }
@@ -669,7 +668,7 @@ code {
   border: 1px solid #78958d26;
   background: #12181866;
   display: grid;
-  grid-template-columns: 1.6fr 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 40px;
   padding: 34px 38px;
@@ -771,7 +770,7 @@ code {
   content: '';
   position: absolute;
   inset: 0;
-  background: url('/images/raven.webp') right 75% / cover;
+  background: url('/images/raven-blue-eye.webp') right 75% / cover;
   opacity: 0.17;
   mask-image: linear-gradient(90deg, transparent, black);
 }
@@ -827,7 +826,7 @@ code {
   background:
     linear-gradient(0deg, #0c0e0ff0, transparent 60%),
     linear-gradient(90deg, transparent 50%, #0c0e0f),
-    url('/images/raven.webp') 66% center/cover;
+    url('/images/raven-blue-eye.webp') 66% center/cover;
   position: relative;
 }
 .auth-art-copy {
@@ -1925,10 +1924,8 @@ tbody tr:hover {
     font-size: 101px;
   }
   .hero-material {
-    background-size:
-      cover,
-      cover,
-      75% auto;
+    --raven-size: 75% auto;
+    background-size: cover, cover, var(--raven-size);
   }
   .hero-footnote {
     margin-top: 70px;
@@ -1955,14 +1952,10 @@ tbody tr:hover {
     font-size: 79px;
   }
   .hero-material {
-    background-size:
-      cover,
-      cover,
-      100% auto;
-    background-position:
-      center,
-      center,
-      150px 45%;
+    --raven-size: 100% auto;
+    --raven-position: 150px 45%;
+    background-size: cover, cover, var(--raven-size);
+    background-position: center, center, var(--raven-position);
   }
   .hero-aside {
     right: 0;
@@ -1985,14 +1978,14 @@ tbody tr:hover {
   .pricing-panel {
     gap: 26px;
     padding: 28px;
-    grid-template-columns: 1.4fr 1fr;
+    grid-template-columns: minmax(0, 1fr) auto;
   }
   .pricing-panel > .button {
     grid-column: 2;
     justify-self: start;
   }
   .pricing-panel > div {
-    grid-row: span 2;
+    grid-row: auto;
   }
   .faq-section {
     gap: 50px;
@@ -2088,14 +2081,10 @@ tbody tr:hover {
     letter-spacing: -3.5px;
   }
   .hero-material {
-    background-size:
-      cover,
-      cover,
-      115% auto;
-    background-position:
-      center,
-      center,
-      170px 36%;
+    --raven-size: 115% auto;
+    --raven-position: 170px 36%;
+    background-size: cover, cover, var(--raven-size);
+    background-position: center, center, var(--raven-position);
     opacity: 0.65;
   }
   .hero-aside {
@@ -2425,18 +2414,14 @@ tbody tr:hover {
     margin-top: 25px;
   }
   .hero-material {
-    background-size:
-      cover,
-      cover,
-      auto 80%;
-    background-position:
-      center,
-      center,
-      54% 21%;
+    --raven-size: auto 80%;
+    --raven-position: 54% 21%;
+    background-size: cover, cover, var(--raven-size);
+    background-position: center, center, var(--raven-position);
     opacity: 0.64;
     background-image:
       linear-gradient(90deg, #0c0e0ffa 0%, #0c0e0fc2 30%, #0c0e0f55 75%),
-      linear-gradient(0deg, #0c0e0f 0%, #0c0e0f00 40%), url('/images/raven-lossless.webp');
+      linear-gradient(0deg, #0c0e0f 0%, #0c0e0f00 40%), url('/images/raven-blue-eye-lossless.webp');
   }
   .hero-description {
     font-size: 15px;
@@ -2673,7 +2658,7 @@ tbody tr:hover {
     min-height: 100svh;
     background:
       linear-gradient(#0c0e0ff5, #0c0e0f),
-      url('/images/raven.webp') center/cover;
+      url('/images/raven-blue-eye.webp') center/cover;
   }
   .auth-content > .brand {
     margin-bottom: 45px;
@@ -2993,7 +2978,7 @@ em {
   letter-spacing: inherit;
 }
 .hero h1 {
-  font-size: clamp(64px, 6.2vw, 96px);
+  font-size: clamp(58px, 5vw, 76px);
   font-weight: 600;
   letter-spacing: -0.055em;
   max-width: 660px;
@@ -3001,10 +2986,30 @@ em {
 .hero h1 em {
   font-size: 1em;
 }
+.hero-title-first {
+  display: block;
+}
 .hero-description {
   font-size: 19px;
   max-width: 510px;
-  min-height: 65px;
+  min-height: 98px;
+}
+.hero-supported {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  color: var(--muted);
+  font-size: 15px;
+}
+.hero-supported > span,
+.pricing-task-type {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hero-supported img,
+.pricing-task-type img {
+  flex-shrink: 0;
 }
 .hero-content {
   padding-top: 184px;
@@ -3040,7 +3045,7 @@ em {
   inset: 0;
   border-radius: inherit;
   z-index: -1;
-  background: url('/images/raven.webp') 91% 77% / 340% auto;
+  background: url('/images/raven-blue-eye.webp') 91% 77% / 340% auto;
   opacity: 0;
   transition:
     opacity 650ms ease,
@@ -3055,6 +3060,15 @@ em {
 .button-primary:hover:not(:disabled) {
   background: #a7bfba;
 }
+.button-primary::before {
+  background-size: 560px auto;
+  filter: grayscale(1) brightness(7) contrast(1.2);
+  mix-blend-mode: multiply;
+}
+.button-primary:hover:not(:disabled)::before,
+.button-primary:focus-visible:not(:disabled)::before {
+  opacity: 0.3;
+}
 .button-outline:hover:not(:disabled)::before {
   opacity: 0.55;
 }
@@ -3066,6 +3080,12 @@ em {
   inset: 0;
   z-index: 120;
   pointer-events: none;
+}
+.workflow-heading {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  margin-bottom: 36px;
 }
 .language-switch {
   display: inline-flex;
@@ -3153,14 +3173,18 @@ html[lang='ru'] .integration-copy h2 {
     gap: 12px;
   }
   .hero-content {
-    padding-top: 154px;
+    padding-top: 182px;
   }
   .hero h1 {
-    font-size: clamp(38px, 12.3vw, 68px);
+    font-size: clamp(34px, 9.6vw, 47px);
     letter-spacing: -0.055em;
   }
   .hero-description {
     font-size: 17px;
+    min-height: 145px;
+  }
+  .hero-title-first {
+    max-width: 230px;
   }
   .hero-actions {
     gap: 20px;
@@ -3222,6 +3246,9 @@ html[lang='ru'] .integration-copy h2 {
   }
 }
 @media (max-width: 400px) {
+  .hero-description {
+    min-height: 174px;
+  }
   .feature-grid {
     grid-template-columns: minmax(0, 1fr);
   }

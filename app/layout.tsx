@@ -9,13 +9,13 @@ export async function generateMetadata(): Promise<Metadata> {
   const locale = (await cookies()).get('huginn_locale')?.value === 'ru' ? 'ru' : 'en';
   return {
     title: {
-      default: translate('Huginn — Solve what others can’t.', locale),
+      default: translate('Huginn — hCaptcha API', locale),
       template: '%s · Huginn',
     },
     description:
       locale === 'ru'
-        ? 'Инфраструктура решения hCaptcha для разработчиков. Понятный API и контроль расходов.'
-        : 'Developer-first hCaptcha solving infrastructure. A clear API and controlled spending.',
+        ? 'API для решения hCaptcha. Задачи, результаты и учёт расходов в личном кабинете.'
+        : 'An API for solving hCaptcha. Tasks, results and billing in your account.',
   };
 }
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
