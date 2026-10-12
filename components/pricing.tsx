@@ -38,13 +38,6 @@ export function Pricing() {
             <img src="/images/hcaptcha.svg" width="20" height="20" alt="" />
             <Text>hCaptcha · USD · charged per successful task</Text>
           </p>
-          {config && (!config.paymentsAvailable || !config.solverAvailable) && (
-            <span className="availability-note">
-              <Text> Preview release. </Text>
-              <Text>{config.paymentsAvailable ? '' : 'Payments are not connected yet.'}</Text>{' '}
-              <Text>{config.solverAvailable ? '' : 'Task processing is not enabled yet.'}</Text>
-            </span>
-          )}
           {error && (
             <p className="availability-note">
               <Text>Pricing is temporarily unavailable.</Text>

@@ -17,28 +17,28 @@ const features = [
   {
     icon: Terminal,
     title: 'REST API',
-    copy: 'Submit hCaptcha tasks and retrieve their results over HTTP.',
+    copy: 'Create tasks and retrieve their results.',
   },
   {
     icon: KeyRound,
     title: 'API Keys',
-    copy: 'Create separate keys for your integrations and revoke them when needed.',
+    copy: 'Create and revoke access keys.',
   },
   {
     icon: SlidersHorizontal,
     title: 'Task history',
-    copy: 'View task statuses, results, duration and cost in your account.',
+    copy: 'Task statuses, duration and cost.',
   },
   {
     icon: ShieldCheck,
     title: 'Billing',
-    copy: 'Only successful tasks are charged. Failed tasks release their reserved balance automatically.',
+    copy: 'Pay for successful tasks from your balance.',
   },
 ];
 const faqs = [
   [
     'What does Huginn support?',
-    'Huginn provides a task-based API for hCaptcha. Other CAPTCHA types are not currently supported.',
+    'Huginn supports hCaptcha, including hCaptcha Enterprise, through the API.',
   ],
   [
     'How are tasks billed?',
@@ -73,17 +73,12 @@ export default function Home() {
             </div>
             <h1 className="reveal">
               <span className="hero-title-first">
-                <Text>hCaptcha solving</Text>
+                <Text>A service for solving</Text>{' '}
               </span>
-              <em>
-                <Text>for applications</Text>
-              </em>
+              <em>hCaptcha</em>
             </h1>
             <p className="hero-description reveal">
-              <Text>
-                Connect your application through the API. Your account includes API keys, usage
-                statistics and billing.
-              </Text>
+              <Text>Supports hCaptcha Enterprise. Access through the API.</Text>
             </p>
             <div className="hero-actions reveal">
               <Link className="button button-primary" href="/register">
@@ -127,13 +122,15 @@ export default function Home() {
               <h2>
                 <Text>API example</Text>
               </h2>
-              <p>
-                <Text>Create a task, then request its status and result.</Text>
-              </p>
-              <Link className="text-link" href="/docs">
-                <Text> Explore the documentation </Text>
-                <ArrowRight size={17} />
-              </Link>
+              <div className="integration-description">
+                <p>
+                  <Text>Create a task, then request its status and result.</Text>
+                </p>
+                <Link className="button button-outline" href="/docs">
+                  <Text> Explore the documentation </Text>
+                  <ArrowUpRight size={17} />
+                </Link>
+              </div>
             </div>
             <CodeExample compact />
           </div>

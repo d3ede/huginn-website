@@ -1,18 +1,15 @@
 export type Locale = 'en' | 'ru';
 export const russian: Record<string, string> = {
-  'hCaptcha solving': 'Решение hCaptcha',
-  'for applications': 'для приложений',
-  'Connect your application through the API. Your account includes API keys, usage statistics and billing.':
-    'Интеграция с приложениями через API. Ключи доступа, статистика использования и расходы доступны в личном кабинете.',
+  'A service for solving': 'Сервис для решения',
+  'Supports hCaptcha Enterprise. Access through the API.':
+    'Поддержка hCaptcha Enterprise. Доступ через API.',
   Features: 'Возможности',
   'REST API': 'REST API',
-  'Submit hCaptcha tasks and retrieve their results over HTTP.':
-    'Отправка задач hCaptcha и получение результатов по HTTP.',
-  'Create separate keys for your integrations and revoke them when needed.':
-    'Отдельные ключи для интеграций с возможностью отзыва.',
+  'Create tasks and retrieve their results.': 'Создание задач и получение результатов.',
+  'Create and revoke access keys.': 'Создание и отзыв ключей доступа.',
   'Task history': 'История задач',
-  'View task statuses, results, duration and cost in your account.':
-    'Статусы, результаты, время выполнения и стоимость задач в кабинете.',
+  'Task statuses, duration and cost.': 'Статусы, время и стоимость задач.',
+  'Pay for successful tasks from your balance.': 'Оплата успешных задач с баланса.',
   'API example': 'Пример API',
   'Create a task, then request its status and result.':
     'Создайте задачу, затем запросите её статус и результат.',
@@ -92,8 +89,8 @@ export const russian: Record<string, string> = {
   Good: 'Частые',
   'questions.': 'вопросы.',
   'What does Huginn support?': 'Что поддерживает Huginn?',
-  'Huginn provides a task-based API for hCaptcha. Other CAPTCHA types are not currently supported.':
-    'Huginn предоставляет API для решения hCaptcha. Другие типы CAPTCHA пока не поддерживаются.',
+  'Huginn supports hCaptcha, including hCaptcha Enterprise, through the API.':
+    'Huginn поддерживает hCaptcha, включая hCaptcha Enterprise, через API.',
   'How are tasks billed?': 'Как оплачиваются задачи?',
   'The task price is reserved when a task is accepted. Successful tasks keep that charge; failed tasks receive an automatic refund. You can review each entry in Billing.':
     'Стоимость резервируется при принятии задачи. При успехе она списывается, при ошибке автоматически возвращается. Все операции доступны в разделе «Баланс».',
