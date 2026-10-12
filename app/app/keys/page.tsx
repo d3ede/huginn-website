@@ -183,11 +183,9 @@ export default function KeysPage() {
                   <tr key={key.id}>
                     <td className="bright">{key.name}</td>
                     <td className="mono">{key.prefix}••••</td>
-                    <td>{dateTime(key.createdAt, user.timezone, locale)}</td>
+                    <td>{dateTime(key.createdAt, locale)}</td>
                     <td>
-                      <Text>
-                        {key.lastUsedAt ? dateTime(key.lastUsedAt, user.timezone, locale) : 'Never'}
-                      </Text>
+                      <Text>{key.lastUsedAt ? dateTime(key.lastUsedAt, locale) : 'Never'}</Text>
                     </td>
                     <td>
                       <span

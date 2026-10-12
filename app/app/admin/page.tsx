@@ -497,7 +497,7 @@ export default function AdminPage() {
                       {history?.changes.map((change) => (
                         <tr key={change.revision}>
                           <td>{change.revision}</td>
-                          <td>{dateTime(change.updatedAt, user.timezone, locale)}</td>
+                          <td>{dateTime(change.updatedAt, locale)}</td>
                           <td>
                             {change.taskProducts.map((entry) => (
                               <div key={entry.id}>

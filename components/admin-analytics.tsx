@@ -154,7 +154,7 @@ function Report({ taskId, close }: { taskId: string; close: () => void }) {
         <>
           <div className="report-identification">
             <code>{taskId}</code>
-            <span>{dateTime(report.createdAt, 'UTC', locale)} · UTC</span>
+            <span>{dateTime(report.createdAt, locale)}</span>
             <span className="status-badge">
               {report.solveMode === 'challenge'
                 ? t(data?.task.status === 'failed' ? 'Challenge run' : 'Challenge solved')
@@ -813,9 +813,7 @@ export function AdminAnalytics() {
                 <tr key={row.id}>
                   <td>
                     {row.user.name}
-                    <small className="table-subtext">
-                      {dateTime(row.createdAt, 'UTC', locale)}
-                    </small>
+                    <small className="table-subtext">{dateTime(row.createdAt, locale)}</small>
                   </td>
                   <td>{product(row.type)}</td>
                   <td className="website-cell" title={row.websiteURL}>

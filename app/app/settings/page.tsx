@@ -19,7 +19,7 @@ export default function SettingsPage() {
     try {
       await api('/account', {
         method: 'PATCH',
-        body: JSON.stringify({ name: form.get('name'), timezone: form.get('timezone') }),
+        body: JSON.stringify({ name: form.get('name') }),
       });
       await refreshUser();
       setSuccess('Profile updated.');
@@ -85,7 +85,7 @@ export default function SettingsPage() {
             <Text>Profile</Text>
           </h2>
           <p>
-            <Text>Your account details and preferred timezone.</Text>
+            <Text>Your account details.</Text>
           </p>
         </div>
         <form onSubmit={save}>
@@ -105,32 +105,6 @@ export default function SettingsPage() {
           </label>
           <p className="field-hint">
             <Text>Email is your account identifier and cannot be changed here.</Text>
-          </p>
-          <label>
-            <Text> Timezone </Text>
-            <input
-              name="timezone"
-              defaultValue={user.timezone}
-              list="timezones"
-              required
-              maxLength={100}
-            />
-            <datalist id="timezones">
-              {[
-                'UTC',
-                'Europe/Tallinn',
-                'Europe/London',
-                'Europe/Berlin',
-                'America/New_York',
-                'America/Los_Angeles',
-                'Asia/Tokyo',
-              ].map((t) => (
-                <option key={t} value={t} />
-              ))}
-            </datalist>
-          </label>
-          <p className="field-hint">
-            <Text> Table timestamps use this timezone. Statistics use UTC day boundaries. </Text>
           </p>
           <button className="button button-outline" disabled={!!busy}>
             <Text>

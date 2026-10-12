@@ -109,7 +109,7 @@ export function TaskTable({ tasks, detailed = false }: { tasks: Task[]; detailed
                 {detailed && (
                   <>
                     <td>{usd(task.cost, 4)}</td>
-                    <td>{dateTime(task.createdAt, user.timezone, locale)}</td>
+                    <td>{dateTime(task.createdAt, locale)}</td>
                     <td>
                       <button
                         className="icon-button"

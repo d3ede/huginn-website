@@ -1,5 +1,6 @@
 export type Locale = 'en' | 'ru';
 export const russian: Record<string, string> = {
+  'Your account details.': 'Данные вашего аккаунта.',
   'Website integrations': 'Интеграции сайтов',
   'Boolean; defaults to false.': 'Boolean; по умолчанию false.',
   'Use the captcha details from Steam’s /refreshcaptcha response in the same browser session.':

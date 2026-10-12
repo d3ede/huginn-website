@@ -295,7 +295,8 @@ export async function buildApp(
             } catch {
               return false;
             }
-          }),
+          })
+          .optional(),
       })
       .strict()
       .parse(request.body);

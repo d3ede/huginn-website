@@ -171,7 +171,7 @@ export default function BillingPage() {
                     <td className="bright">
                       <Text>{labels[entry.kind] ?? entry.kind}</Text>
                     </td>
-                    <td>{dateTime(entry.createdAt, user.timezone, locale)}</td>
+                    <td>{dateTime(entry.createdAt, locale)}</td>
                     <td className={Number(entry.amount) > 0 ? 'positive' : ''}>
                       {Number(entry.amount) > 0 ? '+' : ''}
                       {usd(entry.amount, 4)}
