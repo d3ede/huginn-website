@@ -627,7 +627,7 @@ body {
 }
 .workspace-panel,
 .dialog {
-  background: #fff;
+  background: var(--panel, #fff);
   border-color: #dbe5ee;
 }
 .workspace-mobile-header {

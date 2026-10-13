@@ -20,6 +20,7 @@ import {
 import { api, ApiError } from '@/lib/api';
 import type { User, PublicConfig } from '@/lib/types';
 import { Brand } from './brand';
+import { ThemeSwitch } from './theme';
 type WorkspaceContext = {
   user: User;
   config: PublicConfig;
@@ -128,6 +129,7 @@ export function Workspace({ children }: { children: React.ReactNode }) {
       <div className="workspace">
         <div className="workspace-mobile-header">
           <Brand />
+          <ThemeSwitch />
           <LanguageSwitch />
           <button
             className="icon-button"
@@ -197,6 +199,7 @@ export function Workspace({ children }: { children: React.ReactNode }) {
         </aside>
         <main className="workspace-main" id="main">
           <div className="workspace-topline">
+            <ThemeSwitch />
             <span>
               <Text> HUGINN </Text>
               <span className="breadcrumb-slash">/</span>{' '}

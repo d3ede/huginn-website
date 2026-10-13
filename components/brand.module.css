@@ -21,6 +21,25 @@
   top: -17.931%;
 }
 
+:global([data-theme='dark']) .image {
+  visibility: hidden;
+}
+
+:global([data-theme='dark']) .artwork::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    #7db4df 0%,
+    #7db4df 30%,
+    #e6eef5 37%,
+    #e6eef5 93%,
+    #7db4df 96%
+  );
+  mask: url('/images/brand/huginn-logo-v1.png') center / 117.706% auto no-repeat;
+}
+
 :global(.footer) .logo {
   width: 152px;
 }
@@ -33,5 +52,11 @@
 @media (max-width: 560px) {
   .logo {
     width: 120px;
+  }
+}
+
+@media (max-width: 400px) {
+  .logo {
+    width: 100px;
   }
 }

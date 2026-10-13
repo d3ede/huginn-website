@@ -3,9 +3,11 @@ import { cookies } from 'next/headers';
 import '@fontsource-variable/inter';
 import { I18nProvider, Text } from '@/components/i18n';
 import { RavenInteraction } from '@/components/raven-interaction';
+import { ThemeProvider } from '@/components/theme';
 import { translate } from '@/lib/i18n';
 import './globals.css';
 import './light.css';
+import './themes.css';
 export async function generateMetadata(): Promise<Metadata> {
   const locale = (await cookies()).get('huginn_locale')?.value === 'ru' ? 'ru' : 'en';
   return {
@@ -20,16 +22,20 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const locale = (await cookies()).get('huginn_locale')?.value === 'ru' ? 'ru' : 'en';
+  const preferences = await cookies();
+  const locale = preferences.get('huginn_locale')?.value === 'ru' ? 'ru' : 'en';
+  const theme = preferences.get('huginn_theme')?.value === 'dark' ? 'dark' : 'light';
   return (
-    <html lang={locale} data-scroll-behavior="smooth">
+    <html lang={locale} data-theme={theme} data-scroll-behavior="smooth">
       <body>
         <I18nProvider initialLocale={locale}>
-          <a className="skip-link" href="#main">
-            <Text>Skip to content</Text>
-          </a>
-          {children}
-          <RavenInteraction />
+          <ThemeProvider initialTheme={theme}>
+            <a className="skip-link" href="#main">
+              <Text>Skip to content</Text>
+            </a>
+            {children}
+            <RavenInteraction />
+          </ThemeProvider>
         </I18nProvider>
       </body>
     </html>

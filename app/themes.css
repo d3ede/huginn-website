@@ -1,0 +1,575 @@
+:root {
+  --panel: #fff;
+  --wing-texture: url('/images/button-raven-wings-white.png');
+  --wing-center: #edf5fc;
+  --wing-ink: #18364d;
+  --wing-border: #aecbe0;
+}
+
+.theme-switch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  color: var(--muted);
+  background: transparent;
+  transition:
+    color 180ms,
+    background 180ms,
+    border-color 180ms;
+}
+.theme-switch:hover {
+  color: var(--blue);
+  background: var(--surface);
+  border-color: var(--strong-line);
+}
+.auth-brand-row .theme-switch {
+  margin-left: auto;
+}
+.workspace-topline {
+  align-items: center;
+}
+.workspace-topline .theme-switch {
+  order: 2;
+  margin-left: auto;
+}
+
+/* Keep the same feather scale on small and large buttons to avoid fine-detail aliasing. */
+.button:not(.preview-challenge) {
+  overflow: hidden;
+}
+.button:not(.preview-challenge)::before {
+  inset: -2px;
+  z-index: -2;
+  border-radius: inherit;
+  background: var(--wing-texture) center 65% / max(290px, 100%) auto no-repeat;
+  filter: blur(0.6px) contrast(0.85);
+  mix-blend-mode: normal;
+  opacity: 0;
+  transform: translateY(2px) scale(1.04);
+  transition:
+    opacity 340ms ease,
+    transform 600ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.button:not(.preview-challenge)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--wing-center) 32%,
+    var(--wing-center) 68%,
+    transparent
+  );
+  opacity: 0;
+  transition: opacity 340ms ease;
+}
+.button:not(.preview-challenge):is(:hover, :focus-visible):not(:disabled, [aria-disabled='true']) {
+  background: var(--wing-center);
+  color: var(--wing-ink);
+  border-color: var(--wing-border);
+}
+.button:not(.preview-challenge):is(:hover, :focus-visible):not(
+    :disabled,
+    [aria-disabled='true']
+  )::before,
+.button:not(.preview-challenge):is(:hover, :focus-visible):not(
+    :disabled,
+    [aria-disabled='true']
+  )::after {
+  opacity: 0.76;
+  transform: none;
+}
+
+.button:not(.preview-challenge):is(:hover, :focus-visible):not(
+    :disabled,
+    [aria-disabled='true']
+  )::after {
+  opacity: 1;
+}
+
+.button.button-small::before {
+  background-size: max(240px, 100%) auto;
+  background-position: center 65%;
+  filter: blur(0.6px) contrast(0.85);
+}
+.button.button-small:is(:hover, :focus-visible)::before {
+  background-position: center 65%;
+}
+.button.button-small::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--wing-center) 43%,
+    var(--wing-center) 57%,
+    transparent
+  );
+}
+
+/* A brief, translucent flap. Feather edges dissolve instead of exposing the source crop. */
+.raven-click-wings {
+  position: absolute;
+  display: block;
+  aspect-ratio: 2 / 1;
+  transform: translate(-50%, -50%);
+  animation: raven-flight-lifetime 1400ms linear;
+}
+.raven-click-wing {
+  position: absolute;
+  inset: 0 50% 0 0;
+  background: var(--wing-texture) left center / 200% 100% no-repeat;
+  mask-image: radial-gradient(ellipse at 50% 52%, #000 24%, #0009 46%, transparent 73%);
+  transform-origin: 20% 24%;
+  filter: blur(1px) contrast(0.72);
+  animation:
+    raven-click-left 950ms cubic-bezier(0.2, 0.7, 0.2, 1) both,
+    raven-click-fade 950ms ease-out both;
+}
+.raven-click-wing-right {
+  inset: 0 0 0 50%;
+  background-position: right center;
+  transform-origin: 80% 24%;
+  animation-name: raven-click-right, raven-click-fade;
+}
+@keyframes raven-flight-lifetime {
+  from {
+    visibility: visible;
+  }
+  to {
+    visibility: visible;
+  }
+}
+.raven-click-feather {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 13px;
+  height: 29px;
+  color: #8fb7d1;
+  opacity: 0;
+  pointer-events: none;
+  animation: raven-feather-drift 1250ms ease-out both;
+  filter: blur(0.25px);
+}
+[data-theme='dark'] .raven-click-feather {
+  color: #607f98;
+}
+@keyframes raven-feather-drift {
+  0%,
+  8% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--feather-angle)) scale(0.7);
+  }
+  24% {
+    opacity: 0.64;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--feather-x)), calc(-50% + var(--feather-y)))
+      rotate(var(--feather-spin)) scale(0.9);
+  }
+}
+@keyframes raven-click-fade {
+  0% {
+    opacity: 0;
+  }
+  24% {
+    opacity: 0.52;
+  }
+  50% {
+    opacity: 0.38;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes raven-click-left {
+  0% {
+    transform: translate(12px, 10px) rotate(-16deg) scale(0.88);
+  }
+  42% {
+    transform: translate(-6px, -8px) rotate(7deg) scale(1);
+  }
+  100% {
+    transform: translate(-14px, -18px) rotate(12deg) scale(1.04);
+  }
+}
+@keyframes raven-click-right {
+  0% {
+    transform: translate(-12px, 10px) rotate(16deg) scale(0.88);
+  }
+  42% {
+    transform: translate(6px, -8px) rotate(-7deg) scale(1);
+  }
+  100% {
+    transform: translate(14px, -18px) rotate(-12deg) scale(1.04);
+  }
+}
+
+.button:not(.preview-challenge).wing-press::before {
+  animation: wing-press 560ms ease-out;
+}
+@keyframes wing-press {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  40% {
+    transform: translateY(-1px) scale(1.04);
+  }
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0d151d;
+  --surface: #17232f;
+  --panel: #121e28;
+  --text: #e5edf4;
+  --muted: #a0b0bf;
+  --dim: #90a2b4;
+  --green: #8ebcdf;
+  --blue: #79b5e6;
+  --line: #273848;
+  --strong-line: #3a5064;
+  --wing-texture: url('/images/button-raven-wings-black.png');
+  --wing-center: #172635;
+  --wing-ink: #eef5fb;
+  --wing-border: #476782;
+}
+[data-theme='dark'] body {
+  background: var(--bg);
+}
+[data-theme='dark'] ::selection {
+  background: #345d7d;
+  color: #f4f8fc;
+}
+[data-theme='dark'] .public-header,
+[data-theme='dark'] .workspace-mobile-header {
+  background: #101a24ed;
+  border-color: var(--line);
+}
+[data-theme='dark'] .public-links {
+  color: #bdcbd8;
+}
+[data-theme='dark'] .language-switch {
+  color: var(--muted);
+}
+[data-theme='dark'] .language-switch:hover {
+  background: var(--surface);
+  color: var(--blue);
+}
+[data-theme='dark'] .icon-button:hover,
+[data-theme='dark'] .icon-button:focus-visible {
+  background: var(--surface);
+  color: var(--text);
+}
+[data-theme='dark'] .button-primary {
+  background: #a4c3dc;
+  color: #102434;
+  border-color: #a4c3dc;
+  box-shadow: inset 0 1px 0 #ffffff18;
+}
+[data-theme='dark'] .button-outline {
+  background: #13202bb3;
+  color: #d2e2ef;
+  border-color: #344b60;
+}
+[data-theme='dark'] .text-link {
+  color: var(--blue);
+}
+[data-theme='dark'] .text-link:hover {
+  color: #b5d6f2;
+}
+[data-theme='dark'] .landing-hero-section {
+  background: radial-gradient(ellipse at 76% 42%, #1f3345 0, #14222f 43%, var(--bg) 78%);
+}
+[data-theme='dark'] .landing-hero-section::before {
+  filter: invert(1) grayscale(1) sepia(0.15) hue-rotate(165deg) blur(0.75px);
+  opacity: 0.2;
+  mix-blend-mode: screen;
+}
+[data-theme='dark'] .landing-title-accent {
+  color: #79b5e6;
+}
+[data-theme='dark']
+  :is(
+    .landing-description,
+    .landing-footnote,
+    .supported-note,
+    .hero-badges,
+    .eyebrow,
+    .platform-heading,
+    .landing-features p,
+    .faq-list details p,
+    .footer,
+    .availability-note,
+    .stage-caption,
+    .stage-heading
+  ) {
+  color: var(--muted);
+}
+[data-theme='dark'] .supported-note strong {
+  color: #c3d7e8;
+}
+[data-theme='dark']
+  :is(
+    .platform-section,
+    .landing-features article,
+    .steps article,
+    .pricing-section,
+    .faq-section,
+    .faq-list details,
+    .footer,
+    .workflow,
+    .integration-section
+  ) {
+  border-color: var(--line);
+}
+[data-theme='dark'] .platform-logo {
+  background-color: #94a6b6;
+}
+[data-theme='dark'] .platform-brand:is(:hover, :focus-visible) .platform-logo {
+  background-color: var(--blue);
+}
+[data-theme='dark'] .platform-brand > span:last-child {
+  color: var(--blue);
+}
+[data-theme='dark'] :is(.feature-icon, .landing-feature-icon) {
+  color: #9cc3e3;
+  background: linear-gradient(135deg, #203549, #152635);
+  border-color: #304b63;
+  box-shadow: inset 0 1px 0 #ffffff0a;
+}
+[data-theme='dark'] .raven-stage {
+  background: linear-gradient(130deg, #283f53, #172b3d 54%, #0c1b29);
+  border-color: #354e63;
+  box-shadow: inset 0 1px 0 #ffffff09;
+}
+[data-theme='dark'] .raven-stage::after {
+  background: linear-gradient(140deg, #5e8ca826, transparent 70%);
+}
+[data-theme='dark'] .raven-stage-wing > span {
+  border-color: #7099b330;
+  background: linear-gradient(102deg, #233b50, #162a3a 48%, #42657e 50%, #344c61 85%);
+  box-shadow: -3px 6px 12px #0003;
+  opacity: 0.85;
+}
+[data-theme='dark'] .raven-stage-wing > span::after {
+  background: repeating-linear-gradient(145deg, transparent 0 7px, #a7c9df12 7px 8px);
+}
+[data-theme='dark'] .solver-preview {
+  background: #142330f5;
+  border-color: #4c657c66;
+  box-shadow: 8px 13px 28px #0006;
+}
+[data-theme='dark'] :is(.preview-label, .preview-result, .preview-disclaimer) {
+  color: #a0b6c8;
+  border-color: #314858;
+}
+[data-theme='dark'] .preview-challenge.button {
+  color: #d5e3ee;
+}
+[data-theme='dark'] .preview-challenge.button:is(:hover, :focus-visible) {
+  background: #1a3041;
+}
+[data-theme='dark'] .preview-checkbox {
+  border-color: #809bad;
+  background: #1a2b39;
+}
+[data-theme='dark'] .is-solved .preview-checkbox {
+  background: #24475e;
+  color: #9dd1f6;
+  border-color: #729bb7;
+}
+[data-theme='dark'] .integration-section {
+  background: #101c27;
+}
+[data-theme='dark'] .code-window {
+  background: #0d1822;
+  border-color: #304658;
+  box-shadow: 0 20px 60px #0003;
+}
+[data-theme='dark'] .step-number {
+  color: #8fb3cf;
+}
+[data-theme='dark'] :is(.pricing-panel, .landing-closing) {
+  background: linear-gradient(115deg, #172a3b, #13212e);
+  border-color: #30475c;
+}
+[data-theme='dark'] .auth-art {
+  background:
+    linear-gradient(0deg, #15293b, #1e3a5066),
+    url('/images/feather-texture.svg') 66% center/cover;
+}
+[data-theme='dark'] .auth-art h2 {
+  color: var(--text);
+}
+[data-theme='dark'] .auth-content {
+  background: var(--bg);
+}
+[data-theme='dark'] :is(input, select, textarea) {
+  background: #111e29;
+  color: var(--text);
+  border-color: var(--strong-line);
+}
+[data-theme='dark'] :is(input, textarea)::placeholder {
+  color: #879bad;
+}
+[data-theme='dark'] :is(label, .field-label, .sidebar-user > div > span) {
+  color: #c2d3e1;
+}
+[data-theme='dark'] .workspace {
+  background: var(--bg);
+}
+[data-theme='dark'] .sidebar {
+  background: #101c27;
+  border-color: var(--line);
+}
+[data-theme='dark'] .sidebar nav a {
+  color: #a9bbcc;
+}
+[data-theme='dark'] .sidebar nav a:is(:hover, .active) {
+  background: #20374b;
+  color: #c7e5fc;
+}
+[data-theme='dark'] .avatar {
+  background: #274159;
+  color: #bbd9ef;
+}
+[data-theme='dark'] .breadcrumb-slash {
+  color: var(--dim);
+}
+[data-theme='dark']
+  :is(
+    .workspace-panel,
+    .panel,
+    .dialog,
+    .admin-save-bar,
+    .analytics-metrics > div,
+    .report-rounds button,
+    .report-image,
+    .docs-start-grid > a,
+    .docs-status-grid > div,
+    .docs-json,
+    .docs-site-card,
+    .billing-card,
+    .payment-card
+  ) {
+  background: var(--panel);
+  border-color: var(--line);
+}
+[data-theme='dark'] :is(.docs-article p code, .docs-article li code, .endpoint) {
+  background: #1c3142;
+  color: #a0c7e7;
+  border-color: #314b60;
+}
+[data-theme='dark'] .docs-json pre {
+  color: #b3d3ed;
+}
+[data-theme='dark'] :is(.status-succeeded, .positive, .form-success) {
+  color: #8acbad;
+}
+[data-theme='dark'] :is(.status-failed, .form-error, .dialog .form-error, .button-danger) {
+  color: #e89e9e;
+}
+[data-theme='dark'] :is(.status-queued, .notice, .demo-banner) {
+  color: #d9bd88;
+}
+[data-theme='dark'] .status-processing {
+  color: #9ac9ed;
+}
+[data-theme='dark'] .dialog-overlay {
+  background: #03090dcc;
+}
+
+[data-theme='dark']
+  :is(
+    .task-id,
+    .key-placeholder,
+    .empty-state h3,
+    .pricing-panel ul,
+    .auth-terms a,
+    .preview-result code > span,
+    .preview-result > span,
+    .integration-types,
+    .integration-types .future-type,
+    .landing-supported
+  ) {
+  color: var(--muted);
+}
+[data-theme='dark'] .secret-value input {
+  color: var(--blue);
+}
+[data-theme='dark'] .key-placeholder > span:last-child {
+  color: var(--dim);
+}
+[data-theme='dark'] .docs-nav {
+  background: var(--bg);
+}
+[data-theme='dark'] .report-rounds button[aria-current] {
+  background: var(--surface);
+  border-color: var(--blue);
+}
+[data-theme='dark'] .danger-hover:hover {
+  color: #e89e9e;
+}
+
+@media (max-width: 1100px) {
+  [data-theme='dark'] .public-links.open {
+    background: #101c27;
+    border-color: var(--line);
+  }
+}
+@media (max-width: 800px) {
+  .workspace-topline .theme-switch {
+    display: none;
+  }
+  [data-theme='dark'] .landing-hero-section::before {
+    opacity: 0.16;
+  }
+}
+@media (max-width: 560px) {
+  .theme-switch {
+    width: 34px;
+    height: 36px;
+  }
+  .nav-actions {
+    gap: 5px;
+  }
+  .auth-brand-row {
+    gap: 12px;
+  }
+  .workspace-mobile-header {
+    gap: 7px;
+  }
+  .workspace-mobile-header .theme-switch {
+    margin-left: auto;
+  }
+  .workspace-mobile-header .language-switch {
+    margin-left: 0;
+  }
+  .nav-actions .language-switch svg {
+    display: none;
+  }
+  .nav-actions .language-switch {
+    min-width: 28px;
+    padding: 6px 5px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .button:not(.preview-challenge)::before,
+  .button:not(.preview-challenge)::after {
+    transition: none;
+    transform: none;
+    animation: none;
+  }
+}

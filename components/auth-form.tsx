@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowUpRight, LoaderCircle } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Brand } from './brand';
+import { ThemeSwitch } from './theme';
 export function AuthForm({ register = false }: { register?: boolean }) {
   const { t, locale } = useI18n();
 
@@ -40,6 +41,7 @@ export function AuthForm({ register = false }: { register?: boolean }) {
       <div className="auth-content">
         <div className="auth-brand-row">
           <Brand />
+          <ThemeSwitch />
           <LanguageSwitch />
         </div>
         <div className="auth-form-wrap">

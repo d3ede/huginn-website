@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { ArrowUpRight, Menu, X } from 'lucide-react';
 import { Brand } from './brand';
+import { ThemeSwitch } from './theme';
 export function PublicNav() {
   const { t, locale } = useI18n();
 
@@ -28,6 +29,7 @@ export function PublicNav() {
           </Link>
         </nav>
         <div className="nav-actions">
+          <ThemeSwitch />
           <LanguageSwitch />
           <Link href="/login" className="sign-in button button-outline button-small">
             <Text> Sign in </Text>

@@ -94,7 +94,7 @@ input,
 textarea,
 select {
   border: 1px solid var(--strong-line);
-  background: #ffffff;
+  background: var(--panel, #ffffff);
   color: var(--text);
   border-radius: 5px;
   outline: none;
@@ -1136,7 +1136,7 @@ code {
 }
 .workspace {
   min-height: 100vh;
-  background: #ffffff;
+  background: var(--panel, #ffffff);
 }
 .sidebar {
   width: 206px;
@@ -1146,7 +1146,7 @@ code {
   flex-direction: column;
   padding: 41px 22px 23px;
   border-right: 1px solid var(--line);
-  background: #ffffff;
+  background: var(--panel, #ffffff);
   z-index: 30;
 }
 .sidebar > .brand {
@@ -1586,7 +1586,7 @@ tbody tr:hover {
   color: #344454;
   font-size: 14px;
   font-family: Consolas, monospace;
-  background: #ffffff;
+  background: var(--panel, #ffffff);
   overflow: hidden;
   white-space: nowrap;
 }
@@ -1720,7 +1720,7 @@ tbody tr:hover {
   width: min(470px, 100%);
   max-height: calc(100vh - 50px);
   overflow-y: auto;
-  background: #ffffff;
+  background: var(--panel, #ffffff);
   border: 1px solid #4483b838;
   border-radius: 9px;
   padding: 28px;
@@ -1885,7 +1885,7 @@ tbody tr:hover {
 .amount-input {
   display: flex;
   align-items: center;
-  background: #ffffff;
+  background: var(--panel, #ffffff);
   border: 1px solid var(--strong-line);
   border-radius: 5px;
   margin-top: 8px;
@@ -3513,7 +3513,7 @@ form :is(input, select, textarea) {
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 16px 20px;
-  background: #fff;
+  background: var(--panel, #fff);
   box-shadow: 0 4px 24px #1028370c;
   z-index: 2;
 }
@@ -3619,7 +3619,7 @@ form :is(input, select, textarea) {
   gap: 16px;
 }
 .analytics-metrics > div {
-  background: #fff;
+  background: var(--panel, #fff);
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 20px;
@@ -3843,7 +3843,7 @@ meter::-webkit-meter-optimum-value {
   padding: 14px;
   border: 1px solid var(--line);
   border-radius: 6px;
-  background: #fff;
+  background: var(--panel, #fff);
   margin-bottom: 10px;
 }
 .report-rounds button[aria-current] {
@@ -3877,7 +3877,7 @@ meter::-webkit-meter-optimum-value {
   border: 1px solid var(--line);
   border-radius: 8px;
   overflow: hidden;
-  background: #fff;
+  background: var(--panel, #fff);
   text-align: left;
 }
 .report-image.overlay {
@@ -4078,7 +4078,7 @@ meter::-webkit-meter-optimum-value {
   padding: 22px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #fff;
+  background: var(--panel, #fff);
 }
 .docs-start-grid > a {
   display: grid;
@@ -4169,7 +4169,7 @@ meter::-webkit-meter-optimum-value {
   border-radius: 7px;
   overflow: hidden;
   margin: 18px 0;
-  background: #fff;
+  background: var(--panel, #fff);
 }
 .docs-json-head {
   display: flex;
@@ -4240,7 +4240,7 @@ meter::-webkit-meter-optimum-value {
 .docs-site-card {
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #fff;
+  background: var(--panel, #fff);
   overflow: hidden;
   margin: 20px 0;
 }

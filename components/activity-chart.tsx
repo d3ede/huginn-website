@@ -33,14 +33,14 @@ export default function ActivityChart({ data }: { data: Stats['daily'] }) {
               })
             }
             minTickGap={40}
-            tick={{ fill: '#7d8b89', fontSize: 12 }}
+            tick={{ fill: 'var(--dim)', fontSize: 12 }}
             axisLine={false}
             tickLine={false}
             dy={8}
           />
           <YAxis
             allowDecimals={false}
-            tick={{ fill: '#7d8b89', fontSize: 12 }}
+            tick={{ fill: 'var(--dim)', fontSize: 12 }}
             axisLine={false}
             tickLine={false}
           />
@@ -49,7 +49,7 @@ export default function ActivityChart({ data }: { data: Stats['daily'] }) {
             isAnimationActive={false}
             wrapperStyle={{ pointerEvents: 'none' }}
             contentStyle={{
-              background: '#fff',
+              background: 'var(--panel, #fff)',
               border: '1px solid var(--strong-line)',
               borderRadius: 6,
               fontSize: 14,
