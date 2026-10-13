@@ -39,7 +39,7 @@
   margin-left: auto;
 }
 
-/* Keep the same feather scale on small and large buttons to avoid fine-detail aliasing. */
+/* Scale the wing texture to each control instead of cropping a fixed-size image. */
 .button:not(.preview-challenge) {
   overflow: hidden;
 }
@@ -47,7 +47,7 @@
   inset: -2px;
   z-index: -2;
   border-radius: inherit;
-  background: var(--wing-texture) center 65% / max(290px, 100%) auto no-repeat;
+  background: var(--wing-texture) center 65% / 100% auto no-repeat;
   filter: blur(0.6px) contrast(0.85);
   mix-blend-mode: normal;
   opacity: 0;
@@ -95,24 +95,6 @@
     [aria-disabled='true']
   )::after {
   opacity: 1;
-}
-
-.button.button-small::before {
-  background-size: max(240px, 100%) auto;
-  background-position: center 65%;
-  filter: blur(0.6px) contrast(0.85);
-}
-.button.button-small:is(:hover, :focus-visible)::before {
-  background-position: center 65%;
-}
-.button.button-small::after {
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--wing-center) 43%,
-    var(--wing-center) 57%,
-    transparent
-  );
 }
 
 /* A brief, translucent flap. Feather edges dissolve instead of exposing the source crop. */

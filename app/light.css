@@ -426,7 +426,7 @@ body {
   border: 1px solid #e0e8f0;
   background: linear-gradient(140deg, #e0ecf6, #f4f7fc);
   color: #294c6c;
-  box-shadow: inset 0 1px 0 #fff;
+  box-shadow: none;
 }
 .landing-features h3 {
   font-size: 20px;
