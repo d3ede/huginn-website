@@ -1,7 +1,7 @@
 'use client';
 import { Text } from '@/components/i18n';
 
-import Link from 'next/link';
+import { AccountLink } from './session';
 import { useEffect, useState } from 'react';
 import { ArrowUpRight } from 'lucide-react';
 import { api, usd } from '@/lib/api';
@@ -63,10 +63,10 @@ export function Pricing() {
             </p>
           )}
         </div>
-        <Link className="button button-primary" href="/register">
+        <AccountLink className="button button-primary" href="/app/billing" label="Add funds">
           <Text> Create an account </Text>
           <ArrowUpRight size={16} />
-        </Link>
+        </AccountLink>
       </div>
     </section>
   );

@@ -2,7 +2,8 @@
 import { Text, useI18n, LanguageSwitch } from '@/components/i18n';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSession } from './session';
 import { useRouter } from 'next/navigation';
 import { ArrowUpRight, LoaderCircle } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -12,6 +13,10 @@ export function AuthForm({ register = false }: { register?: boolean }) {
   const { t, locale } = useI18n();
 
   const router = useRouter();
+  const session = useSession();
+  useEffect(() => {
+    if (!session.loading && session.user) router.replace('/app');
+  }, [session.loading, session.user, router]);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   async function submit(event: React.FormEvent<HTMLFormElement>) {
@@ -28,6 +33,7 @@ export function AuthForm({ register = false }: { register?: boolean }) {
           ...(register ? { name: data.get('name') } : {}),
         }),
       });
+      await session.refresh();
       router.replace('/app');
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Unable to connect.');
@@ -35,6 +41,12 @@ export function AuthForm({ register = false }: { register?: boolean }) {
       setBusy(false);
     }
   }
+  if (session.loading || session.user)
+    return (
+      <main id="main" className="workspace-loading">
+        <LoaderCircle size={22} className="spin" />
+      </main>
+    );
   return (
     <main id="main" className="auth-page">
       <div className="auth-art" aria-hidden="true" />

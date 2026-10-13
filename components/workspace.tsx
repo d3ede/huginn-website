@@ -21,6 +21,7 @@ import { api, ApiError } from '@/lib/api';
 import type { User, PublicConfig } from '@/lib/types';
 import { Brand } from './brand';
 import { ThemeSwitch } from './theme';
+import { useSession } from './session';
 type WorkspaceContext = {
   user: User;
   config: PublicConfig;
@@ -43,6 +44,7 @@ const navigation = [
 export function Workspace({ children }: { children: React.ReactNode }) {
   const { t, locale } = useI18n();
 
+  const session = useSession();
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
@@ -95,6 +97,7 @@ export function Workspace({ children }: { children: React.ReactNode }) {
     setLoggingOut(true);
     try {
       await api('/auth/logout', { method: 'POST' });
+      await session.refresh();
       router.replace('/login');
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Sign out failed.');

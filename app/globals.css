@@ -4322,3 +4322,5 @@ meter::-webkit-meter-optimum-value {
     gap: 16px;
   }
 }
+
+.nav-session-loading { width: 170px; height: 40px; }

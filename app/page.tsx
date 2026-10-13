@@ -1,3 +1,4 @@
+import { AccountLink } from '@/components/session';
 import Link from 'next/link';
 import {
   ArrowRight,
@@ -83,10 +84,10 @@ export default function Home() {
                 </Text>
               </p>
               <div className="landing-actions reveal">
-                <Link className="button button-primary" href="/register">
+                <AccountLink className="button button-primary" href="/app/keys" label="API Keys">
                   <Text>Get API key</Text>
                   <ArrowRight size={18} />
-                </Link>
+                </AccountLink>
                 <Link className="button button-outline" href="/#pricing">
                   <Text>View pricing</Text>
                 </Link>

@@ -1,3 +1,4 @@
+import { SessionProvider } from '@/components/session';
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import '@fontsource-variable/inter';
@@ -33,7 +34,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
             <a className="skip-link" href="#main">
               <Text>Skip to content</Text>
             </a>
-            {children}
+            <SessionProvider>{children}</SessionProvider>
             <RavenInteraction />
           </ThemeProvider>
         </I18nProvider>
