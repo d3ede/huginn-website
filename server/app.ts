@@ -1,3 +1,4 @@
+import { allowedOrigin } from './origin.js';
 import Fastify from 'fastify';
 import { registerAdminAnalytics } from './admin-analytics';
 import cookie from '@fastify/cookie';
@@ -118,7 +119,7 @@ export async function buildApp(
       !protocolPath(request.url) &&
       request.url !== '/webhooks/payment'
     ) {
-      if (request.headers.origin !== new URL(config.APP_ORIGIN).origin)
+      if (!allowedOrigin(request.headers.origin, config.APP_ORIGIN))
         throw new AppError(403, 'INVALID_ORIGIN', 'Request origin is not allowed.');
     }
   });
